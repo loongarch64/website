@@ -1,17 +1,16 @@
 [[main]]
   name = "新闻"
   url = "https://example.org"
-  weight = 10
+  weight = 2
 
 [[main]]
   name = "教程"
   identifier = "tutorials"
-  weight = 20
+  weight = 1
 
 [[main]]
   name = "下拉菜单"
   identifier = "dropdown"
-  weight = 30
 
 [[main]]
   parent = "dropdown"
