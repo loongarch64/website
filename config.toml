@@ -1,0 +1,51 @@
+baseURL = "http://www.loongarch.dev/"
+languageCode = "en-us"
+title = "LoongArch Site"
+
+author = "Steve Francia"
+copyright = "Copyright (c) 2008 - 2017, Steve Francia; all rights reserved."
+canonifyurls = true
+paginate = 3
+theme = "hugo-bootstrap"
+
+disqusShortname = "xxxxxx"
+googleAnalytics = "UA-XXXXXXX-1"
+
+[[menu.main]]
+    name = "TAGS"
+    pre = "<i class='fa fa-tags'></i>"
+    weight = -110
+    identifier = "tags"
+    url = "/tags/"
+
+[[menu.main]]
+    name = "CATEGORIES"
+    pre = "<i class='fa fa-folder-open'></i>"
+    weight = -100
+    identifier = "categories"
+    url = "/categories/"
+
+[[menu.main]]
+    name = "ABOUT ME"
+    pre = "<i class='fa fa-info-circle'></i>"
+    weight = -90
+    identifier = "about-me"
+    url = "/about"
+
+
+# You can have link at the footer as below
+# [[menu.footer]]
+#     name = "DISCLAIMER"
+#     weight = -110
+#     identifier = "disclaimer"
+#     url = "/page/disclaimer/"
+#
+# [[menu.footer]]
+#     name = "LICENSE"
+#     weight = -120
+#     identifier = "license"
+#     url = "/page/license/"
+#
+
+defaultContentLanguage = "zh-cn"
+defaultContentLanguageInSubdir = true
