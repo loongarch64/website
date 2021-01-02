@@ -1,0 +1,36 @@
+baseURL = "http://www.loongarch.dev/"
+title = "LoongArch Site"
+theme = "hugo-theme-bootstrap"
+copyright = "Copyright © 2016-{year} Loongson Team. All Rights Reserved."
+
+# Multilingual mode
+#defaultContentLanguage = "en"
+defaultContentLanguage = "zh-cn"
+defaultContentLanguageInSubdir = true
+
+# Pagination
+paginate = 5
+# paginatePath = "page"
+
+# Disqus
+# disqusShortname = "yourdiscussshortname"
+
+# Google analytics
+# googleAnalytics = "UA-123-45"
+
+enableRobotsTXT = true
+
+enableEmoji = true
+
+[blackfriday]
+  hrefTargetBlank = true
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
+[taxonomies]
+  category = "categories"
+  series = "series"
+  tag = "tags"
+
+# vim: ts=2 sw=2 et

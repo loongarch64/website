@@ -1,0 +1,95 @@
+# mainSections = ["post", "posts"] # Default to ["posts"].
+
+# titleSeparator = "|" # Title separator. Default to "-".
+
+description = "An extreme fast, responsive and feature-rich blog theme for Hugo"
+# image = ["site-feature-image.jpg"]
+
+# logo = "images/logo.png" # Logo image. Default to "images/logo.webp".
+brand = "BOOTSTRAP"
+# menusPosition = "left" # Menus position: right(default), left or center.
+
+palette = "blue" # Default palette. Optional.
+# palettes = ["blue", "blue gray", "brown"] # Available palettes. Default to ALL.
+
+# fullWidth = true # Full width.
+
+# dateFormat = "Jan 2, 2006"
+
+# Google Adsense
+googleAdsense = ""
+
+# math = true # Enable math globally.
+# toc = false # Disable TOC globally.
+# breadcrumb = false # Disable breadcrumb
+
+# poweredBy = false # Whether to show powered by.
+
+# featuredPostCount = 10 # The number of featured posts shown in sidebar.
+# recentPostCount = 10 # The number of recent posts shown in sidebar.
+# relatedPostCount = 10 # The number of related posts.
+# categoryCount = 10 # The number of categories shown in sidebar.
+# tagCount = 10 # The number of tags shown in sidebar.
+# seriesCount = 10 # The number of series shown in sidebar.
+
+# Custom CSS and JS
+customCSS = []
+customJS = []
+
+# tocWordCount = 280 # TOC is displayed only if the post's word count exceeds this value.
+# tocSticky = true # Whether to make TOC stick to top when scrolling. Default to true.
+
+[archive]
+  paginate = 8 # Archive pagination. Default to 100.
+  # dateFormat = "01-02" # Archive date format. Default to "Jan 2".
+
+[analytics]
+  # baidu = "" # Baidu Analytics
+
+# Site verification
+[siteVerification]
+  google = ""
+  bing = ""
+  baidu = ""
+  baiduUnion = "" # Baidu Union
+  so = ""
+  sogou = ""
+  shenma = ""
+
+[creativeCommons]
+  # by = true # Credit must be given to you, the creator.
+  # nc = true # Only noncommercial use of your work is permitted.
+  # nd = true # No derivatives or adaptations of your work are permitted.
+  # sa = true # Adaptations must be shared under the same terms.
+
+[utterances]
+  repo = "razonyang/hugo-theme-bootstrap"
+  #issueTerm = "pathname" # pathname, url, title, og:title
+  #label = "comment"
+  theme = "github-dark" # github-light, github-dark, preferred-color-scheme, github-dark-orange, icy-dark, dark-blue, photon-dark.
+
+[search]
+  paginate = 5 # Pagination. Default to 10.
+  # resultContentWordCount = 240 # The maximum word count of result content for displaying.
+  # Fuse.js options. See https://fusejs.io/api/options.html.
+  [search.fuse]
+    # ignoreLocation = true
+    # location = 0
+    # isCaseSensitive = false
+    # minMatchCharLength = 1
+    threshold = 0.1
+    # distance = 100
+    # useExtendedSearch = true
+
+[reward]
+  alipay = "images/reward/alipay.webp"
+  wechat = "images/reward/wechat.webp"
+
+[share]
+  # addThis = "" # AddThis pubid.
+
+[fontSize]
+  # extraSmall = ".8rem"
+  # small = ".9rem"
+  # large = "1.1rem"
+  # extraLarge = "1.2rem"

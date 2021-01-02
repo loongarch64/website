@@ -1,0 +1,20 @@
+[[main]]
+  name = "新闻"
+  url = "https://example.org"
+  weight = 10
+
+[[main]]
+  name = "教程"
+  identifier = "tutorials"
+  weight = 20
+
+[[main]]
+  name = "下拉菜单"
+  identifier = "dropdown"
+  weight = 30
+
+[[main]]
+  parent = "dropdown"
+  name = "Github"
+  url = "https://github.com/loongarch64/"
+  pre = '<i class="fab fa-fw fa-github"></i>'

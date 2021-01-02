@@ -1,0 +1,16 @@
+[[main]]
+  name = "News"
+  url = "https://example.org"
+
+[[main]]
+  name = "Tutorials"
+  identifier = "tutorials"
+
+[[main]]
+  name = "Dropdown"
+  identifier = "dropdown"
+[[main]]
+  parent = "dropdown"
+  name = "Github"
+  url = "https://github.com/razonyang/hugo-theme-bootstrap"
+  pre = '<i class="fab fa-fw fa-github"></i>'
