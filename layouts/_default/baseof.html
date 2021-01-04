@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="{{ .Lang }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{- block "title" . -}}{{- partial "head/title" . -}}{{- end -}}</title>
+    {{- partial "head.html" . -}}
+    {{- block "head-end" . -}}{{- end -}}
+    {{- partial "hooks/head-end" . -}}
+  </head>
+  <body>
+    {{- partial "header.html" . -}}
+    {{- partial "hooks/main-begin" . -}}
+    <main role="main" class="container{{ if default false .Site.Params.fullWidth }}-fluid{{ end }}">
+      <div class="row content">
+				{{- if .Site.Params.banner -}}
+				<img class="banner" alt="Banner" src="{{ absURL (default "images/banner.webp" .Site.Params.banner ) }}" loading="lazy">
+				{{- end -}}
+      </div>
+      <div class="row content">
+        {{- block "content" . -}}{{- end -}}
+      </div>
+    </main>
+    {{- partial "hooks/main-end" . -}}
+    {{- partial "footer.html" . -}}
+    {{- partial "body-end" . -}}
+  </body>
+</html>

@@ -9,6 +9,7 @@ description = "An extreme fast, responsive and feature-rich blog theme for Hugo"
 brand = "LoongArch"
 # menusPosition = "left" # Menus position: right(default), left or center.
 
+banner = "images/banner.jpg"
 palette = "blue" # Default palette. Optional.
 # palettes = ["blue", "blue gray", "brown"] # Available palettes. Default to ALL.
 
