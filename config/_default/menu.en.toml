@@ -1,17 +1,21 @@
 [[main]]
   name = "News"
-  url = "https://example.org"
+  identifier = "news"
+  pre = '<i class="fa fa-fw fa-newspaper"></i>'
+  weight = 2
+#url = "https://example.org"
+
+#[[main]]
+#  name = "Tutorials"
+#  identifier = "tutorials"
 
 [[main]]
-  name = "Tutorials"
-  identifier = "tutorials"
+  name = "About"
+  identifier = "about"
+  pre = '<i class="fa fa-fw fa-user"></i>'
 
 [[main]]
-  name = "Dropdown"
-  identifier = "dropdown"
-
-[[main]]
-  parent = "dropdown"
+  parent = "about"
   name = "Github"
-  url = "https://github.com/razonyang/hugo-theme-bootstrap"
+  url = "https://github.com/loongarch64/"
   pre = '<i class="fab fa-fw fa-github"></i>'

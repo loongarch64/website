@@ -18,8 +18,8 @@ keywords = [
     "static",
     "generator",
 ]
-[menu.main]
-parent = "tutorials"
+#[menu.main]
+#parent = "tutorials"
 +++
 
 Hugo uses the excellent [go][] [html/template][gohtmltemplate] library for

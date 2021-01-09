@@ -17,8 +17,8 @@ keywords = [
     "static",
     "generator",
 ]
-[menu.main]
-parent = "tutorials"
+#[menu.main]
+#parent = "tutorials"
 +++
 
 ## Step 1. Install Hugo
