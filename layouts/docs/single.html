@@ -1,0 +1,45 @@
+{{ define "content" }}
+
+<div class="col-md-12">
+  <div class="container">
+    {{- partial "breadcrumb" . -}}
+	</div>
+</div>
+
+<aside class="col-lg-4 sidebar d-flex">
+  <div class="container">
+  	{{- $toc := .TableOfContents -}}
+  	<div class="accordion accordion-flush surface post-toc position-sticky" id="accordionTOC">
+  		<div class="accordion-item">
+  			<div class="accordion-header" id="headingTOC" data-toggle="collapse" data-target="#collapseTOC" aria-expanded="true" aria-controls="collapseTOC">
+  				<i class="fas fa-fw fa-bars"></i>{{ i18n "table_of_contents" }}
+  			</div>
+  			<div id="collapseTOC" class="accordion-collapse collapse show" aria-labelledby="headingTOC" data-parent="#accordionTOC">
+  				<div class="accordion-body mt-2">
+  					{{ $toc }}
+  				</div>
+  			</div>
+  		</div>
+  	</div>
+  </div>
+</aside>
+<div class="col-md-8">
+  <div class="container">
+		<article class="post row surface">
+			<h1 class="post-title my-3">{{ .Title }}</h1>
+			{{- partial "post/meta" . -}}
+			{{- partial "hooks/content-begin" . -}}
+			{{- partial "post/share" . -}}
+			<div class="post-content mb-3">
+				{{- .Content -}}
+			</div>
+			{{- partial "post/copyright" . -}}
+			{{- partial "post/reward" . -}}
+			{{- partial "hooks/content-end" . -}}
+			{{- partial "post/nav" . -}}
+			{{- partial "post/related-posts" . -}}
+		</article>
+    {{- partial "post/comments" . -}}
+  </div>
+</div>
+{{ end }}
