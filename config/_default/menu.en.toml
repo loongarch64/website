@@ -1,15 +1,4 @@
 [[main]]
-  name = "News"
-  identifier = "news"
-  pre = '<i class="fa fa-fw fa-newspaper"></i>'
-  weight = 2
-#url = "https://example.org"
-
-#[[main]]
-#  name = "Tutorials"
-#  identifier = "tutorials"
-
-[[main]]
   name = "About"
   identifier = "about"
   pre = '<i class="fa fa-fw fa-user"></i>'

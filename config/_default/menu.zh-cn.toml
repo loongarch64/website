@@ -1,17 +1,4 @@
 [[main]]
-  name = "新闻"
-  identifier = "news"
-  pre = '<i class="fa fa-fw fa-newspaper"></i>'
-  weight = 2
-#url = "https://example.org"
-
-#[[main]]
-#  name = "教程"
-#  identifier = "tutorials"
-#  weight = 1
-#  pre = '<i class="fa fa-fw fa-book"></i>'
-
-[[main]]
   name = "关于"
   identifier = "about"
   pre = '<i class="fa fa-fw fa-user"></i>'
