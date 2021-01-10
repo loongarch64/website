@@ -12,6 +12,12 @@ categories = [
 tags = [
   ""
 ]
+series = [
+  ""
+]
+images = [
+  ""
+]
 +++
 
 <!--more-->

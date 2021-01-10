@@ -1,15 +1,14 @@
 baseURL = "http://www.loongarch.dev/"
 title = "LoongArch 开放社区"
 theme = "hugo-theme-bootstrap"
-copyright = "Copyright © 2016-{year} Loongson Team. All Rights Reserved."
+copyright = "Copyright © 2016-{year} Community Team. All Rights Reserved."
 
 # Multilingual mode
-#defaultContentLanguage = "en"
 defaultContentLanguage = "zh-cn"
 defaultContentLanguageInSubdir = true
 
 # Pagination
-paginate = 5
+paginate = 8
 # paginatePath = "page"
 
 # Disqus
