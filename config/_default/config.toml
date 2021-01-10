@@ -33,4 +33,4 @@ enableEmoji = true
   series = "series"
   tag = "tags"
 
-# vim: ts=2 sw=2 et
+# vim: ft=conf ts=2 sw=2 et

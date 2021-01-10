@@ -5,7 +5,7 @@
 description = "An extreme fast, responsive and feature-rich blog theme for Hugo"
 # image = ["site-feature-image.jpg"]
 
-# logo = "images/logo.png" # Logo image. Default to "images/logo.webp".
+logo = "images/logo.png" # Logo image. Default to "images/logo.webp".
 brand = "LoongArch"
 # menusPosition = "left" # Menus position: right(default), left or center.
 
@@ -22,7 +22,7 @@ googleAdsense = ""
 
 # math = true # Enable math globally.
 # toc = false # Disable TOC globally.
-# breadcrumb = false # Disable breadcrumb
+breadcrumb = false # Disable breadcrumb
 
 # poweredBy = false # Whether to show powered by.
 
@@ -34,7 +34,7 @@ googleAdsense = ""
 # seriesCount = 10 # The number of series shown in sidebar.
 
 # Custom CSS and JS
-customCSS = []
+customCSS = ["css/custom.css"]
 customJS = []
 
 # tocWordCount = 280 # TOC is displayed only if the post's word count exceeds this value.
