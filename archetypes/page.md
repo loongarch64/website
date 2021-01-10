@@ -2,15 +2,15 @@
 title: "{{ replace .Name "-" " " | title }}"
 date: {{ .Date }}
 description: ""
+comment: true
 draft: true
 featured: true 
-comment: true
+reward: true
 toc: true
-reward: false
-categories: []
-tags: []
-series: []
-images: []
+categories:
+tags:
+series:
+images:
 menu:
   main:
     parent: "about"
