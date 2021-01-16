@@ -10,10 +10,11 @@ tags = [
   "Alert"
 ]
 series = [
-  "用户手册"
+  "帮助"
 ]
 images = [
 ]
+draft = true
 +++
 
 本文展示了如果使用 `alert` shortcode。

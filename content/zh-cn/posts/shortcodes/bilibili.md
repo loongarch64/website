@@ -9,8 +9,12 @@ categories = [
 tags = [
   "哔哩哔哩"
 ]
+series = [
+  "帮助"
+]
 images = [
 ]
+draft = true
 +++
 
 关于哔哩哔哩 shortcode 的详细使用说明。

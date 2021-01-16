@@ -1,12 +1,9 @@
 ---
 date: 2014-03-10
 linktitle: Migrating from Jekyll
-#menu:
-#  main:
-#    parent: tutorials
 prev: /tutorials/mathjax
+draft: true
 title: Migrate to Hugo from Jekyll
-weight: 10
 ---
 
 ## Move static content to `static`

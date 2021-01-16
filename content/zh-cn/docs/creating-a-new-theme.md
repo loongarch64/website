@@ -5,7 +5,7 @@ linktitle: Creating a New Theme
 next: /tutorials/github-pages-blog
 prev: /tutorials/automated-deployments
 title: Creating a New Theme
-weight: 10
+draft: true
 ---
 
 ## Introduction
