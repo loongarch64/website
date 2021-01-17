@@ -1,4 +1,5 @@
-baseURL = "http://www.loongarch.dev/"
+#baseURL = "http://www.loongarch.dev/"
+baseURL = "/"
 title = "LoongArch 开放社区"
 theme = "hugo-theme-bootstrap"
 copyright = "Copyright © 2016-{year} Community Team. All Rights Reserved."
