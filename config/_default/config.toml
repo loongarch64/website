@@ -1,4 +1,4 @@
-baseURL = "https://www.loongarch.dev/"
+baseURL = "https://loongarch.dev/"
 #baseURL = "/"
 title = "LoongArch Opensource community"
 theme = "hugo-theme-bootstrap"
