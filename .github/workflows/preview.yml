@@ -1,0 +1,25 @@
+name: website-preview
+
+on:
+  pull_request:
+    branches: [ main ]
+
+env:
+  REMOTE: loongarch64/website-preview.git
+  DEST: public
+  TOKEN: ${{ secrets.TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out master
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          submodules: true
+      - name: Build and deploy preview website
+        uses: victoriadrake/hugo-remote@master
+        with:
+          branch: main
