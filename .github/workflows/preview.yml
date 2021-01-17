@@ -38,8 +38,8 @@ jobs:
         uses: Sibz/github-status-action@v1
         with:
           authToken: ${{secrets.GITHUB_TOKEN}}
-          context: 'website preview'
-          description: 'Deployed, click Details to view->'
+          context: 'website-preview/deploy(update)'
+          description: 'Deployed, click "Details" to view ->'
           state: 'success'
           target_url: https://preview.loongarch.dev
           sha: ${{github.event.pull_request.head.sha || github.sha}}
