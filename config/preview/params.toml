@@ -1,2 +1,5 @@
 # Custom CSS and JS
+#baseURL = "http://www.loongarch.dev/"
+title = "Website preview"
+brand = "Preview"
 customJS = ["https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js", "js/jquery.watermark.js", "js/custom.js"]
