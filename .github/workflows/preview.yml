@@ -31,5 +31,7 @@ jobs:
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           external_repository: loongarch64/website-preview
+          allow_empty_commit: true
           publish_dir: ./public
           cname: preview.loongarch.dev
+          #force_orphan: true
