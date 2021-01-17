@@ -32,3 +32,4 @@ jobs:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           external_repository: loongarch64/website-preview
           publish_dir: ./public
+          cname: preview.loongarch.dev
