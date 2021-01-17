@@ -1,4 +1,4 @@
-name: website-preview
+name: website
 
 on:
   push:
