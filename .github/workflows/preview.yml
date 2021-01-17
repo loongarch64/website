@@ -27,8 +27,8 @@ jobs:
         run: hugo --minify --environment preview --cleanDestinationDir'
 
       - name: Deploy
-           uses: peaceiris/actions-gh-pages@v3
-           with:
-             external_repository: loongarch64/website-preview
-             github_token: ${{ secrets.GITHUB_TOKEN }}
-             publish_dir: ./public
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          external_repository: loongarch64/website-preview
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
