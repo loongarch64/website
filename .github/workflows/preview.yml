@@ -22,6 +22,8 @@ jobs:
           fetch-depth: 1
           submodules: true
       - name: Build and deploy preview website
+        env:
+          HUGO_ARGS: '--environment preview --minify --cleanDestinationDir'
         uses: victoriadrake/hugo-remote@master
         with:
           branch: main
