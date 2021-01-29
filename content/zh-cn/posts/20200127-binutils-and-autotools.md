@@ -1,5 +1,6 @@
 +++
 title = "上游优先，迈出第一步"
+linktitle = "上游优先，迈出第一步"
 description = "LoongArch生态建设起步"
 date = 2021-01-27T20:35:23+08:00
 draft = false
