@@ -26,7 +26,7 @@ Judging from some signs in the community, Loongson has already begun to merge pa
 
 ## Binutils
 
-On August 17, 2020, Xu Chenghua sent the first email about LoongArch, requesting to reserve 253~256 Machine numbers for Loongson. After several rounds of communication, the upstream finally allocated 258 to the LoongArch architecture, and in December 2020 Formally merged into the main branch on the 13th.
+On August 17, 2020, Chenghua Xu sent the first email about LoongArch, requesting to reserve 253~256 Machine numbers for Loongson. After several rounds of communication, the upstream finally allocated 258 to the LoongArch architecture, and in December 2020 Formally merged into the main branch on the 13th.
 
 https://sourceware.org/git/?p=binutils-gdb.git;a=commitdiff;h=4cf2ad720078a9f490dd5b5bc8893a926479196e
 
@@ -55,7 +55,7 @@ The `config.guess` and `config.sub` in the GNU Autotools package are independent
 
 Other software such as gnulib and automake will be obtained from here from time to time and merged into their own code tree. Finally, after upstream developers package them through GNU Autotools, these two files will be released in tarballs.
 
-Wu Xiaotian submitted patches related to the LA architecture, which were merged into the **config.git** master branch on December 22, 2020.
+Xiaotian Wu submitted patches related to the LA architecture, which were merged into the **config.git** master branch on December 22, 2020.
 
 https://git.savannah.gnu.org/gitweb/?p=config.git;a=commitdiff;h=c8ddc8472f8efcadafc1ef53ca1d863415fddd5f
 
