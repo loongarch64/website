@@ -1,3 +1,32 @@
++++
+title = "手把手教你构建基于LoongArch64架构的Linux系统"
+description = ""
+date = 2021-06-18
+draft = false
+comment = true
+toc = true
+#reward = true
+#categories = [
+#  ""
+#]
+#tags = [
+#  ""
+#]
+#series = [
+#  ""
+#]
++++
+
+---
+author: "孙海勇"
+date: 2021-06-18
+linktitle: CLFS For LoongArch64
+next: /tutorials/github-pages-blog
+prev: /tutorials/automated-deployments
+title: 手把手教你构建基于LoongArch64架构的Linux系统
+draft: true
+---
+
 # <center>手把手教你构建基于LoongArch64架构的Linux系统</center>
 
 <center>（CLFS For LoongArch64）</center>  
