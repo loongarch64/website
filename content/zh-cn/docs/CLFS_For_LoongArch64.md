@@ -17,11 +17,13 @@ toc = true
 #]
 +++
 
-# <center>手把手教你构建基于LoongArch64架构的Linux系统</center>
+本文讲解如何交叉编译一个基于LoongArch架构的LFS（Linux From Scratch）系统。
 
-<center>（CLFS For LoongArch64）</center>  
+<!--more-->
 
-<center>作者：孙海勇</center>
+（CLFS For LoongArch64）
+
+作者：孙海勇
 
 
 ## 0 前言
