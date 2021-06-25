@@ -1,5 +1,6 @@
 +++
 title = "{{ replace .Name "-" " " | title }}"
+author = ""
 description = ""
 date = {{ .Date }}
 draft = true
