@@ -1,0 +1,9 @@
+.banner {
+  max-height: 200px;
+  margin-bottom: 30px;
+}
+
+.docs #TableOfContents{
+  max-height: 600px;
+  overflow: auto;
+}
