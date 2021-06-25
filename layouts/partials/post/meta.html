@@ -3,11 +3,11 @@
     <i class="fas fa-fw fa-calendar-alt"></i>{{ .Date.Format (default "Jan 2, 2006" $.Site.Params.dateFormat) }}
   </span>
   {{- if .Params.Author -}}
-  <span class="poost-reading-author mr-2">
+  <span class="post-reading-author mr-2">
     <i class="fas fa-fw fa-user"></i>{{ .Params.Author }}
   </span>
   {{- end -}}
-  <span class="poost-reading-time mr-2">
+  <span class="post-reading-time mr-2">
     <i class="fas fa-fw fa-coffee"></i>{{ i18n "reading_time" . }}
   </span>
   {{- partial "post/translations" . -}}
