@@ -28,32 +28,43 @@ toc = true
 
 
 ## 0 前言
+
 　　龙芯中科于2021年推出了全新指令集架构LoongArch，其中64位指令集称为LoongArch64。
+
 　　本文的目标是为LoongArch64制作一套基本的Linux系统，作为对新的指令集架构而制作Linux系统，我们可以默认该架构平台上无可运行的系统为前提，采用交叉编译的方式为其制作一套基本的Linux系统。
 
 
 ## 1 关于软件包的移植
+
 　　对于本文所制作的目标系统是基于LoongArch64架构的Linux系统，对于LoongArch64架构所使用的指令集在本文发布时属于比较新的，很多Linux系统的基本软件包中都没有包含该指令集相关的支持，为了解决支持新架构的问题，可根据不同情况的软件包采用不同的处理方式。
 
 * 扩充式移植软件包
+
 　　这类软件包通常在Linux系统中与具体指令集架构细节打交道的软件包，例如：Linux内核、GCC、Binutls、Glibc以及LLVM等等，且这些软件包通常需要大量代码的加入才能支持新的指令集架构。
+
 　　对于这类软件包，如果想以最佳的手段支持新指令集架构，那么当然是提交到官方的最新版本中并得到长期的支持，但要达到这样的结果是需要一个过程的，那么在这个过程中则可以采用“打补丁”的方式。但因通常这些软件包需要修改和增加大量的代码，这使得补丁文件通常针对具体的版本，当版本升级后通常补丁不能直接使用，所以要使用对应版本的源代码来使用补丁。
+
 　　另一种“不太好”的方式是添加了新架构的完整源代码整体提供下载，即补丁已经打在源代码中，这样只要下载修改过的软件包源码就可以使用了。
 
 * 简易移植软件包
+
 　　这类软件包代码上基本上不涉及汇编或者有非汇编的实现（汇编通常作为优化性能的手段），此类软件包通常有多种指令集架构采用类似的工作行为，可在某一类工作行为上加入新指令集架构的判断或者通过较少的改动即可实现对新指令集架构的移植，比如：Systemd、Automake等，因此针对这类软件包的补丁具有较高的版本通用性，同一个补丁可能适合用于多个版本上，在该类软件包的官方支持新指令集架构之前，采用“打补丁”的方式更适合这类软件包的移植方式。
 
 * 无需移植软件包
+
 　　这类软件包大多采用非汇编的开发语言进行编写，具有较强的通用性，通常在其所依赖的编译器或者运行环境进行了移植后就可以直接进行编译或使用了。例如Coreutils、Findutils等。
+
 　　这类软件包也可能需要在配置阶段进行新架构的支持，主要是软件包自带的config.sub和config.guess检查目标系统时没有匹配的架构设置导致错误，这类问题比较好解决，只需要将增加了新架构的Automake软件包中的config.sub和config.guess覆盖软件包中的文件即可。
 
 　　除了以上这些在新架构平台上可移植的软件包外还有一些软件包是针对某一个特定的指令集架构编写的，如果是非核心功能的软件包可以暂时忽略，如果有对应功能的可移植软件包也可以用来替代这些特定平台的软件包。
 　　
 
 ## 2 准备工作
+
 　　在开始制作前，先做一些准备工作，这包括系统的准备、制作环境的设置以及软件包源代码的下载。
 
 ### 2.1 系统的准备
+
 　　首先准备一台可以安装通用Linux系统的机器，对于要用来交叉编译目标平台的系统我们称为“主系统”，“主系统”可以是X86机器上的系统，也可以是其他架构机器上的系统，为了方便讲解，本文采用在X86架构上的Linux系统进行制作讲解。
 
 　　选择一个合适的Linux对于能否顺利完成制作还是有一定的作用，这里可以使用常见的发行版，如Fedora、Debian、CentOS等，也可以使用专门的系统，如LFS的LiveCD等，接下来我们以Fedora系统作为交叉编译的“主系统”进行讲解。
@@ -70,7 +81,9 @@ sudo dnf install @core @c-development rpm-build git python3-devel texinfo \
                  --repofrompath base,${DISTRO_URL} \
                  --releasever 34 --nogpgcheck
 ```
+
 　　以上步骤将在当前用户的目录中创建"la-clfs"的目录，在这个目录中将安装一个基本的制作环境，这里安装的是Fedora 34的系统，读者也可以安装其它的系统作为制作环境。
+
 　　接下来的制作过程都将在这个目录中进行。
 
 　　复制当前系统的域名解析配置文件到新建立的系统中，以便该系统可以访问网络资源。
@@ -98,6 +111,7 @@ mount -t tmpfs shm dev/shm
 ### 2.2 制作环境的设置
 
 #### 创建必要的目录
+
 　　使用如下命令创建几个目录，后续的制作过程都将在这些目录中进行。
 
 ```sh
@@ -243,78 +257,146 @@ pushd ${SYSDIR}/downloads
 
 　　以下是本次制作所用到的软件包源码的地址：
 
-　　**Acl:** https://download.savannah.gnu.org/releases/acl/acl-2.3.1.tar.xz
+　　**Acl:** https://download.savannah.gnu.org/releases/acl/acl-2.3.1.tar.xz 
+
 　　**Attr:** https://download.savannah.gnu.org/releases/attr/attr-2.5.1.tar.gz
+
 　　**Autoconf:** https://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.xz
+
 　　**Automake:** https://ftp.gnu.org/gnu/automake/automake-1.16.3.tar.xz
+
 　　**Bash:** https://ftp.gnu.org/gnu/bash/bash-5.1.tar.gz
+
 　　**BC:** https://github.com/gavinhoward/bc/releases/download/4.0.2/bc-4.0.2.tar.xz
+
 　　**Binutils:** *暂无下载*
+
 　　**Bison:** https://ftp.gnu.org/gnu/bison/bison-3.7.6.tar.xz
+
 　　**Bzip2:** https://www.sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz
+
 　　**Coreutils:** https://ftp.gnu.org/gnu/coreutils/coreutils-8.32.tar.xz
+
 　　**D-Bus**: https://dbus.freedesktop.org/releases/dbus/dbus-1.12.20.tar.gz
+
 　　**Diffutils:** https://ftp.gnu.org/gnu/diffutils/diffutils-3.7.tar.xz
+
 　　**E2fsprogs:** https://downloads.sourceforge.net/project/e2fsprogs/e2fsprogs/v1.46.2/e2fsprogs-1.46.2.tar.gz
+
 　　**Expat:** https://prdownloads.sourceforge.net/expat/expat-2.4.1.tar.xz
+
 　　**File:** https://astron.com/pub/file/file-5.40.tar.gz
+
 　　**Findutils:** https://ftp.gnu.org/gnu/findutils/findutils-4.8.0.tar.xz
+
 　　**Flex:** https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz
+
 　　**Gawk:** https://ftp.gnu.org/gnu/gawk/gawk-5.1.0.tar.xz
+
 　　**GCC:** *暂无下载*
+
 　　**GDBM:** https://ftp.gnu.org/gnu/gdbm/gdbm-1.19.tar.gz
+
 　　**Gettext:** https://ftp.gnu.org/gnu/gettext/gettext-0.21.tar.xz
+
 　　**Glibc:** *暂无下载*
+
 　　**GMP:** https://ftp.gnu.org/gnu/gmp/gmp-6.2.1.tar.xz
+
 　　**GPerf:** https://ftp.gnu.org/gnu/gperf/gperf-3.1.tar.gz
+
 　　**Grep:** https://ftp.gnu.org/gnu/grep/grep-3.6.tar.xz
+
 　　**Groff:** https://ftp.gnu.org/gnu/groff/groff-1.22.4.tar.gz
+
 　　**Grub2:** https://github.com/loongarch64/grub/tree/dev-la64
+
 　　**Gzip:** https://ftp.gnu.org/gnu/gzip/gzip-1.10.tar.xz
+
 　　**Iana-Etc:** https://github.com/Mic92/iana-etc/releases/download/20210526/iana-etc-20210526.tar.gz
+
 　　**IPRoute2:** https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-5.12.0.tar.xz
+
 　　**KBD:** https://www.kernel.org/pub/linux/utils/kbd/kbd-2.4.0.tar.xz
+
 　　**Kmod:** https://www.kernel.org/pub/linux/utils/kernel/kmod/kmod-29.tar.xz
+
 　　**Less:** https://www.greenwoodsoftware.com/less/less-581.tar.gz
+
 　　**Libcap:** https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.50.tar.xz
+
 　　**Libelf:** https://sourceware.org/ftp/elfutils/0.185/elfutils-0.185.tar.bz2
+
 　　**Libffi:** https://sourceware.org/pub/libffi/libffi-3.3.tar.gz
+
 　　**Libpipeline:** https://download.savannah.gnu.org/releases/libpipeline/libpipeline-1.5.3.tar.gz
+
 　　**Libtool:** https://ftp.gnu.org/gnu/libtool/libtool-2.4.6.tar.xz
+
 　　**Linux:** https://github.com/loongson/linux/tree/loongarch-next
+
 　　**Linux-Firmware:** https://mirrors.edge.kernel.org/pub/linux/kernel/firmware/linux-firmware-20210511.tar.xz
+
 　　**M4:** https://ftp.gnu.org/gnu/m4/m4-1.4.18.tar.xz
+
 　　**Make:** https://ftp.gnu.org/gnu/make/make-4.3.tar.gz
+
 　　**Man-DB:** https://download.savannah.gnu.org/releases/man-db/man-db-2.9.4.tar.xz
+
 　　**Man-Pages:** https://www.kernel.org/pub/linux/docs/man-pages/man-pages-5.11.tar.xz
+
 　　**MPC:** https://ftp.gnu.org/gnu/mpc/mpc-1.2.1.tar.gz
+
 　　**MPFR:** https://www.mpfr.org/mpfr-4.1.0/mpfr-4.1.0.tar.xz
+
 　　**Ncurses:** https://ftp.gnu.org/gnu/ncurses/ncurses-6.2.tar.gz
+
 　　**Ninja:** https://github.com/ninja-build/ninja/archive/v1.10.2/ninja-1.10.2.tar.gz
+
 　　**OpenSSL:** https://www.openssl.org/source/openssl-1.1.1k.tar.gz
+
 　　**Patch:** https://ftp.gnu.org/gnu/patch/patch-2.7.6.tar.xz
+
 　　**Pkg-Config:** https://pkg-config.freedesktop.org/releases/pkg-config-0.29.2.tar.gz
+
 　　**Procps-NG:** https://sourceforge.net/projects/procps-ng/files/Production/procps-ng-3.3.17.tar.xz
+
 　　**PSmisc:** https://sourceforge.net/projects/psmisc/files/psmisc/psmisc-23.4.tar.xz
+
 　　**Readline:** https://ftp.gnu.org/gnu/readline/readline-8.1.tar.gz
+
 　　**Sed:** https://ftp.gnu.org/gnu/sed/sed-4.8.tar.xz
+
 　　**Shadow:** https://github.com/shadow-maint/shadow/releases/download/4.8.1/shadow-4.8.1.tar.xz
+
 　　**Systemd:** https://github.com/systemd/systemd/archive/v248/systemd-248.tar.gz
+
 　　**Tar:** https://ftp.gnu.org/gnu/tar/tar-1.34.tar.xz
+
 　　**Texinfo:** https://ftp.gnu.org/gnu/texinfo/texinfo-6.7.tar.xz
+
 　　**Util-Linux:** https://www.kernel.org/pub/linux/utils/util-linux/v2.36/util-linux-2.36.2.tar.xz
+
 　　**VIM:** https://github.com/vim/vim/archive/refs/tags/v8.2.2879.tar.gz
+
 　　**XZ:** https://tukaani.org/xz/xz-5.2.5.tar.xz
+
 　　**Zlib:** https://zlib.net/zlib-1.2.11.tar.xz
+
 　　**Zstd:** https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz
 
 　　以下是本次制作所需补丁文件的下载地址：
 
 　　https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/automake-1.16.3-add-loongarch.patch
+
 　　https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/gcc-8-loongarch-fix-libdir.patch
+
 　　https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/glibc-2.28-fix-loongarch_pr_uid_and_pr_gid.patch
+
 　　https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/kbd-2.4.0-backspace-1.patch
+
 　　https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/libffi-3.3-add-loongarch.patch
+
 　　https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/systemd-248-add-loongarch64.patch
 
 　　都下载完成后，离开"downloads"目录:
@@ -323,12 +405,14 @@ pushd ${SYSDIR}/downloads
 popd
 ```
 
-
 ## 3 制作交叉工具链及相关工具
+
 　　接下来就正式进入交叉工具链和相关工具的制作环节。
+
 ### 3.1 Linux内核头文件
 
 * 代码准备
+
 　　Linux内核需要进行扩充式移植的软件包，在没有软件官方支持的情况下需要专门的获取代码的方式进行，以下是获取方式：
 
 ```sh
@@ -345,6 +429,7 @@ tar -czf ${DOWNLOADDIR}/linux-5.13.0.tar.gz linux-5.13.0
 ```
 
 * 制作步骤
+
 　　按以下步骤制作Linux内核头文件并安装到目标系统目录中。
 
 ```sh
@@ -360,7 +445,9 @@ popd
 
 
 ### 3.2 交叉编译器之Binutils
+
 * 代码准备
+
 　　Binutils需要进行扩充式移植的软件包，在没有软件官方支持的情况下需要专门的获取代码的方式进行，以下是获取方式：
 
 ```sh
@@ -368,6 +455,7 @@ popd
 ```
 
 * 制作步骤
+
 　　按以下步骤制作交叉编译工具链中的Binutils并安装到存放交叉工具链的目录中。
 
 ```sh
@@ -388,6 +476,7 @@ popd
 ```
 
 ### 3.3 GMP
+
 　　制作交叉工具链中所使用的GMP软件包。
 
 ```sh
@@ -400,6 +489,7 @@ popd
 ```
 
 ### 3.4 MPFR
+
 　　制作交叉工具链中所使用的MPFR软件包。
 
 ```sh
@@ -412,6 +502,7 @@ popd
 ```
 
 ### 3.5 MPC
+
 　　制作交叉工具链中所使用的MPC软件包。
 
 ```sh
@@ -424,7 +515,9 @@ popd
 ```
 
 ### 3.6 交叉编译器之GCC（精简版）
+
 * 代码准备
+
 　　GCC需要进行扩充式移植的软件包，在没有软件官方支持的情况下需要专门的获取代码的方式进行，以下是获取方式：
 
 ```sh
@@ -432,6 +525,7 @@ popd
 ```
 
 * 制作步骤
+
 　　制作交叉编译器中的GCC，第一次编译交叉工具链的GCC需要采用精简方式进行编译和安装，否则会因为缺少目标系统的C库而导致部分内容编译链接失败，制作过程如下：
 
 ```sh
@@ -459,6 +553,7 @@ popd
 ```
 
 对于目标是LoongArch架构来说，目前有几个参数是需要特别注意的：
+
 * `--with-newlib`，因为当前没有目标系统Glibc的支持，所以使用newlib来临时支援GCC的运行。
 * `--disable-shared`，使用newlib需要配合该参数。
 * `--with-abi=${MABI}`，转换过来就是--with-abi=lp64，loongarch64使用的ABI名字为lp64。
@@ -468,7 +563,9 @@ popd
 
 
 ### 3.7 目标系统的Glibc
+
 * 代码准备
+
 　　Glibc需要进行扩充式移植的软件包，在没有软件官方支持的情况下需要专门的获取代码的方式进行，以下是获取方式：
 
 ```sh
@@ -476,6 +573,7 @@ popd
 ```
 
 * 制作步骤
+
 　　在制作并安装好交叉工具链的Binutils、精简版的GCC以及Linux内核的头文件后就可以编译目标系统的Glibc了，制作和安装步骤如下：
 
 ```sh
@@ -500,6 +598,7 @@ popd
 　　Glibc是目标系统的一部分，因此指定prefix等路径参数时是按照常规系统的路径进行设置的，所以必须在安装时指定DESTDIR来指定安装到存放目标系统的目录中。
 
 ### 3.8 交叉编译器之GCC（完整版）
+
 　　完成目标系统的Glibc之后就可以着手制作交叉工具链中完整版的GCC了，制作步骤如下：
 
 ```sh
@@ -524,11 +623,13 @@ popd
 ```
 
 在完成目标系统的Glibc之后就可以增加和修改一些编译参数了，主要是如下：
+
 * 去掉了`--with-newlib`和`--disable-shared`，因为有Glibc，所以不再需要newlib了。
 * `--enable-threads=posix`,可以设置线程支持了。
 * `--enable-languages=c,c++,fortran,objc,obj-c++,lto`，可以支持更多的开发语言了。
 
 ### 3.9 File
+
 　　File软件包的官方最新版已经集成了LoongArch的支持，可以识别出LoongArch架构的二进制文件，因此制作时使用5.40以上的版本。
 
 ```sh
@@ -541,6 +642,7 @@ popd
 ```
 
 ### 3.10 Automake
+
 　　Automake软件包中提供了许多软件包集成用来生成Makefile文件的脚本，但该脚本目标尚未增加对LoongArch架构的支持，因此需要对软件包打补丁文件来增加支持，制作步骤如下：
 
 ```sh
@@ -556,6 +658,7 @@ popd
 　　打上补丁并安装到交叉工具链的目录中，这样当后续有软件包需要更新脚本文件时就可以通过本次安装的Automake中的脚本文件来进行替换。
 
 ### 3.11 Pkg-Config
+
 　　为了能在交叉编译目标系统的过程中使用目标系统中已经安装的“pc”文件，我们在交叉工具链的目录中安装一个专门用来从目标系统目录中的查询“pc”文件的pkg-config命令，制作过程如下：
 
 ```sh
@@ -580,7 +683,8 @@ popd
 ```
 
 ### 3.13 Groff
-	编译目标系统的过程中会对Groff版本有一定要求，因此在交叉工具链的目录中安装一个版本较新的Groff。
+
+　　编译目标系统的过程中会对Groff版本有一定要求，因此在交叉工具链的目录中安装一个版本较新的Groff。
 
 ```sh
 tar xvf ${DOWNLOADDIR}/groff-1.22.4.tar.gz -C ${BUILDDIR}
@@ -592,9 +696,11 @@ popd
 ```
 
 ### 3.14 Grub2
+
 　　为了在交叉编译的环境下可以制作生成LoongArch机器上使用的EFI启动文件，我们在交叉工具链目录中存放一个可以生成目标机器EFI的Grub软件包。
 
 * 代码准备
+
 　　Grub2需要进行扩充式移植的软件包，在没有软件官方支持的情况下需要专门的获取代码的方式进行，以下是获取方式：
 
 ```sh
@@ -638,12 +744,15 @@ popd
 
 
 ## 4 制作目标系统
+
 　　交叉工具链及其相关的工具制作并安装完成后就可以继续制作目标系统了。
 　　
 ### 4.1 软件包制作说明
 
 #### 架构测试脚本替换
+
 　　在制作目标系统的过程中会经常遇到configure阶段提示不识别loongarch64架构的字样，这通常是软件包自带的架构探测脚本没有增加对loongarch64架构的识别，因此需要去对该问题进行处理，处理的方式通常有两种：
+
 　　1. 删除配置脚本，然后通过automake命令自动将新的探测脚本加入到软件包中，具体的操作方式为：
 
 ```sh
@@ -664,14 +773,16 @@ cp ${SYSDIR}/sysroot/usr/share/automake-1.16/config.* config/
 　　也可能一个软件包中有多个探测脚本，那么就需要全部进行覆盖。
 　　
 #### 安装目标系统中的软件包
+
 　　目标系统中的软件包安装的时候都是按照根目录（“/”）来存放的，所以如果直接安装那么就会安装到主系统的目录中，这必然是不对的，所以我们在安装的时候增加“DESTDIR”参数指定一个目录，那么安装的文件将以该指定目录作为安装的根目录进行安装，当我们设置为目标系统存放的目录时，就可以避开与主系统的冲突也可以让安装的软件包以正常的目录结构进行安装。
 
 　　在后续的制作过程中会看到大多数软件包都支持“DESTDIR”参数设置，但也有个别软件包不支持，这种情况下通常采用软件包支持的类似功能参数来解决。
 
 #### 交叉编译软件包
-　　通常在带有configure配置脚本的软件包可以使用“build”、“host”参数来指定编译方式，当“build”和“host”相同时是本地编译，不同时就是交叉编译。
+
+　　通常在带有configure配置脚本的软件包可以使用`build`、`host`参数来指定编译方式，当`build`和`host`相同时是本地编译，不同时就是交叉编译。
 　　
-　　“build”参数可以理解为当前主系统所使用的架构系统信息，而“host”则是目标系统运行的架构系统信息，在本文中采用在x86的Linux系统中交叉编译LoongArch64架构的Linux系统，所以根据之前定义的环境变量，“build”指定为`${CROSS_HOST}`则代表了当前主系统，“host”指定为`${CROSS_TARGET}`则代表了要编译生成的目标架构系统。
+　　`build`参数可以理解为当前主系统所使用的架构系统信息，而`host`则是目标系统运行的架构系统信息，在本文中采用在x86的Linux系统中交叉编译LoongArch64架构的Linux系统，所以根据之前定义的环境变量，`build`指定为`${CROSS_HOST}`则代表了当前主系统，`host`指定为`${CROSS_TARGET}`则代表了要编译生成的目标架构系统。
 
 　　由于是交叉编译，所以在软件包的配置阶段有可能探测的参数错误，这可能导致编译出来的软件包不匹配目标架构系统，这时可以采用指定部分探测参数的方式来解决，通常可以采用创建config.cache文件，然后将一些需要探测的参数和取值写入到该文件中，例如：
 
@@ -685,6 +796,7 @@ EOF
 　　然后在configure的参数中指定`--cache-file=config.cache`，这样就可以在探测这些参数时使用文件中设置的值而不是尝试去探测，这可以避免探测到错误的取值。
 
 #### 编译目录
+
 　　多数软件包可以在软件包自己的“根目录”中进行配置和编译，但也有一些软件包会建议创建一个新的目录来配置和编译，对这些需要创建目录进行编译的软件包，我们通常采用在该软件目录下创建一个“build”开头的目录，并在该目录中进行编译，这样便于使用完软件包后的清理工作。
 
 ### 4.2 软件包的制作
@@ -763,6 +875,7 @@ popd
 ```
 
 #### Binutils
+
 　　这次编译的Binutils是目标系统中使用的，在交叉编译阶段不会使用到它。
 
 ```sh
@@ -828,6 +941,7 @@ popd
 ```
 
 　　由于Bzip2软件包没有configure的配置脚本，因此在编译的时候直接给make命令指定CC参数，该参数用来设置编译程序时使用的编译器命令名，这里设置了交叉编译器的命令名，使得接下来的编译采用交叉编译器进行。
+
 　　安装Bzip2软件包时因没有DESTDIR参数用来设置安装根目录，所以在PREFIX参数中加入目标系统存放目录的路径。
 
 #### XZ
@@ -894,6 +1008,7 @@ popd
 cp  ${SYSDIR}/sysroot/usr/bin/ncursesw6-config ${SYSDIR}/cross-tools/bin/
 sed -i "s@-L\$libdir@@g" ${SYSDIR}/cross-tools/bin/ncursesw6-config
 ```
+
 　　在安装完目标系统的Ncurses后，复制了一个ncursesw6-config脚本命令到交叉编译目录中，这是因为后续编译一些软件包时会调用该命令来获取安装到目标系统中的Nucrses库链接信息，而如果主系统中的库与目标系统中的库链接不一致可能导致链接失败，因此提供一个可以正确链接信息的脚本是有效的解决方案。
 
 #### Readline
@@ -1017,8 +1132,11 @@ popd
 ```
 
 　　该软件包修改了一些默认的设置，下面介绍以下主要修改的内容：
+
 　　1、将用户密码的加密模式从DES改为SHA512，后者相对前者更难破解。
+
 　　2、修改useradd创建用户默认的起始组编号，这个修改可改可不改，但无论改不改这个组编号对应的组都必须在目标系统中存在。
+
 　　3、修改useradd命令创建用户时默认创建mail目录的设置，该目录目前已很少使用，所以修改为默认不创建。
 
 #### Sed
@@ -1552,6 +1670,7 @@ popd
 　　Util-Linux带有大量的命令和库，由于部分命令已经在其它软件包中提供了，所以使用选项参数来关闭这些命令的编译和安装。
 
 #### Systemd
+
 　　Systemd采用的是meson命令进行配置阶段的操作，该命令与其他常见的configure脚本有明显的不同，所以在当前需要进行交叉编译的情况下也会采用完全不同的操作步骤，以下将展开进行说明。
 
 ```sh
@@ -1690,6 +1809,7 @@ popd
 　　因为是交叉编译的原因，Linux内核需要指定“ARCH”变量才能知道目标机器的架构，通过设置“CROSS_COMPILE”变量来指定命令前缀的方式来使用交叉编译工具的命令。
 
 　　下面解释一下多个make命令步骤含义：
+
 　　* `defconfig`，自动获取指定架构目录中的默认配置文件作为当前编译使用的配置文件。
 　　* `menuconfig`，进入到交互式选择内核功能的界面，这需要主系统安装了Ncurses的开发库，该步骤可用来调整Linux内核选择，如果使用默认的就足够了，那么该步骤可以跳过。
 　　* `modules_install`，安装模块文件，模块安装的根目录由`INSTALL_MOD_PATH`变量指定，这里指定了`dest`，代表安装到当前目录中的dest目录里，若没有该目录将自动创建。
@@ -1728,6 +1848,7 @@ popd
 
 
 ## 5 设置目标系统
+
 　　目标系统的软件包制作过程已经完成，接下来就是对目标系统进行必要的设置，以便目标系统可以正常的启动和使用。
 
 ### 创建用户文件
@@ -1858,6 +1979,7 @@ EOF
 ### 启动设置
 
 #### 生成EFI文件
+
 　　生成UEFI的启动文件，用于启动grub，命令如下：
 
 ```sh
@@ -1872,15 +1994,21 @@ ${CROSS_TARGET}-grub-mkimage \
 　　因为运行的是存放在交叉编译工具目录中的Grub命令，所以根据当时安装的命名规则运行的命令是以`${CROSS_TARGET}-`开头的。
 
 　　解释一下上述命令的参数：
+
 　　* `--directory`，该参数指定生成EFI文件所使用模块存放的目录，这里指定的是目标系统存放目录中Grub安装的模块目录。
-　　* `--prefix`，该参数指定EFI文件读取文件的基础目录，也就是说EFI如果需要读取什么文件的话都以该参数设置的目录作为最基础的目录，这里有一个很重要的参数设置`(,gpt2)`，这指定的是存储设备的分区，括号中有两个参数，并使用“,”分隔，逗号前的参数是磁盘编号，逗号后的参数是分区编号，我们看到这里没有指定磁盘编号，那么EFI启动后会自动使用启动EFI文件的磁盘编号来代替，而分区编号指定为`gpt2`,其中“gpt”代表分区类型，这里通常为“gpt”或者“msdos”，“gpt”代表了GPT分区，“msdos”代表了DOS分区，目前GPT分区逐渐成为主流，且UEFI的BIOS也建议分区采用GPT，“gpt”后面的数字代表分区的编号，第一个分区为“1”，第二个分区为“2”，所以这里`gpt2`代表的是GPT的第二个分区。
-　　之所以这样设置是为了方便安装了目标系统的存储设备可以正常的启动，因为通常存放EFI文件的分区和存放与其匹配的Grub启动相关文件的分区都在同一个存储设备上。
+
+　　* `--prefix`，该参数指定EFI文件读取文件的基础目录，也就是说EFI如果需要读取什么文件的话都以该参数设置的目录作为最基础的目录，这里有一个很重要的参数设置`(,gpt2)`，这指定的是存储设备的分区，括号中有两个参数，并使用“,”分隔，逗号前的参数是磁盘编号，逗号后的参数是分区编号，我们看到这里没有指定磁盘编号，那么EFI启动后会自动使用启动EFI文件的磁盘编号来代替，而分区编号指定为`gpt2`,其中“gpt”代表分区类型，这里通常为“gpt”或者“msdos”，“gpt”代表了GPT分区，“msdos”代表了DOS分区，目前GPT分区逐渐成为主流，且UEFI的BIOS也建议分区采用GPT，“gpt”后面的数字代表分区的编号，第一个分区为“1”，第二个分区为“2”，所以这里`gpt2`代表的是GPT的第二个分区。之所以这样设置是为了方便安装了目标系统的存储设备可以正常的启动，因为通常存放EFI文件的分区和存放与其匹配的Grub启动相关文件的分区都在同一个存储设备上。 
+
 　　* `--output`，该参数指定生成的EFI文件存放的路径和文件名，这里设置的是目标系统存放目录中的“/boot/efi/EFI/BOOT”，这是按照一个系统被正常挂载后的目录结构，“/boot/efi”目录通常挂载的是第一个分区，也就是EFI分区，在该分区中通常要创建“EFI/BOOT”，因为UEFI的BIOS通常从这个分区的这个目录中载入EFI文件用于启动。“BOOTLOONGARCH.EFI”是LoongArch机器使用的默认查找的启动EFI文件名。
+
 　　* `--format`，该参数指定生成文件的格式名，不同架构以及不同启动方式的名字会不同，这里针对LoongArch64的EFI启动方式采用的名称为“loongarch64-efi”。
+
 　　* `--compression 'auto'`，该参数指定生成的EFI文件采用的压缩方式，这里设置为`auto`就可以了，其它的取值还有`xz`代表用XZ的压缩方式和`none`代表不进行压缩。
+
 　　* `'ext2' 'part_gpt'`,这两个是指定加入到EFI文件中的模块，加入到EFI文件中的模块会自动作为EFI文件启动后能直接使用的功能，而如果没有加入到EFI中则需要通过加载模块的方式才能使用，这里只加入了`ext2`和`part_gpt`是因为模块都存放在存储设备中，如果要读取模块就需要能识别存储设备的分区和文件系统，这里`part_gpt`用来识别存储设备的GPT分区，而`ext2`则是该分区所使用的文件系统，当这两者与实际的分区和文件系统相匹配的情况下，后续再有什么功能上的需求都可以用加载模块的方式来使用了，这样可以最小化EFI文件的大小，可加快BIOS对EFI文件的加载速度。模块的存放位置由`--prefix`参数指定的基础目录决定，在这个基础目录中的loongarch64-efi目录就是存放各个模块的目录。
 
 #### 安装Grub模块文件
+
 　　生成好EFI文件后，就可以按照生成EFI所设置的目录存放Grub的模块文件了，安装过程如下：
 
 ```sh
@@ -1907,8 +2035,11 @@ popd
 ```
 
 　　这里我们发现strip使用的参数有多种，这里简单的说明一下：
+
 　　* `--strip-debug`，仅去掉调试相关的符号信息，该参数适合用于静态库文件，对于链接过程需要的信息是不会去掉的。
+
 　　* `--strip-unneeded`，删除所有与重定位无关的所有符号信息，该参数不能用于静态库文件，否则会导致静态链接时无法使用处理过的静态库。
+
 　　* `--strip-all`，该参数代表所有能去掉的符号信息都尽量去掉，该参数不建议用于库文件，特别是静态库文件。
 
 ### 打包系统
@@ -1937,8 +2068,11 @@ popd
 　　找到一个容量不少于4G的U盘，如果没有进行符号清理，那么建议容量不少于8G，请确保U盘中没有重要和要保留的数据，因为接下来的操作将破坏U盘内原有的数据。
 
 　　接着给U盘进行分区，建议划分为3个分区，分别是：
+
 　　第一分区：EFI 分区，文件系统为fat，容量100M即可；
+
 　　第二分区：boot分区，文件系统为ext2，容量500M即可；
+
 　　第三分区：根分区，文件系统建议为xfs，剩余容量可以都分给该分区。
 
 　　假设U盘设备名为`sdb`,以下为实际制作步骤如下：
@@ -2001,9 +2135,13 @@ EOF
 popd
 ```
 　　grub.cfg存放的目录是由生成EFI文件时`--prefix`参数设置决定的，按照参数设置的目录并命名为grub.cfg即可。
+
 下面简单介绍一下菜单文件的设置内容：
+
 　　* `menuentry`，该设置项设置启动菜单显示的条目，一个条目对应一个`menuentry`。
+
 　　* `echo`，输入内容，就是在屏幕上打印该行的内容。
+
 　　* `linux`，加载Linux内核，因当前加载的grub.cfg与Linux内核vmlinux文件在同一个分区，则可以直接使用路径，若不在同一个分区中则需要设置磁盘和分区来指定内核文件路径。后面的`root=<PARTUUID> rootdelay=5 rw`都是提供给Linux内核启动时的参数：`root`指定启动根分区名，这里设置了待转换的`<PARTUUID>`，接下来会用到，也可以时用确定的设备名，假定U盘的设备名是sdb，根分区是sdb3，则在可以写成root=/dev/sdb3，当然这里需要根据U盘插入到目标机器上时的设备名进行修改；`rootdelay`设置等待时间，这通常在用U盘作为启动盘时使用，因为U盘会需要一小段的初始化，如果没有等待会导致找不到设备而启动失败；`rw`设置根分区按照可读写的方式挂载。
 
 当设置根分区为待转换的`<PARTUUID>`时，就需要根据根分区的实际PARTUUID进行替换，替换步骤如下：
@@ -2014,7 +2152,9 @@ pushd /tmp/liveusb
 	sed -i "s@<PARTUUID>@PARTUUID=${ROOTPARTUUID}@g" boot/grub/grub.cfg
 popd
 ```
+
 　　我们可以看到替换步骤就是通过blkid命令获取到实际分区的“PARTUUID”，“PARTUUID”通常是由5段字母和数字组成的32个字符的字符串，每段字符使用“-”进行链接，例如：b2c2bd57-82e4-1c25-b87a-0e9caf919053。
+
 　　内核启动时可以通过给root参数传递“PARTUUID”的参数来查找根分区，这样可以使U盘具备更好的通用性。
 
 　　做到这里，我们基本完成了LiveUSB的制作过程，接下来先卸载U盘：
