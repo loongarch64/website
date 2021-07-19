@@ -1811,7 +1811,9 @@ popd
 　　下面解释一下多个make命令步骤含义：
 
 　　* `defconfig`，自动获取指定架构目录中的默认配置文件作为当前编译使用的配置文件。
+
 　　* `menuconfig`，进入到交互式选择内核功能的界面，这需要主系统安装了Ncurses的开发库，该步骤可用来调整Linux内核选择，如果使用默认的就足够了，那么该步骤可以跳过。
+
 　　* `modules_install`，安装模块文件，模块安装的根目录由`INSTALL_MOD_PATH`变量指定，这里指定了`dest`，代表安装到当前目录中的dest目录里，若没有该目录将自动创建。
 
 　　当Linux内核编译完成后，我们可以将内核文件“vmlinux”和对应的模块复制到目标系统存放的目录中。
@@ -1855,7 +1857,7 @@ popd
 
 　　创建基本的用户名，这些用户名大多数在启动过程中会用到，步骤如下：
 
-```
+```C
 cat > ${SYSDIR}/sysroot/etc/passwd << "EOF"
 root::0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/dev/null:/bin/false
@@ -1879,7 +1881,7 @@ EOF
 
 　　创建基本用户组，大多数都是系统必须的，步骤如下：
 
-```
+```C
 cat > ${SYSDIR}/sysroot/etc/group << "EOF"
 root:x:0:
 bin:x:1:daemon
