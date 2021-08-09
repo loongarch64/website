@@ -11,7 +11,7 @@
   <body>
     {{- partial "header.html" . -}}
     {{- partial "hooks/main-begin" . -}}
-    <main role="main" class="container{{ if default false .Site.Params.fullWidth }}-fluid{{ end }}">
+    <main role="main" class="container{{ if or (default false .Site.Params.fullWidth) (default false .Params.fullWidth) }}-fluid{{ end }}">
       <div class="row content">
         {{- if .Site.Params.banner -}}
           <img class="banner" alt="Banner" src="{{ absURL (default "images/banner.webp" .Site.Params.banner ) }}" loading="lazy">
