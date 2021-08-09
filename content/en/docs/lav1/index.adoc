@@ -1,0 +1,42 @@
++++
+title = "LoongArch Reference Manual - Volume 1: Basic Architecture"
+description = "LoongArch Reference Manual"
+date = 2021-08-09T20:00:23+08:00
+draft = false
+comment = true
+toc = true
+tocSticky = true
+reward = false
+featured = true
+fullWidth = true
+categories = [
+  ""
+]
+tags = [
+  "Manual"
+]
++++
+
+:toc:
+
+include::table-of-contents.adoc[]
+
+include::about-this-manual.adoc[]
+
+include::introduction.adoc[]
+
+include::basic-integer-instructions.adoc[]
+
+include::basic-floating-point-instructions.adoc[]
+
+include::overview-of-privileged-resources.adoc[]
+
+include::memory-management.adoc[]
+
+include::exceptions-and-interrupts.adoc[]
+
+include::control-and-status-registers.adoc[]
+
+include::pseudocode-descriptions-of-the-function-definitions.adoc[]
+
+include::table-of-instruction-encoding.adoc[]
