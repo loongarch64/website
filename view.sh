@@ -1,3 +1,3 @@
 #!/usr/bin/bash
 
-hugo --i18n-warnings server
+hugo --i18n-warnings --disableFastRender --ignoreCache server

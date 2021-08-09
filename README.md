@@ -1,3 +1,7 @@
+## 网站
+
+https://loongarch.dev
+
 ## 新建博客
 
 hugo new content/zh-cn/posts/XXX.md
@@ -9,7 +13,6 @@ hugo new content/zh-cn/docs/XXX.md  -k docs
 ## 新建页面
 
 hugo new content/zh-cn/pages/XXX.md  -k page
-
 
 ## 运行
 
