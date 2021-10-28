@@ -40,7 +40,7 @@ sudo pacman -U *loongarch64*
 
 如果要自行制作交叉编译工具链，可参考[打包脚本]() 或 [CLFS 教程]()
 
-## C 语言测试
+## C 语言
 
 `hello.c` 源码：
 
@@ -63,7 +63,7 @@ hello, world!
 $
 ```
 
-## C++ 语言测试
+## C++ 语言
 
 `hello.cpp` 源码：
 
@@ -85,7 +85,7 @@ hello, world!
 $
 ```
 
-## 汇编语言测试
+## 汇编语言
 
 `hello.S` 汇编源代码：
 
