@@ -196,7 +196,7 @@ https://github.com/hrw/syscalls-table/commit/599c8a563292e677aaf14a5e51a1039c4a4
 
 **Archlinux**
 
-旧版: https://github.com/loongson/build-tools/releases/download/2021.06.19/archlinux-bootstrap-dev-2021.06.11-loongarch64.tar.gz
+旧版(Alpha): http://archlinux.oukan.online/alpha/bootstrap/archlinux-bootstrap-alpha-2021.06.11-loongarch64.tar.zst
 
 新版：开发中
 
@@ -211,6 +211,10 @@ https://github.com/sunhaiyong1978/CLFS-for-LoongArch
 **Gentoo**
 
 自举已经完成，stage3、LiveCD 确认可以工作。请配合 https://github.com/xen0n/loongson-overlay 使用
+
+http://loongson-pub-gz.qnbkt.xen0n.name/stage3-loong-systemd-20211205.tar.xz
+http://loongson-pub-gz.qnbkt.xen0n.name/stage3-loong-systemd-20211205.tar.xz.CONTENTS.gz
+http://loongson-pub-gz.qnbkt.xen0n.name/stage3-loong-systemd-20211205.tar.xz.DIGESTS
 
 **Loongnix**
 
