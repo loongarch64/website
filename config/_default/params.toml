@@ -94,3 +94,23 @@ tocSticky = true # Whether to make TOC stick to top when scrolling. Default to t
   # small = ".9rem"
   # large = "1.1rem"
   # extraLarge = "1.2rem"
+
+[[links]]
+  name = "LoongArch Reference Manual - Volume 1"
+  url = "https://loongson.github.io/LoongArch-Documentation/LoongArch-Vol1-EN.html"
+
+[[links]]
+  name = "Loongson 3A5000/3B5000 Processor Reference Manual"
+  url = "https://loongson.github.io/LoongArch-Documentation/Loongson-3A5000-usermanual-EN.html"
+
+[[links]]
+  name = "Loongson 7A1000 Bridge User Manual"
+  url = "https://loongson.github.io/LoongArch-Documentation/Loongson-7A1000-usermanual-EN.html"
+
+[[links]]
+  name = "LoongArch ELF psABI"
+  url = "https://loongson.github.io/LoongArch-Documentation/LoongArch-ELF-ABI-EN.html"
+
+[[links]]
+  name = "LoongArch toolchain conventions"
+  url = "https://loongson.github.io/LoongArch-Documentation/LoongArch-toolchain-conventions-EN.html"
