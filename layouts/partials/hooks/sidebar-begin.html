@@ -1,0 +1,8 @@
+<section class="profile surface row">
+	<h4>{{ T "manual" }}</h4>
+  <ul>
+		{{- range .Site.Params.links -}}
+		<li><a href="{{ .url }}" target="_blank">{{ .name }}</a></li>
+		{{- end -}}
+	</ul>
+</section>

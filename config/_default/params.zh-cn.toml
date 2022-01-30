@@ -2,3 +2,23 @@ dateFormat = "2006-01-02"
 description = "一个极快、响应式和功能丰富的 Hugo 博客主题"
 [archive]
   dateFormat = "01-02"
+
+[[links]]
+  name = "龙芯架构参考手册 - 卷一：基础架构"
+  url = "https://github.com/loongson/LoongArch-Documentation/releases/latest/download/LoongArch-Vol1-v1.00-CN.pdf"
+
+[[links]]
+  name = "龙芯 3A5000/3B5000 处理器寄存器使用手册"
+  url = "https://github.com/loongson/LoongArch-Documentation/releases/latest/download/Loongson-3A5000-usermanual-v1.02-CN.pdf"
+
+[[links]]
+  name = "龙芯 7A1000 桥片用户手册"
+  url = "https://github.com/loongson/LoongArch-Documentation/releases/latest/download/Loongson-7A1000-usermanual-v2.00-CN.pdf"
+
+[[links]]
+  name = "龙芯架构 ELF psABI"
+  url = "https://loongson.github.io/LoongArch-Documentation/LoongArch-ELF-ABI-CN.html"
+
+[[links]]
+  name = "龙芯架构工具链约定"
+  url = "https://loongson.github.io/LoongArch-Documentation/LoongArch-toolchain-conventions-CN.html"
