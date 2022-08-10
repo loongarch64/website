@@ -15,11 +15,14 @@ jobs:
           fetch-depth: 1
           submodules: true
 
+      - name: Install asciidoctor
+        run: sudo apt-get install asciidoctor
+
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: '0.79.1'
-          # extended: true
+          extended: true
 
       - name: Build
         run: hugo --minify --cleanDestinationDir
