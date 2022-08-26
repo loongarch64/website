@@ -1,7 +1,7 @@
 name: website-preview
 
 on:
-  pull_request:
+  pull_request_target:
     branches: [ main ]
 
 jobs:
@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Check out main
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 1
           submodules: true
@@ -32,6 +32,7 @@ jobs:
           allow_empty_commit: true
           publish_dir: ./public
           cname: preview.loongarch.dev
+          destination_dir: ${{ github.event.pull_request.number }}
           #force_orphan: true
 
       - name: Update status
@@ -41,6 +42,6 @@ jobs:
           context: 'website-preview / deploy (update)'
           description: 'Deployed, click "Details" to view ->'
           state: 'success'
-          target_url: https://preview.loongarch.dev
+          target_url: https://preview.loongarch.dev/${{ github.event.pull_request.number }}
           sha: ${{github.event.pull_request.head.sha || github.sha}}
 
