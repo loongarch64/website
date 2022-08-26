@@ -1,0 +1,32 @@
+name: website-preview-clean
+
+on:
+  pull_request_target:
+    types: [closed]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out preview pages
+        uses: actions/checkout@v3
+        with:
+          repository: loongarch64/website-preview
+          fetch-depth: 1
+          submodules: true
+          ref: 'gh-pages'
+
+      - name: Remove closed PR pages
+        run: rm -rvf ${{ github.event.pull_request.number }}
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          external_repository: loongarch64/website-preview
+          allow_empty_commit: true
+          publish_branch: gh-pages
+          publish_dir: .
+          cname: preview.loongarch.dev
+          #force_orphan: true
