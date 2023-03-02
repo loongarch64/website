@@ -1,0 +1,12 @@
+<section class="profile surface row">
+	<h4>{{ T "resources" }}</h4>
+  <ul>
+		{{- range .Site.Params.resources -}}
+		<li>
+			{{- if .icon -}}
+			<i class="fab fa-fw {{ .icon }}"></i>
+			{{- end -}}
+			<a href="{{ .url }}" target="_blank">{{ .name }}</a></li>
+		{{- end -}}
+	</ul>
+</section>

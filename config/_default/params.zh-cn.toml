@@ -3,22 +3,53 @@ description = "一个极快、响应式和功能丰富的 Hugo 博客主题"
 [archive]
   dateFormat = "01-02"
 
-[[links]]
+[[manuals]]
   name = "龙芯架构参考手册 - 卷一：基础架构"
-  url = "https://github.com/loongson/LoongArch-Documentation/releases/latest/download/LoongArch-Vol1-v1.00-CN.pdf"
+  url = "https://github.com/loongson/LoongArch-Documentation/releases/download/2022.03.17/LoongArch-Vol1-v1.00-CN.pdf"
 
-[[links]]
+[[manuals]]
   name = "龙芯 3A5000/3B5000 处理器寄存器使用手册"
-  url = "https://github.com/loongson/LoongArch-Documentation/releases/latest/download/Loongson-3A5000-usermanual-v1.02-CN.pdf"
+  url = "https://github.com/loongson/LoongArch-Documentation/releases/download/2022.03.17/Loongson-3A5000-usermanual-v1.03-CN.pdf"
 
-[[links]]
+[[manuals]]
   name = "龙芯 7A1000 桥片用户手册"
-  url = "https://github.com/loongson/LoongArch-Documentation/releases/latest/download/Loongson-7A1000-usermanual-v2.00-CN.pdf"
+  url = "https://github.com/loongson/LoongArch-Documentation/releases/download/2022.03.17/Loongson-7A1000-usermanual-v2.00-CN.pdf"
 
-[[links]]
+[[manuals]]
   name = "龙芯架构 ELF psABI"
   url = "https://loongson.github.io/LoongArch-Documentation/LoongArch-ELF-ABI-CN.html"
 
-[[links]]
+[[manuals]]
   name = "龙芯架构工具链约定"
   url = "https://loongson.github.io/LoongArch-Documentation/LoongArch-toolchain-conventions-CN.html"
+
+[[resources]]
+  icon ="fa-github"
+  name = "Great Loongson Union"
+  url = "https://github.com/loongson"
+
+[[resources]]
+  icon ="fa-github"
+  name = "Loongarch64"
+  url = "https://github.com/loongarch64"
+
+[[resources]]
+  icon ="fa-github"
+  name = "Loongson Community"
+  url = "https://github.com/loongson-community"
+
+[[resources]]
+  name = "龙芯开源社区"
+  url = "http://loongnix.cn"
+
+[[resources]]
+  name = "龙芯云"
+  url = "https://loongson-cloud-community.github.io/Loongson-Cloud-Community/"
+
+[[resources]]
+  name = "LA UOSC社区"
+  url = "https://bbs.loongarch.org/"
+
+[[resources]]
+  name = "百度贴吧"
+  url = "https://tieba.baidu.com/f?kw=%E9%BE%99%E8%8A%AF&ie=utf-8"
