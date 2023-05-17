@@ -2,7 +2,7 @@ mainSections = ["posts", "docs"] # Default to ["posts"].
 
 # titleSeparator = "|" # Title separator. Default to "-".
 
-description = "An extreme fast, responsive and feature-rich blog theme for Hugo"
+description = "LoongArch Open Source Community"
 # image = ["site-feature-image.jpg"]
 
 logo = "images/logo.png" # Logo image. Default to "images/logo.webp".
