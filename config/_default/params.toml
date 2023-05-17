@@ -49,8 +49,8 @@ tocSticky = true # Whether to make TOC stick to top when scrolling. Default to t
 
 # Site verification
 [siteVerification]
-  google = ""
-  bing = ""
+  google = "53DOfu_ANEIXpldlaxwSXo9g-Vkj7kn0CKMF_RVy064"
+  bing = "057E9D7A262E4F6FD12AC269C1A37DF2"
   baidu = ""
   baiduUnion = "" # Baidu Union
   so = ""
@@ -65,9 +65,9 @@ tocSticky = true # Whether to make TOC stick to top when scrolling. Default to t
 
 [utterances]
   repo = "loongarch64/website"
-  #issueTerm = "pathname" # pathname, url, title, og:title
+  issueTerm = "og:title" # pathname, url, title, og:title
   #label = "comment"
-  theme = "github-dark" # github-light, github-dark, preferred-color-scheme, github-dark-orange, icy-dark, dark-blue, photon-dark.
+  theme = "github-light" # github-light, github-dark, preferred-color-scheme, github-dark-orange, icy-dark, dark-blue, photon-dark.
 
 [search]
   paginate = 5 # Pagination. Default to 10.
