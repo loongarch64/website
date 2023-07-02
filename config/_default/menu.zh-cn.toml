@@ -1,7 +1,34 @@
 [[main]]
+  name = "发行版"
+  identifier = "distro"
+  pre = '<i class="fa fa-fw fa-bars"></i>'
+	weight = 80
+
+[[main]]
+  parent = "distro"
+  name = "ArchLinux"
+  url = "https://loongarchlinux.org"
+
+[[main]]
+  parent = "distro"
+  name = "CLFS"
+  url = "https://github.com/sunhaiyong1978/CLFS-for-LoongArch"
+
+[[main]]
+  parent = "distro"
+  name = "Gentoo"
+  url = "https://gentoo.org/"
+
+[[main]]
+  parent = "distro"
+  name = "Slackware"
+  url = "http://slackwarecn.github.io/"
+
+[[main]]
   name = "关于"
   identifier = "about"
   pre = '<i class="fa fa-fw fa-user"></i>'
+	weight = 90
 
 [[main]]
   parent = "about"
