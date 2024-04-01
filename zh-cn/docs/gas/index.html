@@ -1,0 +1,213 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=keywords content="Linux,LoongArch,龙芯,龙架构,开放,开源,社区"><title>GNU 汇编 - LoongArch 开放社区</title><link rel=apple-touch-icon href=/images/favicons/apple-touch-icon.png sizes=180x180><link rel=icon href=/images/favicons/favicon-32x32.png sizes=32x32 type=image/png><link rel=icon href=/images/favicons/favicon-16x16.png sizes=16x16 type=image/png><link rel=manifest href=/images/favicons/manifest.json><link rel=icon href=/images/favicons/favicon.ico><meta name=description content><meta itemprop=name content="GNU 汇编"><meta itemprop=description content="GNU汇编程序(as) 2.35版本的用户指南。
+本文档根据GNU自由文档许可证的条款分发。许可证的副本包含在标题为“ GNU自由文档许可证”的部分中。"><meta itemprop=datePublished content="2021-01-16T19:39:26+08:00"><meta itemprop=dateModified content="2021-01-16T19:39:26+08:00"><meta itemprop=wordCount content="3884"><meta itemprop=keywords content><meta property="og:title" content="GNU 汇编"><meta property="og:description" content="GNU汇编程序(as) 2.35版本的用户指南。
+本文档根据GNU自由文档许可证的条款分发。许可证的副本包含在标题为“ GNU自由文档许可证”的部分中。"><meta property="og:type" content="article"><meta property="og:url" content="/zh-cn/docs/gas/"><meta property="article:published_time" content="2021-01-16T19:39:26+08:00"><meta property="article:modified_time" content="2021-01-16T19:39:26+08:00"><meta property="og:site_name" content="LoongArch 开放社区"><meta name=twitter:card content="summary"><meta name=twitter:title content="GNU 汇编"><meta name=twitter:description content="GNU汇编程序(as) 2.35版本的用户指南。
+本文档根据GNU自由文档许可证的条款分发。许可证的副本包含在标题为“ GNU自由文档许可证”的部分中。"><meta data-name=palette content="blue"><link rel=stylesheet href=/css/bundle.min.31ae5fde579e9e77d7cd6ec43c26b9999d493df060fca9a54f9da00676116d7c.css integrity="sha256-Ma5f3leennfXzW7EPCa5mZ1JPfBg/KmlT52gBnYRbXw=" crossorigin=anonymous><script src=/js/bundle.min.4f0bf0084c93f18baec18d21035f382e8b666d326b7f3a3fddfab7c6e7566bfc.js integrity="sha256-TwvwCEyT8YuuwY0hA184LotmbTJrfzo/3fq3xudWa/w=" crossorigin=anonymous></script><link rel=stylesheet href=/css/custom.css crossorigin=anonymous></head><body><header><nav class="navbar fixed-top navbar-expand-xl"><div class=container><a class=navbar-brand href=/zh-cn/><img class=logo alt=Logo src=/images/logo.png loading=lazy>LoongArch</a>
+<button class=navbar-toggler type=button data-toggle=collapse data-target=#navbarSupportedContent aria-controls=navbarSupportedContent aria-expanded=false aria-label="Toggle navigation">
+<span class=navbar-toggler-icon></span></button><div class="collapse navbar-collapse" id=navbarSupportedContent><ul class="navbar-nav mr-2 mb-2 mb-lg-0"><form class="search-bar d-flex mr-2" action=/zh-cn/search><div class="input-group input-group-sm"><button class="btn btn-search disabled position-absolute left-0" type=submit><i class="fas fa-fw fa-search"></i></button>
+<input class="form-control rounded-pill" id=searchQuery name=q type=search aria-label=Search></div></form></ul><ul class="navbar-nav mb-2 mb-lg-0 mr-2 ml-auto"><li class=nav-item><a class=nav-link href=/zh-cn/docs/><i class="fa fa-fw fa-book"></i>文档</a></li><li class=nav-item><a class=nav-link href=/zh-cn/archives><i class="fas fa-fw fa-file-archive"></i>归档</a></li><li class=nav-item><a class=nav-link href=/zh-cn/categories><i class="fas fa-fw fa-folder"></i>分类</a></li><li class=nav-item><a class=nav-link href=/zh-cn/tags><i class="fas fa-fw fa-tags"></i>标签</a></li><li class=nav-item><a class=nav-link href=/zh-cn/series><i class="fas fa-fw fa-columns"></i>专栏</a></li><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" id=navbarDropdown-distro role=button data-toggle=dropdown aria-expanded=false><i class="fa fa-fw fa-bars"></i>发行版</a><ul class=dropdown-menu aria-labelledby=navbarDropdown-distro><li><a class=dropdown-item href=https://loongarchlinux.org target=_blank>ArchLinux</a></li><li><a class=dropdown-item href=https://github.com/sunhaiyong1978/CLFS-for-LoongArch target=_blank>CLFS</a></li><li><a class=dropdown-item href=https://gentoo.org/ target=_blank>Gentoo</a></li><li><a class=dropdown-item href=http://slackwarecn.github.io/ target=_blank>Slackware</a></li></ul></li><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" id=navbarDropdown-about role=button data-toggle=dropdown aria-expanded=false><i class="fa fa-fw fa-user"></i>关于</a><ul class=dropdown-menu aria-labelledby=navbarDropdown-about><li><a class=dropdown-item href=https://github.com/loongarch64/ target=_blank><i class="fab fa-fw fa-github"></i>Github</a></li><li><a class=dropdown-item href=/zh-cn/pages/about/><i class="fa fa-fw fa-user"></i>关于本站</a></li></ul></li></ul><ul class="navbar-nav d-flex flex-row mb-2 mb-lg-0"><li class="nav-item mr-2"><a class=nav-link tabindex=0 data-trigger=click id=languageSwitcher data-toggle=popover data-placement=bottom data-target=#languagesPopoverBody data-html=true><i class="fas fa-fw fa-language"></i></a></li><script type=text/html id=languagesPopoverBody><ul class="languages list-group"><li class="language list-group-item"><a href=/en/>English</a></li><li class="language list-group-item active">简体中文</li></ul></script><li class="nav-item mr-2"><a class=nav-link tabindex=0 data-trigger=click id=paletteSwitcher data-toggle=popover data-placement=bottom data-target=#palettesPopoverBody data-html=true><i class="fas fa-fw fa-palette"></i></a></li><script type=text/html id=palettesPopoverBody><ul class="palettes list-group"><li id=palette-blue class="palette list-group-item bg-blue"><a>蓝色</a></li><li id=palette-blue-gray class="palette list-group-item bg-blue-gray"><a>蓝灰色</a></li><li id=palette-brown class="palette list-group-item bg-brown"><a>棕色</a></li><li id=palette-cyan class="palette list-group-item bg-cyan"><a>青色</a></li><li id=palette-green class="palette list-group-item bg-green"><a>绿色</a></li><li id=palette-indigo class="palette list-group-item bg-indigo"><a>靛青色</a></li><li id=palette-orange class="palette list-group-item bg-orange"><a>橙色</a></li><li id=palette-pink class="palette list-group-item bg-pink"><a>粉色</a></li><li id=palette-purple class="palette list-group-item bg-purple"><a>紫色</a></li><li id=palette-red class="palette list-group-item bg-red"><a>红色</a></li><li id=palette-teal class="palette list-group-item bg-teal"><a>蓝绿色</a></li><li id=palette-yellow class="palette list-group-item bg-yellow"><a>黄色</a></li></ul></script><li class="nav-item mr-2"><a class=nav-link tabindex=0 data-trigger=click id=fontSizeSwitcher data-toggle=popover data-placement=bottom data-target=#fontSizesPopoverBody data-html=true><i class="fas fa-fw fa-font"></i></a></li><script type=text/html id=fontSizesPopoverBody><form class=font-size-switcher-form><label for=fontSize class=form-label>字体大小</label>
+<input type=range class=form-range min=-2 max=2 id=fontSize></form></script><form class="mode-switcher-form d-flex align-items-center"><div class="form-check form-switch"><input class=form-check-input type=checkbox id=modeSwitcher></div></form></ul></div></div></nav></header><main role=main class=container><div class="row content"><img class=banner alt=Banner src=/images/banner.jpg loading=lazy></div><div class="row content"><div class=container-fluid><div class=container-fluid><nav class=row aria-label=breadcrumb><ol class="breadcrumb surface"><li class=breadcrumb-item><a href=/zh-cn/>主页</a></li><li class=breadcrumb-item><a href=/zh-cn/docs/>文档</a></li><li class="breadcrumb-item active">GNU 汇编</li></ol></nav></div></div><aside class="col-lg-4 sidebar d-flex"><div class=container><div class="accordion accordion-flush surface post-toc position-sticky" id=accordionTOC><div class=accordion-item><div class=accordion-header id=headingTOC data-toggle=collapse data-target=#collapseTOC aria-expanded=true aria-controls=collapseTOC><i class="fas fa-fw fa-bars"></i>目录</div><div id=collapseTOC class="accordion-collapse collapse show" aria-labelledby=headingTOC data-parent=#accordionTOC><div class="accordion-body mt-2 docs"><nav id=TableOfContents><ul><li><a href=#总览>总览</a></li><li><a href=#命令行选项>命令行选项</a></li><li><a href=#句法>句法</a></li><li><a href=#节和重定位>节和重定位</a></li><li><a href=#符号>符号</a></li><li><a href=#表达式>表达式</a></li><li><a href=#汇编程序指令>汇编程序指令</a></li><li><a href=#对象属性>对象属性</a></li><li><a href=#loongarch相关功能>Loongarch相关功能</a></li></ul></nav></div></div></div></div></div></aside><div class=col-md-8><div class=container-fluid><article class="post row surface"><h1 class="post-title my-3">GNU 汇编</h1><div class="post-meta mb-3"><span class="post-date mr-2"><i class="fas fa-fw fa-calendar-alt"></i>2021-01-16
+</span><span class="post-reading-time mr-2"><i class="fas fa-fw fa-coffee"></i>8 分钟阅读</span><div class="post-translations nav-item dropdown mr-2 d-inline-flex"><a class="nav-link p-0" data-toggle=dropdown href=# role=button aria-haspopup=true aria-expanded=false><i class="fas fa-fw fa-language mr-1"></i>简体中文</a><div class=dropdown-menu><a class="dropdown-item post-translation" href=/en/docs/gas/>English</a></div></div></div><div class="post-content mb-3"><p>GNU汇编程序(as) 2.35版本的用户指南。</p><p>本文档根据GNU自由文档许可证的条款分发。许可证的副本包含在标题为“ GNU自由文档许可证”的部分中。</p><h2 id=总览>总览</h2><p>这是有关如何调用as的简要概述。有关详细信息，请参见命令行选项。</p><p>as [ <strong>-a</strong> [ <strong>cdghlns</strong> ][=file]] [ <strong>- alternate</strong>] [ <strong>-D</strong> ]</p><p>[ <strong>- compress-debug-sections</strong>] [ <strong>- nocompress-debug-sections</strong>]</p><p>[ <strong>- debug-prefix-map</strong> old=new]</p><p>[ <strong>- defsym</strong> sym=val] [ <strong>-f</strong> ] [ <strong>-g</strong> ] [ <strong>- gstabs</strong>]</p><p>[ <strong>- gstabs+</strong>] [ <strong>- gdwarf-</strong>] [ <strong>- gdwarf-sections</strong>]</p><p>[ <strong>- gdwarf-cie-version</strong>=VERSION]</p><p>[ <strong>- help</strong>] [ <strong>-I</strong> dir] [ <strong>-J</strong> ]</p><p>[ <strong>-K</strong> ] [ <strong>-L</strong> ] [ <strong>- listing-lhs-width</strong>=NUM]</p><p>[ <strong>- listing-lhs-width2</strong>=NUM] [ <strong>- listing-rhs-width</strong>=NUM]</p><p>[ <strong>- listing-cont-lines</strong>=NUM] [ <strong>- keep-locals</strong>]</p><p>[ <strong>- no-pad-sections</strong>]</p><p>[ <strong>-o</strong> objfile] [ <strong>-R</strong> ]</p><p>[ <strong>- hash-size</strong>=NUM] [ <strong>- reduce-memory-overheads</strong>]</p><p>[ <strong>- statistics</strong>]</p><p>[ <strong>-v</strong> ] [ <strong>-version</strong> ] [ <strong>- version</strong>]</p><p>[ <strong>-W</strong> ] [ <strong>- warn</strong>] [ <strong>- fatal-warnings</strong>] [ <strong>-w</strong> ] [ <strong>-x</strong> ]</p><p>[ <strong>-Z</strong> ] [ <strong>@ FILE</strong>]</p><p>[ <strong>- sectname-subst</strong>] [ <strong>- size-check=[error|warning]</strong>]</p><p>[ <strong>- elf-stt-common=[no|yes]</strong>]</p><p>[ <strong>- generate-missing-build-notes=[no|yes]</strong>]</p><p>[ <strong>- target-help</strong>] [target-options]</p><p>[ <strong>-</strong> |files …]</p><p><em>Loongarch 目标选项:</em></p><p>[ <strong>-mabi</strong> =ABI]</p><p><code>@file</code></p><pre><code>Read command-line options from FILE.  The options read are inserted
+in place of the original @FILE option.  If FILE does not exist, or
+cannot be read, then the option will be treated literally, and not
+removed.
+
+Options in FILE are separated by whitespace.  A whitespace
+character may be included in an option by surrounding the entire
+option in either single or double quotes.  Any character (including
+a backslash) may be included by prefixing the character to be
+included with a backslash.  The FILE may itself contain additional
+
+@FILE options; any such options will be processed recursively.
+从file中读取命令行选项。读取的选项将代替原始的@ file选项插入。
+如果文件 不存在或无法读取，则该选项将按字面意义处理，并且不会删除。
+
+文件中的选项用空格分隔。通过将整个选项括在单引号或双引号中，可以在选项中包括空格字符。
+通过在要包含的字符前面加上反斜杠，可以包含任何字符（包括反斜杠）。
+该文件本身可能包含其他@文件选项；任何此类选项将被递归处理。
+</code></pre><p><code>-a[cdghlmns]</code></p><pre><code>打开清单输出列表。可以任意使用以下各种方法：
+</code></pre><p><code>-ac</code></p><pre><code>忽略假(false)的条件
+</code></pre><p><code>-ad</code></p><pre><code>忽略调试(debugging)指令
+</code></pre><p><code>-ag</code></p><pre><code>包括一般(general)信息，例如版本和传递的选项
+</code></pre><p><code>-ah</code></p><pre><code>包括高级(high-level)语言的源代码
+</code></pre><p><code>-al</code></p><pre><code>包括汇编(assembly)代码
+</code></pre><p><code>-am</code></p><pre><code>包括宏(macro)扩展
+</code></pre><p><code>-an</code></p><pre><code>忽略格式(forms)处理过程
+</code></pre><p><code>-as</code></p><pre><code>包含符号表(symbols)
+</code></pre><p><code>=file</code></p><pre><code>设置清单文件的名称
+</code></pre><p>您可以组合使用这些选项：例如，不经过格式(forms)处理的汇编代码清单使用 &lsquo;-aln&rsquo; 。</p><p>如果要使用 <code>=file</code> 选项，它必须在最后一个位置。选项 <code>-a</code> 单独使用时，缺省含义是 <code>-ahls</code>。</p><p><code>--alternate</code></p><pre><code>Begin in alternate macro mode.  *Note '.altmacro': Altmacro.
+从备用宏模式开始。请参阅 [`.altmacro`](Altmacro.html#Altmacro).
+</code></pre><p><code>--compress-debug-sections</code></p><pre><code>Compress DWARF debug sections using zlib with SHF_COMPRESSED from
+the ELF ABI. The resulting object file may not be compatible with
+older linkers and object file utilities.  Note if compression would
+make a given section _larger_ then it is not compressed.
+使用zlib和ELF ABI的SHF_COMPRESSED压缩DWARF调试节。
+生成的目标文件可能与较旧的链接器和目标文件实用程序不兼容。
+注意，如果压缩会使给定的部分 _变大_，则它不会被压缩。
+</code></pre><p><code>--compress-debug-sections=none</code></p><p><code>--compress-debug-sections=zlib</code></p><p><code>--compress-debug-sections=zlib-gnu</code></p><p><code>--compress-debug-sections=zlib-gabi</code></p><pre><code>These options control how DWARF debug sections are compressed.
+'--compress-debug-sections=none' is equivalent to
+'--nocompress-debug-sections'.  '--compress-debug-sections=zlib'
+and '--compress-debug-sections=zlib-gabi' are equivalent to
+'--compress-debug-sections'.  '--compress-debug-sections=zlib-gnu'
+compresses DWARF debug sections using zlib.  The debug sections are
+renamed to begin with '.zdebug'.  Note if compression would make a
+given section _larger_ then it is not compressed nor renamed.
+
+这些选项控制DWARF调试节的压缩方式。
+--compress-debug-sections=none 相当于 --nocompress-debug-sections。
+--compress-debug-sections=zlib 和 --compress-debug-sections=zlib-gabi 
+相当于 --compress-debug-sections。
+--compress-debug-sections=zlib-gnu使用zlib压缩DWARF调试部分。调试部分重命名为以 '.zdebug'。
+请注意，如果压缩会使给定的部分 _变大_，则它不会被压缩或重命名。
+</code></pre><p><code>--nocompress-debug-sections</code></p><pre><code>Do not compress DWARF debug sections.  This is usually the default
+for all targets except the x86/x86_64, but a configure time option
+can be used to override this.
+
+不要压缩DWARF调试部分。对于除 x86/x86_64 之外的所有目标，
+这通常是默认设置，但是可以使用配置时的选项可以覆盖它。
+</code></pre><p><code>-D</code></p><pre><code>忽略。接受此选项是为了使脚本与其他汇编程序的调用兼容。
+</code></pre><p><code>--debug-prefix-map old=new</code></p><pre><code>When assembling files in directory 'OLD', record debugging
+information describing them as in 'NEW' instead.
+
+当汇编源文件位于 'old' 目录中时，记录描述它们的调试信息，如同在 'new' 目录中一样。
+</code></pre><p><code>--defsym sym=value</code></p><pre><code>在处理输入文件之前，将符号 sym 定义为 value 。 value 必须是整型常量。
+与C语言中一样，前导字符 '0x' 表示十六进制值，前导字符 '0' 表示八进制值。
+可通过使用 '.set' 伪操作在源文件中覆盖符号的值。
+</code></pre><p><code>-f</code></p><pre><code>快速(fast)处理 --- 跳过空白和注释预处理（假定输入源文件是编译器的输出）。
+</code></pre><p><code>-g</code></p><p><code>--gen-debug</code></p><pre><code>Generate debugging information for each assembler source line using
+whichever debug format is preferred by the target.  This currently
+means either STABS, ECOFF or DWARF2.  When the debug format is
+DWARF then a '.debug_info' and '.debug_line' section is only
+emitted when the assembly file doesn't generate one itself.
+
+使用目标首选的任何调试格式为每个汇编程序源代码行生成调试信息。
+当前这意味着STABS，ECOFF或DWARF2 调试格式之一。
+</code></pre><p><code>--gstabs</code></p><pre><code>生成逐行的 stabs 格式调试信息。如果调试器可以处理这种格式的信息，则有助于汇编代码的调试。
+</code></pre><p><code>--gstabs+</code></p><pre><code>Generate stabs debugging information for each assembler line, with
+GNU extensions that probably only gdb can handle, and that could
+make other debuggers crash or refuse to read your program.  This
+may help debugging assembler code.  Currently the only GNU
+extension is the location of the current working directory at
+assembling time.
+
+使用可能只有gdb可以处理的GNU扩展，为每个汇编器行生成stab调试信息，
+这可能会使其他调试器崩溃或拒绝读取程序。这可能有助于调试汇编代码。
+当前，唯一的GNU扩展名是组装时当前工作目录的位置。
+</code></pre><p><code>--gdwarf-2</code></p><pre><code>Generate DWARF2 debugging information for each assembler line.
+This may help debugging assembler code, if the debugger can handle
+it.  Note--this option is only supported by some targets, not all
+of them.
+
+为每个汇编器行生成DWARF2调试信息。如果调试器可以处理汇编代码，则这
+可能有助于调试。注意-此选项仅受某些目标支持，而并非所有目标都支持。
+</code></pre><p><code>--gdwarf-3</code></p><pre><code>This option is the same as the '--gdwarf-2' option, except that it
+allows for the possibility of the generation of extra debug
+information as per version 3 of the DWARF specification.  Note -
+enabling this option does not guarantee the generation of any extra
+infortmation, the choice to do so is on a per target basis.
+
+此选项与 --gdwarf-2 选项相同，除了它允许根据DWARF规范的版本3生成额外
+的调试信息。注意-启用此选项并不能保证会产生任何额外的激励，因此可以根据每个目标进行选择。
+</code></pre><p><code>--gdwarf-4</code></p><pre><code>This option is the same as the '--gdwarf-2' option, except that it
+allows for the possibility of the generation of extra debug
+information as per version 4 of the DWARF specification.  Note -
+enabling this option does not guarantee the generation of any extra
+infortmation, the choice to do so is on a per target basis.
+
+此选项与 --gdwarf-2 选项相同，除了它允许根据DWARF规范的版本4生成额外
+的调试信息。注意-启用此选项并不能保证会产生任何额外的激励，因此可以根据每个目标进行选择。
+</code></pre><p><code>--gdwarf-5</code></p><pre><code>This option is the same as the '--gdwarf-2' option, except that it
+allows for the possibility of the generation of extra debug
+information as per version 5 of the DWARF specification.  Note -
+enabling this option does not guarantee the generation of any extra
+infortmation, the choice to do so is on a per target basis.
+
+此选项与 --gdwarf-2 选项相同，除了它允许根据DWARF规范的版本5生成额外的调试信息。
+注意-启用此选项并不能保证会产生任何额外的激励，因此可以根据每个目标进行选择。
+</code></pre><p><code>--gdwarf-sections</code></p><pre><code>Instead of creating a .debug_line section, create a series of
+.debug_line.FOO sections where FOO is the name of the corresponding
+code section.  For example a code section called .TEXT.FUNC will
+have its dwarf line number information placed into a section called
+.DEBUG_LINE.TEXT.FUNC.  If the code section is just called .TEXT
+then debug line section will still be called just .DEBUG_LINE
+without any suffix.
+
+而不是创建.debug_line部分，而是创建一系列.debug_line.foo节，其中foo是相应代码节的名称。
+例如，一个名为.text.func的代码段 会将其侏儒行号信息放入一个名为.debug_line.text.func的段中。
+如果仅将代码段称为.text， 则调试行段仍将仅称为.debug_line，不带任何后缀。
+</code></pre><p><code>--gdwarf-cie-version=version</code></p><pre><code>Control which version of DWARF Common Information Entries (CIEs)
+are produced.  When this flag is not specificed the default is
+version 1, though some targets can modify this default.  Other
+possible values for VERSION are 3 or 4.
+
+控制生成哪个版本的DWARF公共信息条目（CIEs）。
+未指定此标志时，默认值为版本1，尽管某些目标可以修改此默认值。
+版本的其他可能值为3或4。
+</code></pre><p><code>--size-check=error</code></p><p><code>--size-check=warning</code></p><pre><code>针对无效的 ELF .size 指令发出错误或警告。
+</code></pre><p><code>--elf-stt-common=no</code></p><p><code>--elf-stt-common=yes</code></p><pre><code>These options control whether the ELF assembler should generate
+common symbols with the 'STT_COMMON' type.  The default can be
+controlled by a configure option '--enable-elf-stt-common'.
+
+这些选项控制ELF汇编程序是否应使用 STT_COMMON 类型生成公共符号。
+默认值可以由 --enable-elf-stt-common 配置选项控制。
+</code></pre><p><code>--generate-missing-build-notes=yes</code></p><p><code>--generate-missing-build-notes=no</code></p><pre><code>These options control whether the ELF assembler should generate GNU
+Build attribute notes if none are present in the input sources.
+The default can be controlled by the
+'--enable-generate-build-notes' configure option.
+
+如果输入源中是none，则这些选项控制ELF汇编器是否应生成GNU Build属性注释。
+默认值可以由 --enable-generate-build-notes 配置选项。
+</code></pre><p><code>--help</code></p><pre><code>打印命令行选项摘要并退出。
+</code></pre><p><code>--target-help</code></p><pre><code>打印所有目标特定选项的摘要并退出。
+</code></pre><p><code>-I dir</code></p><pre><code>将目录dir添加到.include指令的搜索列表中。
+</code></pre><p><code>-J</code></p><pre><code>不要警告符号(signed)溢出。
+</code></pre><p><code>-K</code></p><pre><code>Issue warnings when difference tables altered for long displacements.
+当差值表更改为长位移时，发出警告。
+长跳切换表时发出警告。
+</code></pre><p><code>-L</code></p><p><code>--keep-locals</code></p><pre><code>Keep (in the symbol table) local symbols. These symbols start with system-
+specific local label prefixes, typically '.L' for ELF systems or 'L' for
+traditional a.out systems. See [Symbol Names](Symbol-Names.html#Symbol-Names).
+保留（符号表中的）局部符号。这些符号以系统特定的局部标签前缀开头。
+通常在ELF格式中为为'.L'，传统的a.out格式中为'L'。请参见符号名称。
+</code></pre><p><code>--listing-lhs-width=number</code></p><pre><code>Set the maximum width, in words, of the output data column for an assembler
+listing to number.
+将汇编程序列表的输出数据列的最大宽度（以字为单位）设置为number。
+</code></pre><p><code>--listing-lhs-width2=number</code></p><pre><code>Set the maximum width, in words, of the output data column for continuation
+lines in an assembler listing to number.
+将汇编程序列表中连续行的输出数据列的最大宽度（以字为单位）设置为number。
+</code></pre><p><code>--listing-rhs-width=number</code></p><pre><code>Set the maximum width of an input source line, as displayed in a listing, to
+number bytes.
+将清单中显示的输入源行的最大宽度设置为 数字字节。
+</code></pre><p><code>--listing-cont-lines=number</code></p><pre><code>Set the maximum number of lines printed in a listing for a single line of
+input to number \+ 1.
+将清单中单行输入的最大行数设置为number + 1。
+</code></pre><p><code>--no-pad-sections</code></p><pre><code>Stop the assembler for padding the ends of output sections to the alignment of
+that section. The default is to pad the sections, but this can waste space
+which might be needed on targets which have tight memory constraints.
+停止汇编程序，以将输出节的末端填充到该节的对齐位置。默认设置是填充这些节，但这会浪费空间，而这对于具有严格内存限制的目标可能是必需的。
+</code></pre><p><code>-o objfile</code></p><pre><code>指定输出的目标文件名。
+</code></pre><p><code>-R</code></p><pre><code>将来自数据部分(data section)的代码放置(fold)到文本部分(text section)。
+</code></pre><p><code>--hash-size=number</code></p><pre><code>Set the default size of GAS's hash tables to a prime number close to number.
+Increasing this value can reduce the length of time it takes the assembler to
+perform its tasks, at the expense of increasing the assembler's memory
+requirements. Similarly reducing this value can reduce the memory requirements
+at the expense of speed.
+将GAS哈希表的默认大小设置为接近number的素 数。增加此值可以减少汇编程序执行任务所需的时间，但会增加汇编程序的内存要求。同样，减小此值可以减少内存需求，但会降低速度。
+</code></pre><p><code>--reduce-memory-overheads</code></p><pre><code>This option reduces GAS's memory requirements, at the expense of making the
+assembly processes slower. Currently this switch is a synonym for '\--hash-
+size=4051', but in the future it may have other effects as well.
+此选项降低了GAS的内存要求，但以使组装过程更慢为代价。目前，此开关是“--hash-size = 4051”，但将来也可能会产生其他影响。
+</code></pre><p><code>--sectname-subst</code></p><pre><code>Honor substitution sequences in section names. See [`.section name`](Section.html#Section-Name-Substitutions).
+部分名称中的荣誉替换顺序。请参阅。 .section name
+</code></pre><p><code>--statistics</code></p><pre><code>打印汇编过程中使用的最大空间（字节）和总时间（秒）。
+</code></pre><p><code>--strip-local-absolute</code></p><pre><code>从输出符号表中删除局部绝对符号。
+</code></pre><p><code>-v</code></p><p><code>-version</code></p><pre><code>打印as的版本。
+</code></pre><p><code>--version</code></p><pre><code>打印as的版本并退出。
+</code></pre><p><code>-W</code></p><p><code>--no-warn</code></p><pre><code>禁止显示警告消息。
+</code></pre><p><code>--fatal-warnings</code></p><pre><code>将警告视为错误。
+</code></pre><p><code>--warn</code></p><pre><code>不要禁止警告消息或将其视为错误。
+</code></pre><p><code>-w</code></p><pre><code>已被忽略。
+</code></pre><p><code>-x</code></p><pre><code>已被忽略。
+</code></pre><p><code>-Z</code></p><pre><code>即使发生错误也要生成目标文件。
+</code></pre><p><code>-- | files …</code></p><pre><code>标准输入或要汇编的源文件。
+</code></pre><p>以下选项，当配置 as 为 Loongarch 处理器时有效。</p><p>略&mldr;</p><h2 id=命令行选项>命令行选项</h2><h2 id=句法>句法</h2><h2 id=节和重定位>节和重定位</h2><h2 id=符号>符号</h2><h2 id=表达式>表达式</h2><h2 id=汇编程序指令>汇编程序指令</h2><h2 id=对象属性>对象属性</h2><h2 id=loongarch相关功能>Loongarch相关功能</h2></div><div class="post-copyright mb-4"><h3>版权</h3><div class=post-cc>本作品采用 <a target=_blank rel=license href=https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh>CC BY-NC-ND 4.0 <i class="fab fa-fw fa-creative-commons"></i><i class="fab fa-fw fa-creative-commons-by"></i><i class="fab fa-fw fa-creative-commons-nc"></i><i class="fab fa-fw fa-creative-commons-nd"></i></a>授权。</div></div><div class="post-reward mb-4 text-center"><button type=button class="btn btn-reward" data-toggle=modal data-target=#rewardModal>
+<i class="fas fa-fw fa-medal"></i>打赏</button></div><div class="modal fade" id=rewardModal tabindex=-1 aria-labelledby=rewardModalLabel aria-hidden=true><div class=modal-dialog><div class="modal-content surface"><div class=modal-header><h5 class=modal-title id=rewardModalLabel><i class="fas fa-fw fa-medal"></i>打赏</h5><a href=# data-dismiss=modal aria-label=Close><i class="fas fa-fw fa-times"></i></a></div><div class=modal-body><ul class="nav nav-tabs mb-3" role=tablist><li class=nav-item role=presentation><a class="nav-link active" id=reward-alipay-tab data-toggle=tab href=#reward-alipay role=tab aria-controls=reward-alipay aria-selected=true><i class="fab fa-fw fa-alipay"></i>支付宝</a></li><li class=nav-item role=presentation><a class=nav-link id=reward-wechat-tab data-toggle=tab href=#reward-wechat role=tab aria-controls=reward-wechat aria-selected=true><i class="fab fa-fw fa-weixin"></i>微信</a></li></ul><div class=tab-content id=rewardTabContent><div class="tab-pane fade post-reward-content show active" id=reward-alipay role=tabpanel aria-labelledby=reward-alipay-tab><img class="img-fluid post-reward-img" src=/images/reward/alipay.webp loading=lazy></div><div class="tab-pane fade post-reward-content show" id=reward-wechat role=tabpanel aria-labelledby=reward-wechat-tab><img class="img-fluid post-reward-img" src=/images/reward/wechat.webp loading=lazy></div></div></div></div></div></div><div class="post-navs d-flex mb-3 justify-content-between"><div class="post-nav w-50"><div class=prev-post><a href=/zh-cn/pages/about/>关于本站</a></div></div><div class="post-nav flex-row-reverse"><div class=next-post><a href=/zh-cn/posts/20200127-binutils-and-autotools/>上游优先，迈出第一步</a></div></div></div></article><div class="post-comments surface row"><script src=https://utteranc.es/client.js repo=loongarch64/website issue-term=og:title label theme=github-light crossorigin=anonymous async></script></div></div></div></div></main><footer class="footer mt-auto py-3 text-center container"><nav class="social-links nav my-2 justify-content-center"><li class=nav-item><a class="nav-link social-link" target=_blank href=https://github.com/loongarch64 title=Github><i class="fab fa-fw fa-2x fa-github"></i></a></li><li class=nav-item><a class="nav-link social-link" target=_blank href="http://wpa.qq.com/msgrd?v=3&uin=922566903&site=qq&menu=yes" title=Qq><i class="fab fa-fw fa-2x fa-qq"></i></a></li><li class=nav-item><a class="nav-link social-link" target=_blank href=https://t.me/loongson_users title=Telegram><i class="fab fa-fw fa-2x fa-telegram"></i></a></li></nav><div class="copyright mb-2">Copyright © 2016-2024 Community Team. All Rights Reserved.</div><div class="powered-by mb-2">Powered by <a href=https://gohugo.io target=_blank>Hugo</a> and the <a href=https://github.com/razonyang/hugo-theme-bootstrap target=_blank>Bootstrap</a> theme.</div></footer><a id=btnScrollToTop class=btn-scroll-to-top><i class="fas fa-fw fa-chevron-circle-up fa-2x"></i></a></body></html>

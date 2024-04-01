@@ -1,0 +1,1039 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=keywords content="Linux,LoongArch,龙芯,龙架构,开放,开源,社区"><title>手把手教你构建基于LoongArch64架构的Linux系统 - LoongArch 开放社区</title><link rel=apple-touch-icon href=/images/favicons/apple-touch-icon.png sizes=180x180><link rel=icon href=/images/favicons/favicon-32x32.png sizes=32x32 type=image/png><link rel=icon href=/images/favicons/favicon-16x16.png sizes=16x16 type=image/png><link rel=manifest href=/images/favicons/manifest.json><link rel=icon href=/images/favicons/favicon.ico><meta name=description content><meta itemprop=name content="手把手教你构建基于LoongArch64架构的Linux系统"><meta itemprop=description content="本文讲解如何交叉编译一个基于LoongArch架构的LFS（Linux From Scratch）系统。"><meta itemprop=datePublished content="2021-06-18T00:00:00+00:00"><meta itemprop=dateModified content="2021-06-18T00:00:00+00:00"><meta itemprop=wordCount content="17507"><meta itemprop=keywords content><meta property="og:title" content="手把手教你构建基于LoongArch64架构的Linux系统"><meta property="og:description" content="本文讲解如何交叉编译一个基于LoongArch架构的LFS（Linux From Scratch）系统。"><meta property="og:type" content="article"><meta property="og:url" content="/zh-cn/docs/clfs_for_loongarch64/"><meta property="article:published_time" content="2021-06-18T00:00:00+00:00"><meta property="article:modified_time" content="2021-06-18T00:00:00+00:00"><meta property="og:site_name" content="LoongArch 开放社区"><meta name=twitter:card content="summary"><meta name=twitter:title content="手把手教你构建基于LoongArch64架构的Linux系统"><meta name=twitter:description content="本文讲解如何交叉编译一个基于LoongArch架构的LFS（Linux From Scratch）系统。"><meta data-name=palette content="blue"><link rel=stylesheet href=/css/bundle.min.31ae5fde579e9e77d7cd6ec43c26b9999d493df060fca9a54f9da00676116d7c.css integrity="sha256-Ma5f3leennfXzW7EPCa5mZ1JPfBg/KmlT52gBnYRbXw=" crossorigin=anonymous><script src=/js/bundle.min.4f0bf0084c93f18baec18d21035f382e8b666d326b7f3a3fddfab7c6e7566bfc.js integrity="sha256-TwvwCEyT8YuuwY0hA184LotmbTJrfzo/3fq3xudWa/w=" crossorigin=anonymous></script><link rel=stylesheet href=/css/custom.css crossorigin=anonymous></head><body><header><nav class="navbar fixed-top navbar-expand-xl"><div class=container><a class=navbar-brand href=/zh-cn/><img class=logo alt=Logo src=/images/logo.png loading=lazy>LoongArch</a>
+<button class=navbar-toggler type=button data-toggle=collapse data-target=#navbarSupportedContent aria-controls=navbarSupportedContent aria-expanded=false aria-label="Toggle navigation">
+<span class=navbar-toggler-icon></span></button><div class="collapse navbar-collapse" id=navbarSupportedContent><ul class="navbar-nav mr-2 mb-2 mb-lg-0"><form class="search-bar d-flex mr-2" action=/zh-cn/search><div class="input-group input-group-sm"><button class="btn btn-search disabled position-absolute left-0" type=submit><i class="fas fa-fw fa-search"></i></button>
+<input class="form-control rounded-pill" id=searchQuery name=q type=search aria-label=Search></div></form></ul><ul class="navbar-nav mb-2 mb-lg-0 mr-2 ml-auto"><li class=nav-item><a class=nav-link href=/zh-cn/docs/><i class="fa fa-fw fa-book"></i>文档</a></li><li class=nav-item><a class=nav-link href=/zh-cn/archives><i class="fas fa-fw fa-file-archive"></i>归档</a></li><li class=nav-item><a class=nav-link href=/zh-cn/categories><i class="fas fa-fw fa-folder"></i>分类</a></li><li class=nav-item><a class=nav-link href=/zh-cn/tags><i class="fas fa-fw fa-tags"></i>标签</a></li><li class=nav-item><a class=nav-link href=/zh-cn/series><i class="fas fa-fw fa-columns"></i>专栏</a></li><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" id=navbarDropdown-distro role=button data-toggle=dropdown aria-expanded=false><i class="fa fa-fw fa-bars"></i>发行版</a><ul class=dropdown-menu aria-labelledby=navbarDropdown-distro><li><a class=dropdown-item href=https://loongarchlinux.org target=_blank>ArchLinux</a></li><li><a class=dropdown-item href=https://github.com/sunhaiyong1978/CLFS-for-LoongArch target=_blank>CLFS</a></li><li><a class=dropdown-item href=https://gentoo.org/ target=_blank>Gentoo</a></li><li><a class=dropdown-item href=http://slackwarecn.github.io/ target=_blank>Slackware</a></li></ul></li><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" id=navbarDropdown-about role=button data-toggle=dropdown aria-expanded=false><i class="fa fa-fw fa-user"></i>关于</a><ul class=dropdown-menu aria-labelledby=navbarDropdown-about><li><a class=dropdown-item href=https://github.com/loongarch64/ target=_blank><i class="fab fa-fw fa-github"></i>Github</a></li><li><a class=dropdown-item href=/zh-cn/pages/about/><i class="fa fa-fw fa-user"></i>关于本站</a></li></ul></li></ul><ul class="navbar-nav d-flex flex-row mb-2 mb-lg-0"><li class="nav-item mr-2"><a class=nav-link tabindex=0 data-trigger=click id=languageSwitcher data-toggle=popover data-placement=bottom data-target=#languagesPopoverBody data-html=true><i class="fas fa-fw fa-language"></i></a></li><script type=text/html id=languagesPopoverBody><ul class="languages list-group"><li class="language list-group-item"><a href=/en/>English</a></li><li class="language list-group-item active">简体中文</li></ul></script><li class="nav-item mr-2"><a class=nav-link tabindex=0 data-trigger=click id=paletteSwitcher data-toggle=popover data-placement=bottom data-target=#palettesPopoverBody data-html=true><i class="fas fa-fw fa-palette"></i></a></li><script type=text/html id=palettesPopoverBody><ul class="palettes list-group"><li id=palette-blue class="palette list-group-item bg-blue"><a>蓝色</a></li><li id=palette-blue-gray class="palette list-group-item bg-blue-gray"><a>蓝灰色</a></li><li id=palette-brown class="palette list-group-item bg-brown"><a>棕色</a></li><li id=palette-cyan class="palette list-group-item bg-cyan"><a>青色</a></li><li id=palette-green class="palette list-group-item bg-green"><a>绿色</a></li><li id=palette-indigo class="palette list-group-item bg-indigo"><a>靛青色</a></li><li id=palette-orange class="palette list-group-item bg-orange"><a>橙色</a></li><li id=palette-pink class="palette list-group-item bg-pink"><a>粉色</a></li><li id=palette-purple class="palette list-group-item bg-purple"><a>紫色</a></li><li id=palette-red class="palette list-group-item bg-red"><a>红色</a></li><li id=palette-teal class="palette list-group-item bg-teal"><a>蓝绿色</a></li><li id=palette-yellow class="palette list-group-item bg-yellow"><a>黄色</a></li></ul></script><li class="nav-item mr-2"><a class=nav-link tabindex=0 data-trigger=click id=fontSizeSwitcher data-toggle=popover data-placement=bottom data-target=#fontSizesPopoverBody data-html=true><i class="fas fa-fw fa-font"></i></a></li><script type=text/html id=fontSizesPopoverBody><form class=font-size-switcher-form><label for=fontSize class=form-label>字体大小</label>
+<input type=range class=form-range min=-2 max=2 id=fontSize></form></script><form class="mode-switcher-form d-flex align-items-center"><div class="form-check form-switch"><input class=form-check-input type=checkbox id=modeSwitcher></div></form></ul></div></div></nav></header><main role=main class=container><div class="row content"><img class=banner alt=Banner src=/images/banner.jpg loading=lazy></div><div class="row content"><div class=container-fluid><div class=container-fluid><nav class=row aria-label=breadcrumb><ol class="breadcrumb surface"><li class=breadcrumb-item><a href=/zh-cn/>主页</a></li><li class=breadcrumb-item><a href=/zh-cn/docs/>文档</a></li><li class="breadcrumb-item active">手把手教你构建基于LoongArch64架构的Linux系统</li></ol></nav></div></div><aside class="col-lg-4 sidebar d-flex"><div class=container><div class="accordion accordion-flush surface post-toc position-sticky" id=accordionTOC><div class=accordion-item><div class=accordion-header id=headingTOC data-toggle=collapse data-target=#collapseTOC aria-expanded=true aria-controls=collapseTOC><i class="fas fa-fw fa-bars"></i>目录</div><div id=collapseTOC class="accordion-collapse collapse show" aria-labelledby=headingTOC data-parent=#accordionTOC><div class="accordion-body mt-2 docs"><nav id=TableOfContents><ul><li><a href=#0-前言>0 前言</a></li><li><a href=#1-关于软件包的移植>1 关于软件包的移植</a></li><li><a href=#2-准备工作>2 准备工作</a><ul><li><a href=#21-系统的准备>2.1 系统的准备</a></li><li><a href=#22-制作环境的设置>2.2 制作环境的设置</a></li><li><a href=#23-下载软件包>2.3 下载软件包</a></li></ul></li><li><a href=#3-制作交叉工具链及相关工具>3 制作交叉工具链及相关工具</a><ul><li><a href=#31-linux内核头文件>3.1 Linux内核头文件</a></li><li><a href=#32-交叉编译器之binutils>3.2 交叉编译器之Binutils</a></li><li><a href=#33-gmp>3.3 GMP</a></li><li><a href=#34-mpfr>3.4 MPFR</a></li><li><a href=#35-mpc>3.5 MPC</a></li><li><a href=#36-交叉编译器之gcc精简版>3.6 交叉编译器之GCC（精简版）</a></li><li><a href=#37-目标系统的glibc>3.7 目标系统的Glibc</a></li><li><a href=#38-交叉编译器之gcc完整版>3.8 交叉编译器之GCC（完整版）</a></li><li><a href=#39-file>3.9 File</a></li><li><a href=#310-automake>3.10 Automake</a></li><li><a href=#311-pkg-config>3.11 Pkg-Config</a></li><li><a href=#312-ninja>3.12 Ninja</a></li><li><a href=#313-groff>3.13 Groff</a></li><li><a href=#314-grub2>3.14 Grub2</a></li></ul></li><li><a href=#4-制作目标系统>4 制作目标系统</a><ul><li><a href=#41-软件包制作说明>4.1 软件包制作说明</a></li><li><a href=#42-软件包的制作>4.2 软件包的制作</a></li></ul></li><li><a href=#5-设置目标系统>5 设置目标系统</a><ul><li><a href=#创建用户文件>创建用户文件</a></li><li><a href=#创建组文件>创建组文件</a></li><li><a href=#创建输入配置文件>创建输入配置文件</a></li><li><a href=#设置时间文件>设置时间文件</a></li><li><a href=#创建系统信息文件>创建系统信息文件</a></li><li><a href=#启动设置>启动设置</a></li></ul></li><li><a href=#6-处理目标系统>6 处理目标系统</a><ul><li><a href=#清理符号symbol信息>清理符号（symbol）信息</a></li><li><a href=#打包系统>打包系统</a></li></ul></li><li><a href=#7-创建启动u盘>7 创建启动U盘</a><ul><li><a href=#设置u盘分区>设置U盘分区</a></li><li><a href=#制作grub的启动菜单文件>制作Grub的启动菜单文件</a></li></ul></li><li><a href=#附录>附录</a><ul><li><a href=#参考资料>参考资料</a></li></ul></li></ul></nav></div></div></div></div></div></aside><div class=col-md-8><div class=container-fluid><article class="post row surface"><h1 class="post-title my-3">手把手教你构建基于LoongArch64架构的Linux系统</h1><div class="post-meta mb-3"><span class="post-date mr-2"><i class="fas fa-fw fa-calendar-alt"></i>2021-06-18
+</span><span class="post-reading-author mr-2"><i class="fas fa-fw fa-user"></i>孙海勇
+</span><span class="post-reading-time mr-2"><i class="fas fa-fw fa-coffee"></i>35 分钟阅读</span></div><div class="post-content mb-3"><p>本文讲解如何交叉编译一个基于LoongArch架构的LFS（Linux From Scratch）系统。</p><p>（CLFS For LoongArch64）</p><p>作者：孙海勇</p><h2 id=0-前言>0 前言</h2><p>　　龙芯中科于2021年推出了全新指令集架构LoongArch，其中64位指令集称为LoongArch64。</p><p>　　本文的目标是为LoongArch64制作一套基本的Linux系统，作为对新的指令集架构而制作Linux系统，我们可以默认该架构平台上无可运行的系统为前提，采用交叉编译的方式为其制作一套基本的Linux系统。</p><h2 id=1-关于软件包的移植>1 关于软件包的移植</h2><p>　　对于本文所制作的目标系统是基于LoongArch64架构的Linux系统，对于LoongArch64架构所使用的指令集在本文发布时属于比较新的，很多Linux系统的基本软件包中都没有包含该指令集相关的支持，为了解决支持新架构的问题，可根据不同情况的软件包采用不同的处理方式。</p><ul><li>扩充式移植软件包</li></ul><p>　　这类软件包通常在Linux系统中与具体指令集架构细节打交道的软件包，例如：Linux内核、GCC、Binutls、Glibc以及LLVM等等，且这些软件包通常需要大量代码的加入才能支持新的指令集架构。</p><p>　　对于这类软件包，如果想以最佳的手段支持新指令集架构，那么当然是提交到官方的最新版本中并得到长期的支持，但要达到这样的结果是需要一个过程的，那么在这个过程中则可以采用“打补丁”的方式。但因通常这些软件包需要修改和增加大量的代码，这使得补丁文件通常针对具体的版本，当版本升级后通常补丁不能直接使用，所以要使用对应版本的源代码来使用补丁。</p><p>　　另一种“不太好”的方式是添加了新架构的完整源代码整体提供下载，即补丁已经打在源代码中，这样只要下载修改过的软件包源码就可以使用了。</p><ul><li>简易移植软件包</li></ul><p>　　这类软件包代码上基本上不涉及汇编或者有非汇编的实现（汇编通常作为优化性能的手段），此类软件包通常有多种指令集架构采用类似的工作行为，可在某一类工作行为上加入新指令集架构的判断或者通过较少的改动即可实现对新指令集架构的移植，比如：Systemd、Automake等，因此针对这类软件包的补丁具有较高的版本通用性，同一个补丁可能适合用于多个版本上，在该类软件包的官方支持新指令集架构之前，采用“打补丁”的方式更适合这类软件包的移植方式。</p><ul><li>无需移植软件包</li></ul><p>　　这类软件包大多采用非汇编的开发语言进行编写，具有较强的通用性，通常在其所依赖的编译器或者运行环境进行了移植后就可以直接进行编译或使用了。例如Coreutils、Findutils等。</p><p>　　这类软件包也可能需要在配置阶段进行新架构的支持，主要是软件包自带的config.sub和config.guess检查目标系统时没有匹配的架构设置导致错误，这类问题比较好解决，只需要将增加了新架构的Automake软件包中的config.sub和config.guess覆盖软件包中的文件即可。</p><p>　　除了以上这些在新架构平台上可移植的软件包外还有一些软件包是针对某一个特定的指令集架构编写的，如果是非核心功能的软件包可以暂时忽略，如果有对应功能的可移植软件包也可以用来替代这些特定平台的软件包。</p><h2 id=2-准备工作>2 准备工作</h2><p>　　在开始制作前，先做一些准备工作，这包括系统的准备、制作环境的设置以及软件包源代码的下载。</p><h3 id=21-系统的准备>2.1 系统的准备</h3><p>　　首先准备一台可以安装通用Linux系统的机器，对于要用来交叉编译目标平台的系统我们称为“主系统”，“主系统”可以是X86机器上的系统，也可以是其他架构机器上的系统，为了方便讲解，本文采用在X86架构上的Linux系统进行制作讲解。</p><p>选择一个合适的Linux对于能否顺利完成制作还是有一定的作用，这里可以使用常见的发行版，如Fedora、Debian、CentOS等，也可以使用专门的系统，如LFS的LiveCD等，接下来我们以Fedora系统作为交叉编译的“主系统”进行讲解。</p><p>为了使制作系统讲解的过程中尽量减少额外的因素导致的问题，我们在一个“重新搭建的”Fedora系统中进行制作，在一个支持dnf命令工具的系统中使用如下命令进行搭建：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>export DISTRO_URL<span style=color:#f92672>=</span>https://mirrors.bfsu.edu.cn/fedora/releases/34/Everything/x86_64/os/
+sudo dnf install @core @c-development rpm-build git python3-devel texinfo <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>                 zlib-devel xz-lzma-compat gettext-devel perl-FindBin <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>                 perl-Pod-Html rpm-devel tcl ncurses-devel openssl-devel bc <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>                 wget meson ninja-build gperf rsync <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>                 --installroot <span style=color:#e6db74>${</span>HOME<span style=color:#e6db74>}</span>/la-clfs --disablerepo<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;*&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>                 --repofrompath base,<span style=color:#e6db74>${</span>DISTRO_URL<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>                 --releasever <span style=color:#ae81ff>34</span> --nogpgcheck
+</code></pre></div><p>　　以上步骤将在当前用户的目录中创建"la-clfs"的目录，在这个目录中将安装一个基本的制作环境，这里安装的是Fedora 34的系统，读者也可以安装其它的系统作为制作环境。</p><p>　　接下来的制作过程都将在这个目录中进行。</p><p>　　复制当前系统的域名解析配置文件到新建立的系统中，以便该系统可以访问网络资源。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>cp -a /etc/resolv.conf <span style=color:#e6db74>${</span>HOME<span style=color:#e6db74>}</span>/la-clfs/etc/
+</code></pre></div><p>　　接下来切换到该目录中:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>sudo chroot <span style=color:#e6db74>${</span>HOME<span style=color:#e6db74>}</span>/la-clfs
+</code></pre></div><p>　　挂载必要的文件系统：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>mount -t proc proc proc
+mount -t sysfs sys sys
+mount -t devtmpfs dev dev 
+mount -t devpts devpts dev/pts 
+mount -t tmpfs shm dev/shm
+</code></pre></div><h3 id=22-制作环境的设置>2.2 制作环境的设置</h3><h4 id=创建必要的目录>创建必要的目录</h4><p>　　使用如下命令创建几个目录，后续的制作过程都将在这些目录中进行。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>export SYSDIR<span style=color:#f92672>=</span>/opt/mylaos
+mkdir -pv <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>
+mkdir -pv <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/downloads
+mkdir -pv <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/build
+install -dv <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools
+install -dv <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot
+</code></pre></div><p>　　简单说明一下这几个目录的用处：</p><ul><li><p>通过设置“SYSDIR"变量方便对“基础目录”的使用，该变量设置了一个具体的目录作为“基础目录”，与本次制作相关的工作都在该目录中进行。</p></li><li><p>“downloads”目录用来存放各种软件的源码包以及补丁文件；</p></li><li><p>“build”目录用来编译各个软件包；</p></li><li><p>“cross-tools”目录用来存放交叉工具链及相关的软件；</p></li><li><p>“sysroot”用来存放目标平台系统。</p></li></ul><h4 id=创建制作用户>创建制作用户</h4><p>　　为了防止制作过程中意外的对系统本身造成破坏，创建一个普通用户的账号，后续的制作过程除非需要特殊权限操作，否则对于目标系统的一切操作都使用该用户进行。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>groupadd lauser
+useradd -s /bin/bash -g lauser -m -k /dev/null lauser
+</code></pre></div><p>设置目录为新创建用户所属：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>chown -Rv lauser <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>
+chmod -v a+wt <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/<span style=color:#f92672>{</span>sysroot,cross-tools,downloads,build<span style=color:#f92672>}</span>
+</code></pre></div><h5 id=切换到制作用户>切换到制作用户</h5><p>　　使用命令切换到新创建的用户：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>su - lauser
+</code></pre></div><p>　　使用“su”命令进行切换时加上“-”参数可以防止切换前的用户环境变量带到新用户环境中。</p><h5 id=设置制作用户环境>设置制作用户环境</h5><p>　　为制作用户设置最精简和必要的环境变量，以帮助后续制作过程的开展，以下为用户的环境变量进行长期设置。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>cat &gt; ~/.bash_profile &lt;&lt; <span style=color:#e6db74>&#34;EOF&#34;</span>
+exec env -i HOME<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>HOME<span style=color:#e6db74>}</span> TERM<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>TERM<span style=color:#e6db74>}</span> PS1<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;\u:\w\$ &#39;</span> /bin/bash
+EOF
+</code></pre></div><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>cat &gt; ~/.bashrc &lt;&lt; <span style=color:#e6db74>&#34;EOF&#34;</span>
+set +h
+umask <span style=color:#ae81ff>022</span>
+export SYSDIR<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;/opt/mylaos&#34;</span>
+export BUILDDIR<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span><span style=color:#e6db74>/build&#34;</span>
+export DOWNLOADDIR<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span><span style=color:#e6db74>/downloads&#34;</span>
+export LC_ALL<span style=color:#f92672>=</span>POSIX
+export CROSS_HOST<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#66d9ef>$(</span>echo $MACHTYPE | sed <span style=color:#e6db74>&#34;s/</span><span style=color:#66d9ef>$(</span>echo $MACHTYPE | cut -d- -f2<span style=color:#66d9ef>)</span><span style=color:#e6db74>/cross/&#34;</span><span style=color:#66d9ef>)</span><span style=color:#e6db74>&#34;</span>
+export CROSS_TARGET<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;loongarch64-unknown-linux-gnu&#34;</span>
+export MABI<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;lp64&#34;</span>
+export BUILD_ARCH<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;-march=loongarch&#34;</span>
+export BUILD_MABI<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;-mabi=</span><span style=color:#e6db74>${</span>MABI<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>
+export BUILD64<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;-mabi=lp64&#34;</span>
+export PATH<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools/bin:/bin:/usr/bin
+unset CFLAGS
+unset CXXFLAGS
+EOF
+</code></pre></div><p>　　这里设置了几个环境变量，下面简单介绍这些变量的含义：</p><ul><li>SYSDIR：方便引用“基础目录”，可以通过修改该变量所设置的路径来改变所使用的“基础目录”。</li><li>BUILDIR：该变量指定的目录用来进行软件包编译过程使用的目录。</li><li>DOWNLOADDIR：该变量指定的目录存放制作系统的过程中所需要的软件包及一些必要的补丁文件。</li><li>CROSS_HOST:设置“主系统”所使用的架构系统描述词</li><li>CROSS_TARGET：设置“目标系统”所使用的架构系统描述词。</li><li>MABI:指定“目标系统”默认使用的ABI名称。</li><li>BUILD_ARCH:设置编译“目标系统”中的软件包时使用的默认架构参数。</li><li>BUILD_MABI:设置编译“目标系统”中的软件包时使用的默认ABI参数。</li><li>BUILD64：设置编译“目标系统”中的软件包为64位ABI时使用的ABI参数。</li></ul><p>　　设置好用户环境配置文件后通过source命令使环境设置生效，使用命令：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>source ~/.bash_profile
+</code></pre></div><h4 id=创建目标系统的目录结构>创建目标系统的目录结构</h4><p>　　我们要制作的目标系统是常规的Linux/GNU系统，我们按照常规的Linux/GNU系统所使用的目录结构创建目标系统的目录，命令如下:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>pushd <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot
+	mkdir -pv ./<span style=color:#f92672>{</span>boot,home,root,mnt,opt,srv,run<span style=color:#f92672>}</span>
+	mkdir -pv ./etc/<span style=color:#f92672>{</span>opt,sysconfig<span style=color:#f92672>}</span>
+	mkdir -pv ./media/<span style=color:#f92672>{</span>floppy,cdrom<span style=color:#f92672>}</span>
+	mkdir -pv ./usr/<span style=color:#f92672>{</span>,local/<span style=color:#f92672>}{</span>include,src<span style=color:#f92672>}</span>
+	mkdir -pv ./usr/local/<span style=color:#f92672>{</span>bin,lib,sbin<span style=color:#f92672>}</span>
+	mkdir -pv ./usr/<span style=color:#f92672>{</span>,local/<span style=color:#f92672>}</span>share/<span style=color:#f92672>{</span>color,dict,doc,info,locale,man<span style=color:#f92672>}</span>
+	mkdir -pv ./usr/<span style=color:#f92672>{</span>,local/<span style=color:#f92672>}</span>share/<span style=color:#f92672>{</span>misc,terminfo,zoneinfo<span style=color:#f92672>}</span>
+	mkdir -pv ./usr/<span style=color:#f92672>{</span>,local/<span style=color:#f92672>}</span>share/man/man<span style=color:#f92672>{</span>1..8<span style=color:#f92672>}</span>
+	mkdir -pv ./var/<span style=color:#f92672>{</span>cache,local,log,mail,opt,spool<span style=color:#f92672>}</span>
+	mkdir -pv ./var/lib/<span style=color:#f92672>{</span>color,misc,locate<span style=color:#f92672>}</span>
+	mkdir -pv ./usr/<span style=color:#f92672>{</span>lib<span style=color:#f92672>{</span>,64<span style=color:#f92672>}</span>,bin,sbin<span style=color:#f92672>}</span>
+	ln -sfv usr/<span style=color:#f92672>{</span>lib<span style=color:#f92672>{</span>,64<span style=color:#f92672>}</span>,bin,sbin<span style=color:#f92672>}</span> ./
+	mkdir -pv ./lib/firmware
+	mkdir -pv ./<span style=color:#f92672>{</span>dev,proc,sys<span style=color:#f92672>}</span>
+	ln -sfv ../run ./var/run
+	ln -sfv ../run/lock ./var/lock
+	install -dv -m <span style=color:#ae81ff>1777</span> ./tmp ./var/tmp
+popd
+</code></pre></div><p>　　目标系统将存放在${SYSDIR}/sysroot目录中，所以以该目录为基础创建各种目录和链接文件。</p><h3 id=23-下载软件包>2.3 下载软件包</h3><p>　　为了使用最新的软件包构建目标系统，这可能需要从网络中下载软件包源代码及补丁文件，下载的文件建议存放在“downloads”目录中。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>pushd <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/downloads
+</code></pre></div><p>　　然后可以使用wget工具下载相应版本的软件包，例如下载coreutils-8.32这个软件包，可使用命令：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>	wget https://ftp.gnu.org/gnu/coreutils/coreutils-8.32.tar.xz
+</code></pre></div><p>　　下载后软件包存放在“downloads”目录中。</p><p>　　以下是本次制作所用到的软件包源码的地址：</p><p><strong>Acl:</strong> <a href=https://download.savannah.gnu.org/releases/acl/acl-2.3.1.tar.xz>https://download.savannah.gnu.org/releases/acl/acl-2.3.1.tar.xz</a></p><p><strong>Attr:</strong> <a href=https://download.savannah.gnu.org/releases/attr/attr-2.5.1.tar.gz>https://download.savannah.gnu.org/releases/attr/attr-2.5.1.tar.gz</a></p><p><strong>Autoconf:</strong> <a href=https://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.xz>https://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.xz</a></p><p><strong>Automake:</strong> <a href=https://ftp.gnu.org/gnu/automake/automake-1.16.3.tar.xz>https://ftp.gnu.org/gnu/automake/automake-1.16.3.tar.xz</a></p><p><strong>Bash:</strong> <a href=https://ftp.gnu.org/gnu/bash/bash-5.1.tar.gz>https://ftp.gnu.org/gnu/bash/bash-5.1.tar.gz</a></p><p><strong>BC:</strong> <a href=https://github.com/gavinhoward/bc/releases/download/4.0.2/bc-4.0.2.tar.xz>https://github.com/gavinhoward/bc/releases/download/4.0.2/bc-4.0.2.tar.xz</a></p><p><strong>Binutils:</strong> <em>暂无下载</em></p><p><strong>Bison:</strong> <a href=https://ftp.gnu.org/gnu/bison/bison-3.7.6.tar.xz>https://ftp.gnu.org/gnu/bison/bison-3.7.6.tar.xz</a></p><p><strong>Bzip2:</strong> <a href=https://www.sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz>https://www.sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz</a></p><p><strong>Coreutils:</strong> <a href=https://ftp.gnu.org/gnu/coreutils/coreutils-8.32.tar.xz>https://ftp.gnu.org/gnu/coreutils/coreutils-8.32.tar.xz</a></p><p><strong>D-Bus</strong>: <a href=https://dbus.freedesktop.org/releases/dbus/dbus-1.12.20.tar.gz>https://dbus.freedesktop.org/releases/dbus/dbus-1.12.20.tar.gz</a></p><p><strong>Diffutils:</strong> <a href=https://ftp.gnu.org/gnu/diffutils/diffutils-3.7.tar.xz>https://ftp.gnu.org/gnu/diffutils/diffutils-3.7.tar.xz</a></p><p><strong>E2fsprogs:</strong> <a href=https://downloads.sourceforge.net/project/e2fsprogs/e2fsprogs/v1.46.2/e2fsprogs-1.46.2.tar.gz>https://downloads.sourceforge.net/project/e2fsprogs/e2fsprogs/v1.46.2/e2fsprogs-1.46.2.tar.gz</a></p><p><strong>Expat:</strong> <a href=https://prdownloads.sourceforge.net/expat/expat-2.4.1.tar.xz>https://prdownloads.sourceforge.net/expat/expat-2.4.1.tar.xz</a></p><p><strong>File:</strong> <a href=https://astron.com/pub/file/file-5.40.tar.gz>https://astron.com/pub/file/file-5.40.tar.gz</a></p><p><strong>Findutils:</strong> <a href=https://ftp.gnu.org/gnu/findutils/findutils-4.8.0.tar.xz>https://ftp.gnu.org/gnu/findutils/findutils-4.8.0.tar.xz</a></p><p><strong>Flex:</strong> <a href=https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz>https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz</a></p><p><strong>Gawk:</strong> <a href=https://ftp.gnu.org/gnu/gawk/gawk-5.1.0.tar.xz>https://ftp.gnu.org/gnu/gawk/gawk-5.1.0.tar.xz</a></p><p><strong>GCC:</strong> <em>暂无下载</em></p><p><strong>GDBM:</strong> <a href=https://ftp.gnu.org/gnu/gdbm/gdbm-1.19.tar.gz>https://ftp.gnu.org/gnu/gdbm/gdbm-1.19.tar.gz</a></p><p><strong>Gettext:</strong> <a href=https://ftp.gnu.org/gnu/gettext/gettext-0.21.tar.xz>https://ftp.gnu.org/gnu/gettext/gettext-0.21.tar.xz</a></p><p><strong>Glibc:</strong> <em>暂无下载</em></p><p><strong>GMP:</strong> <a href=https://ftp.gnu.org/gnu/gmp/gmp-6.2.1.tar.xz>https://ftp.gnu.org/gnu/gmp/gmp-6.2.1.tar.xz</a></p><p><strong>GPerf:</strong> <a href=https://ftp.gnu.org/gnu/gperf/gperf-3.1.tar.gz>https://ftp.gnu.org/gnu/gperf/gperf-3.1.tar.gz</a></p><p><strong>Grep:</strong> <a href=https://ftp.gnu.org/gnu/grep/grep-3.6.tar.xz>https://ftp.gnu.org/gnu/grep/grep-3.6.tar.xz</a></p><p><strong>Groff:</strong> <a href=https://ftp.gnu.org/gnu/groff/groff-1.22.4.tar.gz>https://ftp.gnu.org/gnu/groff/groff-1.22.4.tar.gz</a></p><p><strong>Grub2:</strong> <a href=https://github.com/loongarch64/grub/tree/dev-la64>https://github.com/loongarch64/grub/tree/dev-la64</a></p><p><strong>Gzip:</strong> <a href=https://ftp.gnu.org/gnu/gzip/gzip-1.10.tar.xz>https://ftp.gnu.org/gnu/gzip/gzip-1.10.tar.xz</a></p><p><strong>Iana-Etc:</strong> <a href=https://github.com/Mic92/iana-etc/releases/download/20210526/iana-etc-20210526.tar.gz>https://github.com/Mic92/iana-etc/releases/download/20210526/iana-etc-20210526.tar.gz</a></p><p><strong>IPRoute2:</strong> <a href=https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-5.12.0.tar.xz>https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-5.12.0.tar.xz</a></p><p><strong>KBD:</strong> <a href=https://www.kernel.org/pub/linux/utils/kbd/kbd-2.4.0.tar.xz>https://www.kernel.org/pub/linux/utils/kbd/kbd-2.4.0.tar.xz</a></p><p><strong>Kmod:</strong> <a href=https://www.kernel.org/pub/linux/utils/kernel/kmod/kmod-29.tar.xz>https://www.kernel.org/pub/linux/utils/kernel/kmod/kmod-29.tar.xz</a></p><p><strong>Less:</strong> <a href=https://www.greenwoodsoftware.com/less/less-581.tar.gz>https://www.greenwoodsoftware.com/less/less-581.tar.gz</a></p><p><strong>Libcap:</strong> <a href=https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.50.tar.xz>https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.50.tar.xz</a></p><p><strong>Libelf:</strong> <a href=https://sourceware.org/ftp/elfutils/0.185/elfutils-0.185.tar.bz2>https://sourceware.org/ftp/elfutils/0.185/elfutils-0.185.tar.bz2</a></p><p><strong>Libffi:</strong> <a href=https://sourceware.org/pub/libffi/libffi-3.3.tar.gz>https://sourceware.org/pub/libffi/libffi-3.3.tar.gz</a></p><p><strong>Libpipeline:</strong> <a href=https://download.savannah.gnu.org/releases/libpipeline/libpipeline-1.5.3.tar.gz>https://download.savannah.gnu.org/releases/libpipeline/libpipeline-1.5.3.tar.gz</a></p><p><strong>Libtool:</strong> <a href=https://ftp.gnu.org/gnu/libtool/libtool-2.4.6.tar.xz>https://ftp.gnu.org/gnu/libtool/libtool-2.4.6.tar.xz</a></p><p><strong>Linux:</strong> <a href=https://github.com/loongson/linux/tree/loongarch-next>https://github.com/loongson/linux/tree/loongarch-next</a></p><p><strong>Linux-Firmware:</strong> <a href=https://mirrors.edge.kernel.org/pub/linux/kernel/firmware/linux-firmware-20210511.tar.xz>https://mirrors.edge.kernel.org/pub/linux/kernel/firmware/linux-firmware-20210511.tar.xz</a></p><p><strong>M4:</strong> <a href=https://ftp.gnu.org/gnu/m4/m4-1.4.18.tar.xz>https://ftp.gnu.org/gnu/m4/m4-1.4.18.tar.xz</a></p><p><strong>Make:</strong> <a href=https://ftp.gnu.org/gnu/make/make-4.3.tar.gz>https://ftp.gnu.org/gnu/make/make-4.3.tar.gz</a></p><p><strong>Man-DB:</strong> <a href=https://download.savannah.gnu.org/releases/man-db/man-db-2.9.4.tar.xz>https://download.savannah.gnu.org/releases/man-db/man-db-2.9.4.tar.xz</a></p><p><strong>Man-Pages:</strong> <a href=https://www.kernel.org/pub/linux/docs/man-pages/man-pages-5.11.tar.xz>https://www.kernel.org/pub/linux/docs/man-pages/man-pages-5.11.tar.xz</a></p><p><strong>MPC:</strong> <a href=https://ftp.gnu.org/gnu/mpc/mpc-1.2.1.tar.gz>https://ftp.gnu.org/gnu/mpc/mpc-1.2.1.tar.gz</a></p><p><strong>MPFR:</strong> <a href=https://www.mpfr.org/mpfr-4.1.0/mpfr-4.1.0.tar.xz>https://www.mpfr.org/mpfr-4.1.0/mpfr-4.1.0.tar.xz</a></p><p><strong>Ncurses:</strong> <a href=https://ftp.gnu.org/gnu/ncurses/ncurses-6.2.tar.gz>https://ftp.gnu.org/gnu/ncurses/ncurses-6.2.tar.gz</a></p><p><strong>Ninja:</strong> <a href=https://github.com/ninja-build/ninja/archive/v1.10.2/ninja-1.10.2.tar.gz>https://github.com/ninja-build/ninja/archive/v1.10.2/ninja-1.10.2.tar.gz</a></p><p><strong>OpenSSL:</strong> <a href=https://www.openssl.org/source/openssl-1.1.1k.tar.gz>https://www.openssl.org/source/openssl-1.1.1k.tar.gz</a></p><p><strong>Patch:</strong> <a href=https://ftp.gnu.org/gnu/patch/patch-2.7.6.tar.xz>https://ftp.gnu.org/gnu/patch/patch-2.7.6.tar.xz</a></p><p><strong>Pkg-Config:</strong> <a href=https://pkg-config.freedesktop.org/releases/pkg-config-0.29.2.tar.gz>https://pkg-config.freedesktop.org/releases/pkg-config-0.29.2.tar.gz</a></p><p><strong>Procps-NG:</strong> <a href=https://sourceforge.net/projects/procps-ng/files/Production/procps-ng-3.3.17.tar.xz>https://sourceforge.net/projects/procps-ng/files/Production/procps-ng-3.3.17.tar.xz</a></p><p><strong>PSmisc:</strong> <a href=https://sourceforge.net/projects/psmisc/files/psmisc/psmisc-23.4.tar.xz>https://sourceforge.net/projects/psmisc/files/psmisc/psmisc-23.4.tar.xz</a></p><p><strong>Readline:</strong> <a href=https://ftp.gnu.org/gnu/readline/readline-8.1.tar.gz>https://ftp.gnu.org/gnu/readline/readline-8.1.tar.gz</a></p><p><strong>Sed:</strong> <a href=https://ftp.gnu.org/gnu/sed/sed-4.8.tar.xz>https://ftp.gnu.org/gnu/sed/sed-4.8.tar.xz</a></p><p><strong>Shadow:</strong> <a href=https://github.com/shadow-maint/shadow/releases/download/4.8.1/shadow-4.8.1.tar.xz>https://github.com/shadow-maint/shadow/releases/download/4.8.1/shadow-4.8.1.tar.xz</a></p><p><strong>Systemd:</strong> <a href=https://github.com/systemd/systemd/archive/v248/systemd-248.tar.gz>https://github.com/systemd/systemd/archive/v248/systemd-248.tar.gz</a></p><p><strong>Tar:</strong> <a href=https://ftp.gnu.org/gnu/tar/tar-1.34.tar.xz>https://ftp.gnu.org/gnu/tar/tar-1.34.tar.xz</a></p><p><strong>Texinfo:</strong> <a href=https://ftp.gnu.org/gnu/texinfo/texinfo-6.7.tar.xz>https://ftp.gnu.org/gnu/texinfo/texinfo-6.7.tar.xz</a></p><p><strong>Util-Linux:</strong> <a href=https://www.kernel.org/pub/linux/utils/util-linux/v2.36/util-linux-2.36.2.tar.xz>https://www.kernel.org/pub/linux/utils/util-linux/v2.36/util-linux-2.36.2.tar.xz</a></p><p><strong>VIM:</strong> <a href=https://github.com/vim/vim/archive/refs/tags/v8.2.2879.tar.gz>https://github.com/vim/vim/archive/refs/tags/v8.2.2879.tar.gz</a></p><p><strong>XZ:</strong> <a href=https://tukaani.org/xz/xz-5.2.5.tar.xz>https://tukaani.org/xz/xz-5.2.5.tar.xz</a></p><p><strong>Zlib:</strong> <a href=https://zlib.net/zlib-1.2.11.tar.xz>https://zlib.net/zlib-1.2.11.tar.xz</a></p><p><strong>Zstd:</strong> <a href=https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz>https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz</a></p><p>以下是本次制作所需补丁文件的下载地址：</p><p><a href=https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/automake-1.16.3-add-loongarch.patch>https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/automake-1.16.3-add-loongarch.patch</a></p><p><a href=https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/gcc-8-loongarch-fix-libdir.patch>https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/gcc-8-loongarch-fix-libdir.patch</a></p><p><a href=https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/glibc-2.28-fix-loongarch_pr_uid_and_pr_gid.patch>https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/glibc-2.28-fix-loongarch_pr_uid_and_pr_gid.patch</a></p><p><a href=https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/kbd-2.4.0-backspace-1.patch>https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/kbd-2.4.0-backspace-1.patch</a></p><p><a href=https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/libffi-3.3-add-loongarch.patch>https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/libffi-3.3-add-loongarch.patch</a></p><p><a href=https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/systemd-248-add-loongarch64.patch>https://github.com/sunhaiyong1978/CLFS-for-LoongArch/blob/main/patches/systemd-248-add-loongarch64.patch</a></p><p>　　都下载完成后，离开"downloads"目录:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>popd
+</code></pre></div><h2 id=3-制作交叉工具链及相关工具>3 制作交叉工具链及相关工具</h2><p>　　接下来就正式进入交叉工具链和相关工具的制作环节。</p><h3 id=31-linux内核头文件>3.1 Linux内核头文件</h3><ul><li>代码准备</li></ul><p>　　Linux内核需要进行扩充式移植的软件包，在没有软件官方支持的情况下需要专门的获取代码的方式进行，以下是获取方式：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>git clone https://github.com/loongson/linux.git -b loongarch-next --depth <span style=color:#ae81ff>1</span>
+pushd linux
+	git archive --format<span style=color:#f92672>=</span>tar --output ../linux-5.13.0.tar <span style=color:#e6db74>&#34;loongarch-next&#34;</span>
+popd
+mkdir linux-5.13.0
+pushd linux-5.13.0
+	tar xvf ../linux-5.13.0.tar
+popd
+tar -czf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/linux-5.13.0.tar.gz linux-5.13.0
+
+</code></pre></div><ul><li>制作步骤</li></ul><p>　　按以下步骤制作Linux内核头文件并安装到目标系统目录中。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/linux-5.13.0.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/linux-5.13.0
+	make mrproper
+	make ARCH<span style=color:#f92672>=</span>loongarch INSTALL_HDR_PATH<span style=color:#f92672>=</span>dest headers_install
+	find dest/include -name <span style=color:#e6db74>&#39;.*&#39;</span> -delete
+	mkdir -pv <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/include
+	cp -rv dest/include/* <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/include
+popd
+</code></pre></div><h3 id=32-交叉编译器之binutils>3.2 交叉编译器之Binutils</h3><ul><li>代码准备</li></ul><p>　　Binutils需要进行扩充式移植的软件包，在没有软件官方支持的情况下需要专门的获取代码的方式进行，以下是获取方式：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>略
+</code></pre></div><ul><li>制作步骤</li></ul><p>　　按以下步骤制作交叉编译工具链中的Binutils并安装到存放交叉工具链的目录中。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/binutils-2.31.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/binutils-2.31
+	rm -rf gdb libdecnumber readline sim
+	mkdir build
+	cd build
+	CC<span style=color:#f92672>=</span>gcc AR<span style=color:#f92672>=</span>ar AS<span style=color:#f92672>=</span>as <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	../configure --prefix<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	             --target<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --with-sysroot<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot --disable-nls <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	             --disable-static --disable-werror --enable-64-bit-bfd
+	make configure-host
+	make 
+	make install
+	cp -v ../include/libiberty.h <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/include
+popd
+</code></pre></div><h3 id=33-gmp>3.3 GMP</h3><p>　　制作交叉工具链中所使用的GMP软件包。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/gmp-6.2.1.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/gmp-6.2.1
+	./configure --prefix<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools --enable-cxx --disable-static
+	make
+	make install
+popd
+</code></pre></div><h3 id=34-mpfr>3.4 MPFR</h3><p>　　制作交叉工具链中所使用的MPFR软件包。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/mpfr-4.1.0.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/mpfr-4.1.0
+	./configure --prefix<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools --disable-static --with-gmp<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools
+	make
+	make install
+popd
+</code></pre></div><h3 id=35-mpc>3.5 MPC</h3><p>　　制作交叉工具链中所使用的MPC软件包。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/mpc-1.2.1.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/mpc-1.2.1 
+	./configure --prefix<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools --disable-static --with-gmp<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools
+	make
+	make install
+popd
+</code></pre></div><h3 id=36-交叉编译器之gcc精简版>3.6 交叉编译器之GCC（精简版）</h3><ul><li>代码准备</li></ul><p>　　GCC需要进行扩充式移植的软件包，在没有软件官方支持的情况下需要专门的获取代码的方式进行，以下是获取方式：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>略
+</code></pre></div><ul><li>制作步骤</li></ul><p>　　制作交叉编译器中的GCC，第一次编译交叉工具链的GCC需要采用精简方式进行编译和安装，否则会因为缺少目标系统的C库而导致部分内容编译链接失败，制作过程如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/gcc-8.3.0.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span> 
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/gcc-8.3.0
+	patch -Np1 -i <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/gcc-8-loongarch-fix-libdir.patch
+	mkdir build
+	pushd build
+		AR<span style=color:#f92672>=</span>ar LDFLAGS<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;-Wl,-rpath,</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span><span style=color:#e6db74>/cross-tools/lib&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		../configure --prefix<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --target<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --disable-nls <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --with-mpfr<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools --with-gmp<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --with-mpc<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --with-newlib --disable-shared --with-sysroot<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --disable-decimal-float --disable-libgomp --disable-libitm <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --disable-libsanitizer --disable-libquadmath --disable-threads <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --disable-target-zlib <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --with-system-zlib --enable-checking<span style=color:#f92672>=</span>release <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --with-abi<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>MABI<span style=color:#e6db74>}</span> --with-fix-loongson3-llsc --with-arch<span style=color:#f92672>=</span>loongarch <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --enable-languages<span style=color:#f92672>=</span>c --enable-tls
+		make all-gcc all-target-libgcc
+		make install-gcc install-target-libgcc
+	popd
+popd
+</code></pre></div><p>　　对于目标是LoongArch架构来说，目前有几个参数是需要特别注意的：</p><ul><li><code>--with-newlib</code>，因为当前没有目标系统Glibc的支持，所以使用newlib来临时支援GCC的运行。</li><li><code>--disable-shared</code>，使用newlib需要配合该参数。</li><li><code>--with-abi=${MABI}</code>，转换过来就是&ndash;with-abi=lp64，loongarch64使用的ABI名字为lp64。</li><li><code>--with-arch=loongarch</code>，指定目标架构为LoongArch。</li><li><code>--enable-tls</code>，该参数必须指定，否则可能在后续编译目标系统的Glibc上出现错误。</li><li><code>--enable-languages=c</code>，这次仅编译C语言的支持就可以了，因为当前没有目标系统的Glibc，只能制作精简版。</li></ul><h3 id=37-目标系统的glibc>3.7 目标系统的Glibc</h3><ul><li>代码准备</li></ul><p>　　Glibc需要进行扩充式移植的软件包，在没有软件官方支持的情况下需要专门的获取代码的方式进行，以下是获取方式：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>略
+</code></pre></div><ul><li>制作步骤</li></ul><p>　　在制作并安装好交叉工具链的Binutils、精简版的GCC以及Linux内核的头文件后就可以编译目标系统的Glibc了，制作和安装步骤如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>	tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/glibc-2.28.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+	pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/glibc-2.28
+	patch -Np1 -i <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/glibc-2.28-fix-loongarch_pr_uid_and_pr_gid.patch
+	mkdir -v build-64
+	pushd build-64
+		BUILD_CC<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;gcc&#34;</span> CC<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-gcc </span><span style=color:#e6db74>${</span>BUILD64<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		CXX<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-gcc </span><span style=color:#e6db74>${</span>BUILD64<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		AR<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-ar&#34;</span> RANLIB<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-ranlib&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		../configure --prefix<span style=color:#f92672>=</span>/usr --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --libdir<span style=color:#f92672>=</span>/usr/lib64 --libexecdir<span style=color:#f92672>=</span>/usr/lib64/glibc --enable-add-ons <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --with-tls --with-binutils<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools/bin <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --with-headers<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/include <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --enable-obsolete-rpc --disable-werror
+			make
+			make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+		popd
+	popd
+</code></pre></div><p>　　Glibc是目标系统的一部分，因此指定prefix等路径参数时是按照常规系统的路径进行设置的，所以必须在安装时指定DESTDIR来指定安装到存放目标系统的目录中。</p><h3 id=38-交叉编译器之gcc完整版>3.8 交叉编译器之GCC（完整版）</h3><p>　　完成目标系统的Glibc之后就可以着手制作交叉工具链中完整版的GCC了，制作步骤如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/gcc-8.3.0.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span> 
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/gcc-8.3.0
+	patch -Np1 -i <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/gcc-8-loongarch-fix-libdir.patch
+	mkdir build-all
+	pushd build-all
+		AR<span style=color:#f92672>=</span>ar LDFLAGS<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;-Wl,-rpath,</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span><span style=color:#e6db74>/cross-tools/lib&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		../configure --prefix<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --target<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --with-sysroot<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot --with-mpfr<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --with-gmp<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools --with-mpc<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --enable-__cxa_atexit --enable-threads<span style=color:#f92672>=</span>posix --with-system-zlib <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --enable-libstdcxx-time --enable-checking<span style=color:#f92672>=</span>release <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --with-abi<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>MABI<span style=color:#e6db74>}</span> --with-arch<span style=color:#f92672>=</span>loongarch --enable-tls <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --enable-languages<span style=color:#f92672>=</span>c,c++,fortran,objc,obj-c++,lto
+		make
+		make install
+	popd
+popd
+</code></pre></div><p>　　在完成目标系统的Glibc之后就可以增加和修改一些编译参数了，主要是如下：</p><ul><li>去掉了<code>--with-newlib</code>和<code>--disable-shared</code>，因为有Glibc，所以不再需要newlib了。</li><li><code>--enable-threads=posix</code>,可以设置线程支持了。</li><li><code>--enable-languages=c,c++,fortran,objc,obj-c++,lto</code>，可以支持更多的开发语言了。</li></ul><h3 id=39-file>3.9 File</h3><p>　　File软件包的官方最新版已经集成了LoongArch的支持，可以识别出LoongArch架构的二进制文件，因此制作时使用5.40以上的版本。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/file-5.40.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/file-5.40
+	./configure --prefix<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools
+	make
+	make install
+popd
+</code></pre></div><h3 id=310-automake>3.10 Automake</h3><p>　　Automake软件包中提供了许多软件包集成用来生成Makefile文件的脚本，但该脚本目标尚未增加对LoongArch架构的支持，因此需要对软件包打补丁文件来增加支持，制作步骤如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/automake-1.16.3.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/automake-1.16.3
+	patch -Np1 -i <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/automake-1.16.3-add-loongarch.patch
+	./configure --prefix<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools
+	make
+	make install
+popd
+</code></pre></div><p>　　打上补丁并安装到交叉工具链的目录中，这样当后续有软件包需要更新脚本文件时就可以通过本次安装的Automake中的脚本文件来进行替换。</p><h3 id=311-pkg-config>3.11 Pkg-Config</h3><p>　　为了能在交叉编译目标系统的过程中使用目标系统中已经安装的“pc”文件，我们在交叉工具链的目录中安装一个专门用来从目标系统目录中的查询“pc”文件的pkg-config命令，制作过程如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/pkg-config-0.29.2.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/pkg-config-0.29.2
+	./configure --prefix<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --with-pc_path<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/pkgconfig:<span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/share/pkgconfig <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --program-prefix<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>- --with-internal-glib --disable-host-tool
+	make
+	make install
+popd
+</code></pre></div><h3 id=312-ninja>3.12 Ninja</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/ninja-1.10.2.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/ninja-1.10.2
+	python3 configure.py --bootstrap
+	install -vm755 ninja <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools/bin/
+popd
+</code></pre></div><h3 id=313-groff>3.13 Groff</h3><p>　　编译目标系统的过程中会对Groff版本有一定要求，因此在交叉工具链的目录中安装一个版本较新的Groff。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/groff-1.22.4.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/groff-1.22.4
+	PAGE<span style=color:#f92672>=</span>A4 ./configure --prefix<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools
+	make
+	make install
+popd
+</code></pre></div><h3 id=314-grub2>3.14 Grub2</h3><p>　　为了在交叉编译的环境下可以制作生成LoongArch机器上使用的EFI启动文件，我们在交叉工具链目录中存放一个可以生成目标机器EFI的Grub软件包。</p><ul><li>代码准备</li></ul><p>　　Grub2需要进行扩充式移植的软件包，在没有软件官方支持的情况下需要专门的获取代码的方式进行，以下是获取方式：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>git clone -b <span style=color:#e6db74>&#34;dev-la64&#34;</span> https://github.com/loongarch64/grub.git
+pushd grub
+    git archive --format<span style=color:#f92672>=</span>tar --output ../grub-2.06.tar <span style=color:#e6db74>&#34;dev-la64&#34;</span>
+    ./bootstrap
+    pushd gnulib
+        git archive --format<span style=color:#f92672>=</span>tar --output ../../gnulib.tar HEAD
+    popd
+popd
+mkdir grub-2.06
+pushd grub-2.06
+    tar xvf ../grub-2.06.tar
+    mkdir gnulib
+    tar xvf ../gnulib.tar -C gnulib
+    ./bootstrap
+popd
+tar -czf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/grub-2.06.tar.gz grub-2.06
+
+</code></pre></div><ul><li>制作步骤</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar -xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/grub-2.06.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/grub-2.06
+	mkdir build
+	pushd build
+		TARGET_CC<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-gcc&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		../configure --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --target<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --prefix<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --program-transform-name<span style=color:#f92672>=</span>s,grub,<span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>-grub, <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --with-platform<span style=color:#f92672>=</span>efi --with-utils<span style=color:#f92672>=</span>host --disable-werror
+		make
+		make install
+	popd
+popd
+</code></pre></div><p>　　本次制作的Grub命令可以运行在X86的Linux系统环境中但可以生成LoongArch机器上使用的EFI文件。</p><h2 id=4-制作目标系统>4 制作目标系统</h2><p>　　交叉工具链及其相关的工具制作并安装完成后就可以继续制作目标系统了。</p><h3 id=41-软件包制作说明>4.1 软件包制作说明</h3><h4 id=架构测试脚本替换>架构测试脚本替换</h4><p>　　在制作目标系统的过程中会经常遇到configure阶段提示不识别loongarch64架构的字样，这通常是软件包自带的架构探测脚本没有增加对loongarch64架构的识别，因此需要去对该问题进行处理，处理的方式通常有两种：</p><ol><li>删除配置脚本，然后通过automake命令自动将新的探测脚本加入到软件包中，具体的操作方式为：</li></ol><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>rm config.guess config.sub
+automake --add-missing
+</code></pre></div><p>　　这里假定config.guess和config.sub两个脚本文件在软件包的第一级目录下，也可能是在build-aux之类的目录，找到文件并删除，然后使用automake命令的“&ndash;add-missing”参数来运行，该参数会自动确认是否缺少探测架构的脚本，如果缺少会从Automake软件包安装的目录中复制过来，因automake运行的是我们在交叉工具链目录中的，所以已经增加了LoongArch架构的判断，这样软件包就可以正常运行了。</p><p>2.直接替换文件，具体的操作方式为：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>cp <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/share/automake-1.16/config.* config/
+</code></pre></div><p>　　如果使用automake命令无法解决，可以直接复制Automake软件包安装的脚本文件，以我们安装的Automake-1.16版本为例，从${SYSDIR}/sysroot/usr/share/automake-1.16/中复制config开头的文件覆盖当前要编译的软件包中的同名文件即可，这里假定需要覆盖的文件在config目录中，也可能是在其它目录，可根据需要进行覆盖。</p><p>　　也可能一个软件包中有多个探测脚本，那么就需要全部进行覆盖。</p><h4 id=安装目标系统中的软件包>安装目标系统中的软件包</h4><p>　　目标系统中的软件包安装的时候都是按照根目录（“/”）来存放的，所以如果直接安装那么就会安装到主系统的目录中，这必然是不对的，所以我们在安装的时候增加“DESTDIR”参数指定一个目录，那么安装的文件将以该指定目录作为安装的根目录进行安装，当我们设置为目标系统存放的目录时，就可以避开与主系统的冲突也可以让安装的软件包以正常的目录结构进行安装。</p><p>　　在后续的制作过程中会看到大多数软件包都支持“DESTDIR”参数设置，但也有个别软件包不支持，这种情况下通常采用软件包支持的类似功能参数来解决。</p><h4 id=交叉编译软件包>交叉编译软件包</h4><p>　　通常在带有configure配置脚本的软件包可以使用<code>build</code>、<code>host</code>参数来指定编译方式，当<code>build</code>和<code>host</code>相同时是本地编译，不同时就是交叉编译。</p><p>　　<code>build</code>参数可以理解为当前主系统所使用的架构系统信息，而<code>host</code>则是目标系统运行的架构系统信息，在本文中采用在x86的Linux系统中交叉编译LoongArch64架构的Linux系统，所以根据之前定义的环境变量，<code>build</code>指定为<code>${CROSS_HOST}</code>则代表了当前主系统，<code>host</code>指定为<code>${CROSS_TARGET}</code>则代表了要编译生成的目标架构系统。</p><p>　　由于是交叉编译，所以在软件包的配置阶段有可能探测的参数错误，这可能导致编译出来的软件包不匹配目标架构系统，这时可以采用指定部分探测参数的方式来解决，通常可以采用创建config.cache文件，然后将一些需要探测的参数和取值写入到该文件中，例如：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>cat &gt; config.cache &lt;&lt; <span style=color:#e6db74>&#34;EOF&#34;</span>
+    ac_cv_func_mmap_fixed_mapped<span style=color:#f92672>=</span>yes
+    ......
+EOF
+</code></pre></div><p>　　然后在configure的参数中指定<code>--cache-file=config.cache</code>，这样就可以在探测这些参数时使用文件中设置的值而不是尝试去探测，这可以避免探测到错误的取值。</p><h4 id=编译目录>编译目录</h4><p>　　多数软件包可以在软件包自己的“根目录”中进行配置和编译，但也有一些软件包会建议创建一个新的目录来配置和编译，对这些需要创建目录进行编译的软件包，我们通常采用在该软件目录下创建一个“build”开头的目录，并在该目录中进行编译，这样便于使用完软件包后的清理工作。</p><h3 id=42-软件包的制作>4.2 软件包的制作</h3><h4 id=man-pages>Man-Pages</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/man-pages-5.11.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/man-pages-5.11
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><p>　　Man-Pages软件包没有配置阶段，直接安装到目标系统的目录中即可。</p><h5 id=iana-etc>Iana-Etc</h5><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/iana-etc-20210407.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/iana-etc-20210407
+	cp services protocols <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/etc
+popd
+</code></pre></div><p>　　Iana-Etc软件包无需配置编译，只要将包含的文件复制到目标系统的目录中即可。</p><h4 id=gmp>GMP</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/gmp-6.2.1.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/gmp-6.2.1
+	rm config.guess config.sub
+	automake --add-missing
+	./configure --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>                --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --enable-cxx
+	make 
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+	rm -v <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/lib<span style=color:#f92672>{</span>gmp,gmpxx<span style=color:#f92672>}</span>.la
+popd
+</code></pre></div><p>　　GMP软件包自带的探测架构脚本不支持LoongArch，因此删除探测脚本并用automake命令重新安装探测脚本。</p><h4 id=mpfr>MPFR</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/mpfr-4.1.0.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/mpfr-4.1.0
+	./configure --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+	rm -v <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/libmpfr.la
+popd
+</code></pre></div><h4 id=mpc>MPC</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/mpc-1.2.1.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/mpc-1.2.1
+	rm <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	./configure --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+	rm -v <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/libmpc.la
+popd
+</code></pre></div><h4 id=zlib>Zlib</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/zlib-1.2.11.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/zlib-1.2.11
+	CC<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-gcc&#34;</span> ./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=binutils>Binutils</h4><p>　　这次编译的Binutils是目标系统中使用的，在交叉编译阶段不会使用到它。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/binutils-2.31.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/binutils-2.31
+	rm -rf gdb libdecnumber readline sim
+	mkdir build
+	pushd build
+		../configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --enable-shared --disable-werror <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --with-system-zlib --enable-64-bit-bfd
+		make tooldir<span style=color:#f92672>=</span>/usr
+		make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot tooldir<span style=color:#f92672>=</span>/usr install
+	popd
+popd
+</code></pre></div><h4 id=gcc>GCC</h4><p>　　与上面编译的Binutils一样，这次编译的GCC也是在目标系统中使用的编译器，在交叉编译阶段不会使用到它，但是其提供的libgcc、libstdc++等库可以为后续软件包的编译提供链接用的库。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/gcc-8.3.0.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span> 
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/gcc-8.3.0
+	patch -Np1 -i <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/gcc-8-loongarch-fix-libdir.patch
+	mkdir build
+	pushd build
+		../configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --target<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --enable-__cxa_atexit --enable-threads<span style=color:#f92672>=</span>posix <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --with-system-zlib --enable-libstdcxx-time <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --enable-checking<span style=color:#f92672>=</span>release --enable-tls <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --with-abi<span style=color:#f92672>=</span>lp64 --with-arch<span style=color:#f92672>=</span>loongarch <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --enable-languages<span style=color:#f92672>=</span>c,c++,fortran,objc,obj-c++,lto
+		make
+		make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+		ln -sv /usr/bin/cpp <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/lib
+		ln -sv gcc <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/bin/cc
+	popd
+popd
+</code></pre></div><p>　　因在目标系统中使用，所以编译的完整一些，将C、C++以及Fortran等语言的支持加上。</p><h4 id=bzip2>Bzip2</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/bzip2-1.0.8.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/bzip2-1.0.8
+	sed -i.orig -e <span style=color:#e6db74>&#34;/^all:/s/ test//&#34;</span> Makefile
+	make CC<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>-gcc -f Makefile-libbz2_so
+	make clean
+	make CC<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>-gcc
+	make PREFIX<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr install
+	cp -v bzip2-shared <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/bin/bzip2
+	cp -av libbz2.so* <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/lib64
+	ln -sfv ../../lib64/libbz2.so.1.0 <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/libbz2.so
+	rm -v <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/bin/<span style=color:#f92672>{</span>bunzip2,bzcat,bzip2<span style=color:#f92672>}</span>
+	ln -sfv bzip2 <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/bin/bunzip2
+	ln -sfv bzip2 <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/bin/bzcat
+	rm -fv <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib/libbz2.a
+popd
+</code></pre></div><p>　　由于Bzip2软件包没有configure的配置脚本，因此在编译的时候直接给make命令指定CC参数，该参数用来设置编译程序时使用的编译器命令名，这里设置了交叉编译器的命令名，使得接下来的编译采用交叉编译器进行。</p><p>　　安装Bzip2软件包时因没有DESTDIR参数用来设置安装根目录，所以在PREFIX参数中加入目标系统存放目录的路径。</p><h4 id=xz>XZ</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/xz-5.2.5.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/xz-5.2.5
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=zstd>Zstd</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/zstd-1.5.0.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/zstd-1.5.0
+	make CC<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-gcc&#34;</span> PREFIX<span style=color:#f92672>=</span>/usr LIBDIR<span style=color:#f92672>=</span>/usr/lib64
+	make CC<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-gcc&#34;</span> PREFIX<span style=color:#f92672>=</span>/usr LIBDIR<span style=color:#f92672>=</span>/usr/lib64 DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=file>File</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/file-5.40.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/file-5.40
+	rm config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	./configure --prefix<span style=color:#f92672>=</span>/usr  --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=ncurses>Ncurses</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/ncurses-6.2.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/ncurses-6.2
+	rm config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --with-shared --without-debug <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --without-normal --enable-pc-files <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --with-pkg-config-libdir<span style=color:#f92672>=</span>/usr/lib64/pkgconfig --enable-widec <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --disable-stripping
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+	
+	<span style=color:#66d9ef>for</span> lib in ncurses form panel menu ; <span style=color:#66d9ef>do</span>
+	    rm -vf                    <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/lib<span style=color:#e6db74>${</span>lib<span style=color:#e6db74>}</span>.so
+	    echo <span style=color:#e6db74>&#34;INPUT(-l</span><span style=color:#e6db74>${</span>lib<span style=color:#e6db74>}</span><span style=color:#e6db74>w)&#34;</span> &gt; <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/lib<span style=color:#e6db74>${</span>lib<span style=color:#e6db74>}</span>.so
+	    ln -sfv <span style=color:#e6db74>${</span>lib<span style=color:#e6db74>}</span>w.pc        <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/pkgconfig/<span style=color:#e6db74>${</span>lib<span style=color:#e6db74>}</span>.pc
+	<span style=color:#66d9ef>done</span>
+	
+	rm -vf  <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/libcursesw.so
+	echo <span style=color:#e6db74>&#34;INPUT(-lncursesw)&#34;</span> &gt; <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/libcursesw.so
+	ln -sfv libncurses.so      <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/libcurses.so
+	rm -fv <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/libncurses++w.a
+popd
+
+cp  <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/bin/ncursesw6-config <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools/bin/
+sed -i <span style=color:#e6db74>&#34;s@-L\$libdir@@g&#34;</span> <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/cross-tools/bin/ncursesw6-config
+</code></pre></div><p>　　在安装完目标系统的Ncurses后，复制了一个ncursesw6-config脚本命令到交叉编译目录中，这是因为后续编译一些软件包时会调用该命令来获取安装到目标系统中的Nucrses库链接信息，而如果主系统中的库与目标系统中的库链接不一致可能导致链接失败，因此提供一个可以正确链接信息的脚本是有效的解决方案。</p><h4 id=readline>Readline</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/readline-8.1.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/readline-8.1
+	sed -i <span style=color:#e6db74>&#39;/MV.*old/d&#39;</span> Makefile.in
+	sed -i <span style=color:#e6db74>&#39;/{OLDSUFF}/c:&#39;</span> support/shlib-install
+	rm support/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>				--disable-static --with-curses
+	make SHLIB_LIBS<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;-lncursesw&#34;</span>
+	make SHLIB_LIBS<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;-lncursesw&#34;</span> DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><p>　　因交叉编译的原因，Redaline的配置脚本无法正确的探测目标系统中安装的Ncurses软件包，因此在配置中加入<code>--with-curses</code>参数保证加入Ncurses的支持以及在编译阶段加入<code>SHLIB_LIBS="-lncursesw"</code>以保证正确链接库文件。</p><h4 id=m4>M4</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/m4-1.4.18.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/m4-1.4.18
+	sed -i <span style=color:#e6db74>&#39;s/IO_ftrylockfile/IO_EOF_SEEN/&#39;</span> lib/*.c
+	echo <span style=color:#e6db74>&#34;#define _IO_IN_BACKUP 0x100&#34;</span> &gt;&gt; lib/stdio-impl.h
+	./configure --prefix<span style=color:#f92672>=</span>/usr --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=bc>BC</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/bc-4.0.2.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/bc-4.0.2
+	CC<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-gcc&#34;</span> HOSTCC<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;gcc&#34;</span> ./configure --prefix<span style=color:#f92672>=</span>/usr
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=flex>Flex</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/flex-2.6.4.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/flex-2.6.4
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --disable-static
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+	ln -sv flex <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/bin/lex
+popd
+</code></pre></div><h4 id=attr>Attr</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/attr-2.5.1.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/attr-2.5.1
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --disable-static --sysconfdir<span style=color:#f92672>=</span>/etc
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+	rm <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/libattr.la
+popd
+</code></pre></div><h4 id=acl>Acl</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/acl-2.3.1.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/acl-2.3.1
+	rm <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --disable-static
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+	rm <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/libacl.la
+popd
+</code></pre></div><h4 id=libcap>Libcap</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/libcap-2.49.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/libcap-2.49
+	make CROSS_COMPILE<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-&#34;</span> BUILD_CC<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;gcc&#34;</span> GOLANG<span style=color:#f92672>=</span>no prefix<span style=color:#f92672>=</span>/usr lib<span style=color:#f92672>=</span>lib64
+	make CROSS_COMPILE<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-&#34;</span> BUILD_CC<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;gcc&#34;</span> GOLANG<span style=color:#f92672>=</span>no prefix<span style=color:#f92672>=</span>/usr lib<span style=color:#f92672>=</span>lib64 <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		 DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><p>　　因为该软件包没有配置脚本，所以直接在make命令上增加指定编译器的参数<code>CROSS_COMPILE="${CROSS_TARGET}-"</code>，这里要注意CROSS_COMPILE指定的是交叉编译工具的前缀而不是具体命令名，这样在编译过程中各种编译、汇编和链接相关的命令都会自动加上这个指定的前缀。</p><p>　　另外在编译过程中会编译在主系统中运行的程序，这个时候不能使用交叉编译器编译，所以还需要指定<code>BUILD_CC="gcc"</code>这个参数来保证编译这些要运行的程序使用的是本地编译器。</p><h4 id=shadow>Shadow</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/shadow-4.8.1.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/shadow-4.8.1
+	sed -i <span style=color:#e6db74>&#39;s/groups$(EXEEXT) //&#39;</span> src/Makefile.in
+	find man -name Makefile.in -exec sed -i <span style=color:#e6db74>&#39;s/groups\.1 / /&#39;</span>   <span style=color:#f92672>{}</span> <span style=color:#ae81ff>\;</span>
+	find man -name Makefile.in -exec sed -i <span style=color:#e6db74>&#39;s/getspnam\.3 / /&#39;</span> <span style=color:#f92672>{}</span> <span style=color:#ae81ff>\;</span>
+	find man -name Makefile.in -exec sed -i <span style=color:#e6db74>&#39;s/passwd\.5 / /&#39;</span>   <span style=color:#f92672>{}</span> <span style=color:#ae81ff>\;</span>
+	sed -e <span style=color:#e6db74>&#39;s:#ENCRYPT_METHOD DES:ENCRYPT_METHOD SHA512:&#39;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	    -e <span style=color:#e6db74>&#39;s:/var/spool/mail:/var/mail:&#39;</span>                 <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	    -e <span style=color:#e6db74>&#39;/PATH=/{s@/sbin:@@;s@/bin:@@}&#39;</span>                <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	    -i etc/login.defs
+	sed -i <span style=color:#e6db74>&#39;s/1000/999/&#39;</span> etc/useradd
+	./configure --sysconfdir<span style=color:#f92672>=</span>/etc --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>				--with-group-name-max-length<span style=color:#f92672>=</span><span style=color:#ae81ff>32</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+	sed -i <span style=color:#e6db74>&#39;s/yes/no/&#39;</span> <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/etc/default/useradd
+popd
+</code></pre></div><p>　　该软件包修改了一些默认的设置，下面介绍以下主要修改的内容：</p><p>　　1、将用户密码的加密模式从DES改为SHA512，后者相对前者更难破解。</p><p>　　2、修改useradd创建用户默认的起始组编号，这个修改可改可不改，但无论改不改这个组编号对应的组都必须在目标系统中存在。</p><p>　　3、修改useradd命令创建用户时默认创建mail目录的设置，该目录目前已很少使用，所以修改为默认不创建。</p><h4 id=sed>Sed</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/sed-4.8.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/sed-4.8
+	rm <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	./configure --prefix<span style=color:#f92672>=</span>/usr --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=psmisc>PSmisc</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/psmisc-23.4.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/psmisc-23.4
+	sed -i.orig <span style=color:#e6db74>&#34;/rpl_malloc/d&#34;</span> configure
+	sed -i.orig <span style=color:#e6db74>&#34;/rpl_realloc/d&#34;</span> configure
+	./configure --prefix<span style=color:#f92672>=</span>/usr --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=gettext>Gettext</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/gettext-0.21.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/gettext-0.21
+	<span style=color:#66d9ef>for</span> i in <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>
+	<span style=color:#66d9ef>do</span>
+		rm ./$i/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+		pushd <span style=color:#66d9ef>$(</span>dirname ./$i<span style=color:#66d9ef>)</span>
+		    automake --add-missing
+		popd
+	<span style=color:#66d9ef>done</span>
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --disable-static <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --with-libncurses-prefix<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot
+	make
+	sed -i <span style=color:#e6db74>&#34;/hello-c++-kde/d&#34;</span> gettext-tools/examples/Makefile
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><p>　　Gettext软件包的源码中有多处探测架构的脚本，这些脚本在当前的版本中均不支持LoongArch架构，所以找到全部探测脚本并进行替换。</p><h4 id=bison>Bison</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/bison-3.7.6.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/bison-3.7.6
+	rm <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	./configure --prefix<span style=color:#f92672>=</span>/usr --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=grep>Grep</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/grep-3.6.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/grep-3.6
+	rm <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	./configure --prefix<span style=color:#f92672>=</span>/usr --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=bash>Bash</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/bash-5.1.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/bash-5.1
+	rm <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	
+	cat &gt; config.cache &lt;&lt; <span style=color:#e6db74>&#34;EOF&#34;</span>
+	ac_cv_func_mmap_fixed_mapped<span style=color:#f92672>=</span>yes
+	ac_cv_func_strcoll_works<span style=color:#f92672>=</span>yes
+	ac_cv_func_working_mktime<span style=color:#f92672>=</span>yes
+	bash_cv_func_sigsetjmp<span style=color:#f92672>=</span>present
+	bash_cv_getcwd_malloc<span style=color:#f92672>=</span>yes
+	bash_cv_job_control_missing<span style=color:#f92672>=</span>present
+	bash_cv_printf_a_format<span style=color:#f92672>=</span>yes
+	bash_cv_sys_named_pipes<span style=color:#f92672>=</span>present
+	bash_cv_ulimit_maxfds<span style=color:#f92672>=</span>yes
+	bash_cv_under_sys_siglist<span style=color:#f92672>=</span>yes
+	bash_cv_unusable_rtsigs<span style=color:#f92672>=</span>no
+	gt_cv_int_divbyzero_sigfpe<span style=color:#f92672>=</span>yes
+	EOF
+	
+	sed -i  <span style=color:#e6db74>&#39;/^bashline.o:.*shmbchar.h/a bashline.o: ${DEFDIR}/builtext.h&#39;</span> Makefile.in
+	
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --without-bash-malloc <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --with-installed-readline --cache-file<span style=color:#f92672>=</span>config.cache
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><p>　　Bash软件在交叉编译时的配置阶段会有大量的参数探测错误，需要我们手工指定这些参数的真实取值，创建一个文本文件，将这些参数的取值写进去，并在configure配置中增加<code>--cache-file=config.cache</code>参数（其中config.cache就是保存参数的文本文件名）。</p><h4 id=libtool>Libtool</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/libtool-2.4.6.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/libtool-2.4.6
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=gdbm>GDBM</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/gdbm-1.19.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/gdbm-1.19
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --disable-static --enable-libgdbm-compat
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=gperf>GPerf</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/gperf-3.1.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/gperf-3.1
+	./configure --prefix<span style=color:#f92672>=</span>/usr --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=expat>Expat</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/expat-2.3.0.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/expat-2.3.0
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>				--disable-static
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=autoconf>Autoconf</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/autoconf-2.71.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/autoconf-2.71
+	./configure --prefix<span style=color:#f92672>=</span>/usr --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=automake>Automake</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/automake-1.16.3.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/automake-1.16.3
+	patch -Np1 -i <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/automake-1.16.3-add-loongarch.patch
+	./configure --prefix<span style=color:#f92672>=</span>/usr --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><p>　　在交叉编译目录中我们安装了一个Automake软件包，该软件包提供了增加LoongArch支持的探测脚本，有很多软件都会需要用这些脚本来覆盖自己源代码中的脚本。</p><p>　　在制作的目标系统中当然也需要改其中的Automake软件包，也使其支持LoongArch，这样将来在目标系统中配置编译一些软件包时就可以使用上。</p><h4 id=kmod>Kmod</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/kmod-28.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/kmod-28
+	rm <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --bindir<span style=color:#f92672>=</span>/bin <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --sysconfdir<span style=color:#f92672>=</span>/etc --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --with-xz --with-zstd --with-zlib
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+	
+	<span style=color:#66d9ef>for</span> target in depmod insmod lsmod modinfo modprobe rmmod; <span style=color:#66d9ef>do</span>
+		ln -sfv ../bin/kmod <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/sbin/$target
+	<span style=color:#66d9ef>done</span>
+	ln -sfv kmod <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/bin/lsmod
+popd
+</code></pre></div><h4 id=libelf>Libelf</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/elfutils-0.183.tar.bz2 -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/elfutils-0.183
+	LIBS<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;-lpthread -llzma -lz -lbz2 -lzstd&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>				--host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --disable-libdebuginfod --disable-debuginfod <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>				 ac_cv_search_lzma_auto_decoder<span style=color:#f92672>=</span>-llzma ac_cv_search_ZSTD_decompress<span style=color:#f92672>=</span>-lzstd
+	make
+	make -C libelf DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+	make -C libelf DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install-data
+popd
+</code></pre></div><p>　　该软件包使用交叉编译会有个别功能探测错误，使用指定参数和取值的方式来解决，该制作步骤上采用了另一种设置参数取值的方式，若要指定的参数数值不多的情况下可以直接在configure的参数中进行设置,如<code>ac_cv_search_lzma_auto_decoder=-llzma</code>和<code>ac_cv_search_ZSTD_decompress=-lzstd</code>这就是这种设置方式，也可以通过将这两个参数写到<code>config.cache</code>，然后通过<code>--cache-file=config.cache</code>来使用。</p><h4 id=libffi>Libffi</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/libffi-3.3.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/libffi-3.3
+	patch -Np1 -i <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/libffi-3.3-add-loongarch.patch
+	aclocal
+	automake -fi
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --disable-static --with-gcc-arch<span style=color:#f92672>=</span>native
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><p>　　Libffi也是一个要增加架构支持的软件包，这里通过打补丁的方式加入LoongArch架构的支持。</p><h4 id=openssl>OpenSSL</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/openssl-1.1.1k.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/openssl-1.1.1k
+	CC<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-gcc&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	./Configure --prefix<span style=color:#f92672>=</span>/usr --openssldir<span style=color:#f92672>=</span>/etc/ssl <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>				--libdir<span style=color:#f92672>=</span>lib64 shared zlib linux-generic64
+	make
+	sed -i <span style=color:#e6db74>&#39;/INSTALL_LIBS/s/libcrypto.a libssl.a//&#39;</span> Makefile
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><p>　　OpenSSL是一个十分重要的安全算法库，通常对不同的架构可以使用汇编对算法进行优化，但其也提供了通用的C实现，因此可以采用<code>linux-generic64</code>来指定用通用实现进行编译，当然通用实现的性能是相对较低的，在今后如果有了针对LoongArch64的优化支持则可以修改该参数来达到优化编译的目的。</p><h4 id=coreutils>Coreutils</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/coreutils-8.32.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/coreutils-8.32
+	sed -i <span style=color:#e6db74>&#34;s@SYS_getdents@SYS_getdents64@g&#34;</span> src/ls.c
+	rm <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	FORCE_UNSAFE_CONFIGURE<span style=color:#f92672>=</span><span style=color:#ae81ff>1</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	./configure --prefix<span style=color:#f92672>=</span>/usr  --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>				--enable-no-install-program<span style=color:#f92672>=</span>kill,uptime
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+	mv -v <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/bin/chroot <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/sbin
+popd
+</code></pre></div><h4 id=diffutils>Diffutils</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/diffutils-3.7.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/diffutils-3.7
+	rm <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	./configure --prefix<span style=color:#f92672>=</span>/usr  --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=gawk>Gawk</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/gawk-5.1.0.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/gawk-5.1.0
+	sed -i <span style=color:#e6db74>&#39;s/extras//&#39;</span> Makefile.in
+	<span style=color:#66d9ef>for</span> i in <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>
+	<span style=color:#66d9ef>do</span>
+		rm ./$i/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+		pushd <span style=color:#66d9ef>$(</span>dirname ./$i<span style=color:#66d9ef>)</span>
+			automake --add-missing
+		popd
+	<span style=color:#66d9ef>done</span>
+	./configure --prefix<span style=color:#f92672>=</span>/usr  --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=findutils>Findutils</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/findutils-4.8.0.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/findutils-4.8.0
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --localstatedir<span style=color:#f92672>=</span>/var/lib/locate
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=groff>Groff</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/groff-1.22.4.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/groff-1.22.4
+	rm <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	PAGE<span style=color:#f92672>=</span>A4 ./configure --prefix<span style=color:#f92672>=</span>/usr --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make TROFFBIN<span style=color:#f92672>=</span>troff GROFFBIN<span style=color:#f92672>=</span>groff GROFF_BIN_PATH<span style=color:#f92672>=</span>
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=less>Less</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/less-581.2.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/less-581.2
+	./configure --prefix<span style=color:#f92672>=</span>/usr --sysconfdir<span style=color:#f92672>=</span>/etc --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=gzip>Gzip</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/gzip-1.10.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/gzip-1.10
+	rm <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	./configure --prefix<span style=color:#f92672>=</span>/usr --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=iproute2>IPRoute2</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/iproute2-5.12.0.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/iproute2-5.12.0
+	sed -i /ARPD/d Makefile
+	rm -fv man/man8/arpd.8
+	sed -i <span style=color:#e6db74>&#39;s/.m_ipt.o//&#39;</span> tc/Makefile
+	make CC<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-gcc&#34;</span> HOSTCC<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;gcc&#34;</span> KERNEL_INCLUDE<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/include
+	make CC<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-gcc&#34;</span> HOSTCC<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;gcc&#34;</span> KERNEL_INCLUDE<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/include <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>			DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><p>　　IPRoute2软件包没有配置阶段，直接在make命令中使用“CC”变量指定交叉编译器，而对于在编译过程中会临时编译一些在本地运行的程序时就需要使用“HOSTCC”变量来指定本地编译器，否则“HOSTCC”会使用“CC”变量的指定编译器，那么编译出来的程序就无法在交叉编译的主系统中运行了。</p><h4 id=kbd>KBD</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/kbd-2.4.0.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/kbd-2.4.0
+	patch -Np1 -i <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/kbd-2.4.0-backspace-1.patch
+	sed -i <span style=color:#e6db74>&#39;/RESIZECONS_PROGS=/s/yes/no/&#39;</span> configure
+	sed -i <span style=color:#e6db74>&#39;s/resizecons.8 //&#39;</span> docs/man/man8/Makefile.in
+	rm <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	LIBS<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;-lrt -lpthread&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	./configure --prefix<span style=color:#f92672>=</span>/usr --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --disable-vlock
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><p>　　交叉编译KBD时可能会缺少链接库而导致制作失败，此时可以通过LIBS变量指定缺少链接的库而完成KBD软件包的制作。</p><h4 id=libpipeline>Libpipeline</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/libpipeline-1.5.3.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/libpipeline-1.5.3
+	rm <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=make>Make</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/make-4.3.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/make-4.3
+	rm <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=patch>Patch</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/patch-2.7.6.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/patch-2.7.6
+	./configure --prefix<span style=color:#f92672>=</span>/usr -build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=man-db>Man-DB</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/man-db-2.9.4.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/man-db-2.9.4
+	rm <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+	automake --add-missing
+	LIBS<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;-lpipeline&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --sysconfdir<span style=color:#f92672>=</span>/etc --disable-setuid <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --enable-cache-owner<span style=color:#f92672>=</span>bin 	--with-browser<span style=color:#f92672>=</span>/usr/bin/lynx <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --with-vgrind<span style=color:#f92672>=</span>/usr/bin/vgrind --with-grap<span style=color:#f92672>=</span>/usr/bin/grap
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=tar>Tar</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/tar-1.34.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/tar-1.34
+	FORCE_UNSAFE_CONFIGURE<span style=color:#f92672>=</span><span style=color:#ae81ff>1</span> ./configure --prefix<span style=color:#f92672>=</span>/usr --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><h4 id=texinfo>Texinfo</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/texinfo-6.7.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/texinfo-6.7
+	<span style=color:#66d9ef>for</span> i in <span style=color:#66d9ef>$(</span>dirname <span style=color:#66d9ef>$(</span>find -name <span style=color:#e6db74>&#34;config.sub&#34;</span><span style=color:#66d9ef>))</span>
+	<span style=color:#66d9ef>do</span>
+		rm ./$i/config.<span style=color:#f92672>{</span>sub,guess<span style=color:#f92672>}</span>
+		pushd <span style=color:#66d9ef>$(</span>dirname ./$i<span style=color:#66d9ef>)</span>
+			automake --add-missing
+		popd
+	<span style=color:#66d9ef>done</span>
+	./configure --prefix<span style=color:#f92672>=</span>/usr --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot TEXMF<span style=color:#f92672>=</span>/usr/share/texmf install-tex
+popd
+</code></pre></div><h4 id=vim>VIM</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/v8.2.2879.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/vim-8.2.2879
+	echo <span style=color:#e6db74>&#39;#define SYS_VIMRC_FILE &#34;/etc/vimrc&#34;&#39;</span> &gt;&gt; src/feature.h
+	cat &gt; src/auto/config.cache <span style=color:#e6db74>&lt;&lt; EOF
+</span><span style=color:#e6db74>	vim_cv_getcwd_broken=no
+</span><span style=color:#e6db74>	vim_cv_toupper_broken=no
+</span><span style=color:#e6db74>	vim_cv_terminfo=yes
+</span><span style=color:#e6db74>	vim_cv_tgetent=zero
+</span><span style=color:#e6db74>	vim_cv_stat_ignores_slash=no
+</span><span style=color:#e6db74>	vim_cv_memmove_handles_overlap=yes
+</span><span style=color:#e6db74>	EOF</span>
+	./configure --prefix<span style=color:#f92672>=</span>/usr --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>  --with-tlib<span style=color:#f92672>=</span>ncurses
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot STRIP<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>-strip install
+	ln -sv vim <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/bin/vi
+popd
+</code></pre></div><p>　　VIM制作过程中也需要设置一些参数避免自动探测错误，但VIM的参数设置文件是有默认文件路径的即“src/auto/config.cache”，在文件中写入参数和取值即可，configure配置脚本会自动从该文件中读取。</p><p>　　在安装完VIM后，我们可以配置VIM的默认设置文件，设置步骤如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>cat &gt; <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/etc/vimrc &lt;&lt; <span style=color:#e6db74>&#34;EOF&#34;</span>
+let skip_defaults_vim<span style=color:#f92672>=</span><span style=color:#ae81ff>1</span> 
+set nocompatible
+set backspace<span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>
+set mouse<span style=color:#f92672>=</span>
+syntax on
+<span style=color:#66d9ef>if</span> <span style=color:#f92672>(</span>&amp;term <span style=color:#f92672>==</span> <span style=color:#e6db74>&#34;xterm&#34;</span><span style=color:#f92672>)</span> <span style=color:#f92672>||</span> <span style=color:#f92672>(</span>&amp;term <span style=color:#f92672>==</span> <span style=color:#e6db74>&#34;putty&#34;</span><span style=color:#f92672>)</span>
+  set background<span style=color:#f92672>=</span>dark
+endif
+EOF
+</code></pre></div><p>　　改设置内容主要是设置了一些基本的界面和操作特性，如Tab转换成几个空格显示，不同的终端下背景颜色等等。</p><h4 id=util-linux>Util-Linux</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/util-linux-2.36.2.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/util-linux-2.36.2
+	cp <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/share/automake-1.16/config.* config/
+	LDFLAGS<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;-lpthread&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	./configure  --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>        ADJTIME_PATH<span style=color:#f92672>=</span>/var/lib/hwclock/adjtime <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>        --libdir<span style=color:#f92672>=</span>/usr/lib64 <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>        --disable-chfn-chsh --disable-login --disable-nologin <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>        --disable-su --disable-setpriv --disable-runuser <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>        --disable-pylibmount --disable-static --without-python <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>        --without-systemd --disable-makeinstall-chown <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>        runstatedir<span style=color:#f92672>=</span>/run
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><p>　　Util-Linux带有大量的命令和库，由于部分命令已经在其它软件包中提供了，所以使用选项参数来关闭这些命令的编译和安装。</p><h4 id=systemd>Systemd</h4><p>　　Systemd采用的是meson命令进行配置阶段的操作，该命令与其他常见的configure脚本有明显的不同，所以在当前需要进行交叉编译的情况下也会采用完全不同的操作步骤，以下将展开进行说明。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/systemd-248.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/systemd-248
+	patch -Np1 -i <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/systemd-248-add-loongarch64.patch
+	pushd src/basic
+        python3 missing_syscalls.py missing_syscall_def.h <span style=color:#66d9ef>$(</span>ls syscalls-*.txt<span style=color:#66d9ef>)</span>
+	popd
+	sed -i <span style=color:#e6db74>&#39;s/GROUP=&#34;render&#34;/GROUP=&#34;video&#34;/&#39;</span> rules.d/50-udev-default.rules.in
+</code></pre></div><p>　　以上步骤是为了解压Systemd源代码和打上支持LoongArch64的补丁，并且对代码进行必要的修正。</p><p>　　接下来的步骤是制作一个为meson命令用来交叉编译配置的文本文件，步骤如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>echo <span style=color:#e6db74>&#34;[binaries]&#34;</span> &gt; meson-cross.txt
+echo <span style=color:#e6db74>&#34;c = &#39;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-gcc&#39;&#34;</span> &gt;&gt; meson-cross.txt
+echo <span style=color:#e6db74>&#34;cpp = &#39;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-g++&#39;&#34;</span> &gt;&gt; meson-cross.txt
+echo <span style=color:#e6db74>&#34;ar = &#39;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-ar&#39;&#34;</span> &gt;&gt; meson-cross.txt
+echo <span style=color:#e6db74>&#34;strip = &#39;</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-strip&#39;&#34;</span> &gt;&gt; meson-cross.txt
+echo <span style=color:#e6db74>&#34;pkgconfig = &#39;</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span><span style=color:#e6db74>/cross-tools/bin/</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span><span style=color:#e6db74>-pkg-config&#39;&#34;</span> &gt;&gt; meson-cross.txt
+echo <span style=color:#e6db74>&#34;[properties]&#34;</span> &gt;&gt; meson-cross.txt
+echo -n <span style=color:#e6db74>&#34;c_args = [&#39;&#34;</span> &gt;&gt; meson-cross.txt
+echo -n <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>BUILD_ARCH<span style=color:#e6db74>}</span><span style=color:#e6db74> </span><span style=color:#e6db74>${</span>BUILD_MABI<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span> | sed <span style=color:#e6db74>&#34;s@ ?*@&#39;,&#39;@g&#34;</span> &gt;&gt; meson-cross.txt
+echo <span style=color:#e6db74>&#34;&#39;]&#34;</span> &gt;&gt; meson-cross.txt
+echo -n <span style=color:#e6db74>&#34;cpp_args = [&#39;&#34;</span> &gt;&gt; meson-cross.txt
+echo -n <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>BUILD_ARCH<span style=color:#e6db74>}</span><span style=color:#e6db74> </span><span style=color:#e6db74>${</span>BUILD_MABI<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span> | sed <span style=color:#e6db74>&#34;s@ ?*@&#39;,&#39;@g&#34;</span> &gt;&gt; meson-cross.txt
+echo <span style=color:#e6db74>&#34;&#39;]&#34;</span> &gt;&gt; meson-cross.txt
+echo <span style=color:#e6db74>&#34;c_link_args = [&#39;-Wl,-rpath-link,/opt/mylaos/sysroot/usr/lib64&#39;]&#34;</span> &gt;&gt; meson-cross.txt
+echo <span style=color:#e6db74>&#34;cpp_link_args = [&#39;-Wl,-rpath-link,/opt/mylaos/sysroot/usr/lib64&#39;]&#34;</span> &gt;&gt; meson-cross.txt
+echo <span style=color:#e6db74>&#34;sys_root = &#39;</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span><span style=color:#e6db74>/sysroot&#39;&#34;</span> &gt;&gt; meson-cross.txt
+cat &gt;&gt; meson-cross.txt &lt;&lt; <span style=color:#e6db74>&#34;EOF&#34;</span>
+<span style=color:#f92672>[</span>host_machine<span style=color:#f92672>]</span>
+system <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;linux&#39;</span>
+cpu_family <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;loongarch64&#39;</span>
+cpu <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;loongarch64&#39;</span>
+endian <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;little&#39;</span>
+EOF
+</code></pre></div><p>　　以上步骤完成后将在当前目录中生成一个meson-cross.txt文件，该文件包含了编译Systemd时目标架构的名字、系统、使用的工具链命令以及编译参数等等，这样在接下来的配置阶段中引用该文件就可以了。</p><p>　　以下是配置和编译的步骤：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>	mkdir -p build
+	pushd build
+		LANG<span style=color:#f92672>=</span>en_US.UTF-8 <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		meson --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --sysconfdir<span style=color:#f92672>=</span>/etc --localstatedir<span style=color:#f92672>=</span>/var <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		      -Dblkid<span style=color:#f92672>=</span>true -Dbuildtype<span style=color:#f92672>=</span>release -Ddefault-dnssec<span style=color:#f92672>=</span>no -Dfirstboot<span style=color:#f92672>=</span>false <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		      -Dinstall-tests<span style=color:#f92672>=</span>false -Dldconfig<span style=color:#f92672>=</span>false -Dsysusers<span style=color:#f92672>=</span>false -Db_lto<span style=color:#f92672>=</span>false <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		      -Drpmmacrosdir<span style=color:#f92672>=</span>no -Dhomed<span style=color:#f92672>=</span>false -Duserdb<span style=color:#f92672>=</span>false -Dman<span style=color:#f92672>=</span>false -Dmode<span style=color:#f92672>=</span>release <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		      --cross-file ../meson-cross.txt <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		      ..
+		ninja
+		DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot ninja install
+	popd
+popd
+</code></pre></div><p>　　较新版本的Systemd不再使用make命令进行编译了，配合meson使用ninja命令进行编译，在编译后同样用ninja命令安装软件包。</p><p>　　安装命令支持“DESTDIR”变量设置，但与make命令不同的是“DESTDIR”变量需要写在ninja命令的前面，安装的参数是“install”，该命令执行后同样将软件包安装到目标系统存放的目录中。</p><h4 id=d-bus>D-Bus</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/dbus-1.12.20.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/dbus-1.12.20
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --sysconfdir<span style=color:#f92672>=</span>/etc --localstatedir<span style=color:#f92672>=</span>/var <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --disable-static --disable-doxygen-docs --disable-xml-docs <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --with-console-auth-dir<span style=color:#f92672>=</span>/run/console <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --with-system-pid-file<span style=color:#f92672>=</span>/run/dbus/pid <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --with-system-socket<span style=color:#f92672>=</span>/run/dbus/system_bus_socket
+	make
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+	ln -sfv /etc/machine-id <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/var/lib/dbus
+popd
+</code></pre></div><h4 id=procps-ng>Procps-ng</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/procps-ng-3.3.17.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/procps-3.3.17
+	./configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64  --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --disable-static --disable-kill <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            --with-systemd NCURSES_LIBS<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;-lncursesw&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>	            ac_cv_func_malloc_0_nonnull<span style=color:#f92672>=</span>yes ac_cv_func_realloc_0_nonnull<span style=color:#f92672>=</span>yes
+	make 
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><p>　　Procps-ng软件包也是在交叉编译方式上会出现参数判断错误的情况，需要在配置阶段指定参数和取值。</p><h4 id=e2fsprogs>E2fsprogs</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/e2fsprogs-1.46.2.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/e2fsprogs-1.46.2
+	cp <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/share/automake-1.16/config.* config/
+	mkdir -v build
+	pushd build
+		LDFLAGS<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;-Wl,-rpath-link,/opt/mylaos/sysroot/usr/lib64&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		../configure --prefix<span style=color:#f92672>=</span>/usr --libdir<span style=color:#f92672>=</span>/usr/lib64 --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> --sysconfdir<span style=color:#f92672>=</span>/etc <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --enable-elf-shlibs--disable-libblkid <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --disable-libuuid --disable-uuidd --disable-fsck
+		make 
+		make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+		rm -fv <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/<span style=color:#f92672>{</span>libcom_err,libe2p,libext2fs,libss<span style=color:#f92672>}</span>.a
+	popd
+popd
+</code></pre></div><h4 id=linux>Linux</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/linux-5.13.0.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/linux-5.13.0
+	make mrproper
+	make ARCH<span style=color:#f92672>=</span>loongarch CROSS_COMPILE<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>- defconfig
+	make ARCH<span style=color:#f92672>=</span>loongarch CROSS_COMPILE<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>- menuconfig
+	make ARCH<span style=color:#f92672>=</span>loongarch CROSS_COMPILE<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>-
+	make ARCH<span style=color:#f92672>=</span>loongarch CROSS_COMPILE<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>- INSTALL_MOD_PATH<span style=color:#f92672>=</span>dest modules_install
+	mkdir -pv <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/lib/modules/
+	cp -a dest/lib/modules/* <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/lib/modules/
+	cp -a vmlinux <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/boot/vmlinux
+popd
+</code></pre></div><p>　　因为是交叉编译的原因，Linux内核需要指定“ARCH”变量才能知道目标机器的架构，通过设置“CROSS_COMPILE”变量来指定命令前缀的方式来使用交叉编译工具的命令。</p><p>　　下面解释一下多个make命令步骤含义：</p><p>　　* <code>defconfig</code>，自动获取指定架构目录中的默认配置文件作为当前编译使用的配置文件。</p><p>　　* <code>menuconfig</code>，进入到交互式选择内核功能的界面，这需要主系统安装了Ncurses的开发库，该步骤可用来调整Linux内核选择，如果使用默认的就足够了，那么该步骤可以跳过。</p><p>　　* <code>modules_install</code>，安装模块文件，模块安装的根目录由<code>INSTALL_MOD_PATH</code>变量指定，这里指定了<code>dest</code>，代表安装到当前目录中的dest目录里，若没有该目录将自动创建。</p><p>　　当Linux内核编译完成后，我们可以将内核文件“vmlinux”和对应的模块复制到目标系统存放的目录中。</p><h4 id=linux-firmware>Linux-Firmware</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/linux-firmware-20210511.tar.xz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/linux-firmware-20210511
+	make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+popd
+</code></pre></div><p>　　安装Linux-Firmware软件包主要是因为当目标机器搭配了某些独显后需要相应的固件支持才能正常显示。</p><h4 id=grub2>Grub2</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>tar -xvf <span style=color:#e6db74>${</span>DOWNLOADDIR<span style=color:#e6db74>}</span>/grub-2.06.tar.gz -C <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>
+pushd <span style=color:#e6db74>${</span>BUILDDIR<span style=color:#e6db74>}</span>/grub-2.06
+	mkdir build
+	pushd build
+		../configure --prefix<span style=color:#f92672>=</span>/usr  --libdir<span style=color:#f92672>=</span>/usr/lib64  --build<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_HOST<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --host<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span> -with-platform<span style=color:#f92672>=</span>efi <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>		             --with-utils<span style=color:#f92672>=</span>host --disable-werror
+		make 
+		make DESTDIR<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot install
+	popd
+popd
+</code></pre></div><p>　　为目标系统安装Grub2的命令及模块，这样在启动目标架构机器上启动目标系统后也可以制作对应的EFI文件和设置启动相关的文件了。</p><h2 id=5-设置目标系统>5 设置目标系统</h2><p>　　目标系统的软件包制作过程已经完成，接下来就是对目标系统进行必要的设置，以便目标系统可以正常的启动和使用。</p><h3 id=创建用户文件>创建用户文件</h3><p>　　创建基本的用户名，这些用户名大多数在启动过程中会用到，步骤如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C>cat <span style=color:#f92672>&gt;</span> <span style=color:#960050;background-color:#1e0010>$</span>{SYSDIR}<span style=color:#f92672>/</span>sysroot<span style=color:#f92672>/</span>etc<span style=color:#f92672>/</span>passwd <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;EOF&#34;</span>
+root<span style=color:#f92672>::</span><span style=color:#ae81ff>0</span><span style=color:#f92672>:</span><span style=color:#ae81ff>0</span><span style=color:#f92672>:</span>root:<span style=color:#f92672>/</span>root:<span style=color:#f92672>/</span>bin<span style=color:#f92672>/</span>bash
+bin<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>1</span><span style=color:#f92672>:</span><span style=color:#ae81ff>1</span><span style=color:#f92672>:</span>bin:<span style=color:#f92672>/</span>dev<span style=color:#f92672>/</span>null:<span style=color:#f92672>/</span>bin<span style=color:#f92672>/</span>false
+daemon<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>6</span><span style=color:#f92672>:</span><span style=color:#ae81ff>6</span><span style=color:#f92672>:</span>Daemon User:<span style=color:#f92672>/</span>dev<span style=color:#f92672>/</span>null:<span style=color:#f92672>/</span>bin<span style=color:#f92672>/</span>false
+messagebus<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>18</span><span style=color:#f92672>:</span><span style=color:#ae81ff>18</span><span style=color:#f92672>:</span>D<span style=color:#f92672>-</span>Bus Message Daemon User:<span style=color:#f92672>/</span>var<span style=color:#f92672>/</span>run<span style=color:#f92672>/</span>dbus:<span style=color:#f92672>/</span>bin<span style=color:#f92672>/</span>false
+sshd<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>50</span><span style=color:#f92672>:</span><span style=color:#ae81ff>50</span><span style=color:#f92672>:</span>sshd PrivSep:<span style=color:#f92672>/</span>var<span style=color:#f92672>/</span>lib<span style=color:#f92672>/</span>sshd:<span style=color:#f92672>/</span>bin<span style=color:#f92672>/</span>false
+systemd<span style=color:#f92672>-</span>bus<span style=color:#f92672>-</span>proxy<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>72</span><span style=color:#f92672>:</span><span style=color:#ae81ff>72</span><span style=color:#f92672>:</span>systemd Bus Proxy:<span style=color:#f92672>/:/</span>bin<span style=color:#f92672>/</span>false
+systemd<span style=color:#f92672>-</span>journal<span style=color:#f92672>-</span>gateway<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>73</span><span style=color:#f92672>:</span><span style=color:#ae81ff>73</span><span style=color:#f92672>:</span>systemd Journal Gateway:<span style=color:#f92672>/:/</span>bin<span style=color:#f92672>/</span>false
+systemd<span style=color:#f92672>-</span>journal<span style=color:#f92672>-</span>remote<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>74</span><span style=color:#f92672>:</span><span style=color:#ae81ff>74</span><span style=color:#f92672>:</span>systemd Journal Remote:<span style=color:#f92672>/:/</span>bin<span style=color:#f92672>/</span>false
+systemd<span style=color:#f92672>-</span>journal<span style=color:#f92672>-</span>upload<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>75</span><span style=color:#f92672>:</span><span style=color:#ae81ff>75</span><span style=color:#f92672>:</span>systemd Journal Upload:<span style=color:#f92672>/:/</span>bin<span style=color:#f92672>/</span>false
+systemd<span style=color:#f92672>-</span>network<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>76</span><span style=color:#f92672>:</span><span style=color:#ae81ff>76</span><span style=color:#f92672>:</span>systemd Network Management:<span style=color:#f92672>/:/</span>bin<span style=color:#f92672>/</span>false
+systemd<span style=color:#f92672>-</span>resolve<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>77</span><span style=color:#f92672>:</span><span style=color:#ae81ff>77</span><span style=color:#f92672>:</span>systemd Resolver:<span style=color:#f92672>/:/</span>bin<span style=color:#f92672>/</span>false
+systemd<span style=color:#f92672>-</span>timesync<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>78</span><span style=color:#f92672>:</span><span style=color:#ae81ff>78</span><span style=color:#f92672>:</span>systemd Time Synchronization:<span style=color:#f92672>/:/</span>bin<span style=color:#f92672>/</span>false
+systemd<span style=color:#f92672>-</span>coredump<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>79</span><span style=color:#f92672>:</span><span style=color:#ae81ff>79</span><span style=color:#f92672>:</span>systemd Core Dumper:<span style=color:#f92672>/:/</span>bin<span style=color:#f92672>/</span>false
+nobody<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>99</span><span style=color:#f92672>:</span><span style=color:#ae81ff>99</span><span style=color:#f92672>:</span>Unprivileged User:<span style=color:#f92672>/</span>dev<span style=color:#f92672>/</span>null:<span style=color:#f92672>/</span>bin<span style=color:#f92672>/</span>false
+EOF	
+</code></pre></div><h3 id=创建组文件>创建组文件</h3><p>　　创建基本用户组，大多数都是系统必须的，步骤如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C>cat <span style=color:#f92672>&gt;</span> <span style=color:#960050;background-color:#1e0010>$</span>{SYSDIR}<span style=color:#f92672>/</span>sysroot<span style=color:#f92672>/</span>etc<span style=color:#f92672>/</span>group <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;EOF&#34;</span>
+root<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>0</span><span style=color:#f92672>:</span>
+bin<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>1</span><span style=color:#f92672>:</span>daemon
+sys<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>2</span><span style=color:#f92672>:</span>
+kmem<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>3</span><span style=color:#f92672>:</span>
+tape<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>4</span><span style=color:#f92672>:</span>
+tty<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>5</span><span style=color:#f92672>:</span>
+daemon<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>6</span><span style=color:#f92672>:</span>
+floppy<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>7</span><span style=color:#f92672>:</span>
+disk<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>8</span><span style=color:#f92672>:</span>
+lp<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>9</span><span style=color:#f92672>:</span>
+dialout<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>10</span><span style=color:#f92672>:</span>
+audio<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>11</span><span style=color:#f92672>:</span>
+video<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>12</span><span style=color:#f92672>:</span>
+utmp<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>13</span><span style=color:#f92672>:</span>
+usb<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>14</span><span style=color:#f92672>:</span>
+cdrom<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>15</span><span style=color:#f92672>:</span>
+adm<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>16</span><span style=color:#f92672>:</span>
+messagebus<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>18</span><span style=color:#f92672>:</span>
+systemd<span style=color:#f92672>-</span>journal<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>23</span><span style=color:#f92672>:</span>
+input<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>24</span><span style=color:#f92672>:</span>
+mail<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>34</span><span style=color:#f92672>:</span>
+sshd<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>50</span><span style=color:#f92672>:</span>
+kvm<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>61</span><span style=color:#f92672>:</span>
+systemd<span style=color:#f92672>-</span>bus<span style=color:#f92672>-</span>proxy<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>72</span><span style=color:#f92672>:</span>
+systemd<span style=color:#f92672>-</span>journal<span style=color:#f92672>-</span>gateway<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>73</span><span style=color:#f92672>:</span>
+systemd<span style=color:#f92672>-</span>journal<span style=color:#f92672>-</span>remote<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>74</span><span style=color:#f92672>:</span>
+systemd<span style=color:#f92672>-</span>journal<span style=color:#f92672>-</span>upload<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>75</span><span style=color:#f92672>:</span>
+systemd<span style=color:#f92672>-</span>network<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>76</span><span style=color:#f92672>:</span>
+systemd<span style=color:#f92672>-</span>resolve<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>77</span><span style=color:#f92672>:</span>
+systemd<span style=color:#f92672>-</span>timesync<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>78</span><span style=color:#f92672>:</span>
+systemd<span style=color:#f92672>-</span>coredump<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>79</span><span style=color:#f92672>:</span>
+saslauth<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>81</span><span style=color:#f92672>:</span>
+wheel<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>97</span><span style=color:#f92672>:</span>
+nogroup<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>99</span><span style=color:#f92672>:</span>
+users<span style=color:#960050;background-color:#1e0010>❌</span><span style=color:#ae81ff>999</span><span style=color:#f92672>:</span>
+EOF
+</code></pre></div><h3 id=创建输入配置文件>创建输入配置文件</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>cat &gt; <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/etc/inputrc &lt;&lt; <span style=color:#e6db74>&#34;EOF&#34;</span>
+set horizontal-scroll-mode Off
+set meta-flag On
+set input-meta On
+set convert-meta Off
+set output-meta On
+set bell-style none
+<span style=color:#e6db74>&#34;\eOd&#34;</span>: backward-word
+<span style=color:#e6db74>&#34;\eOc&#34;</span>: forward-word
+<span style=color:#e6db74>&#34;\e[1~&#34;</span>: beginning-of-line
+<span style=color:#e6db74>&#34;\e[4~&#34;</span>: end-of-line
+<span style=color:#e6db74>&#34;\e[5~&#34;</span>: beginning-of-history
+<span style=color:#e6db74>&#34;\e[6~&#34;</span>: end-of-history
+<span style=color:#e6db74>&#34;\e[3~&#34;</span>: delete-char
+<span style=color:#e6db74>&#34;\e[2~&#34;</span>: quoted-insert
+<span style=color:#e6db74>&#34;\eOH&#34;</span>: beginning-of-line
+<span style=color:#e6db74>&#34;\eOF&#34;</span>: end-of-line
+<span style=color:#e6db74>&#34;\e[H&#34;</span>: beginning-of-line
+<span style=color:#e6db74>&#34;\e[F&#34;</span>: end-of-line
+EOF
+</code></pre></div><p>　　通过创建输入配置文件，可以使终端输入时更加符合常见系统中的习惯，不创建该文件也不会对系统造成影响。</p><h3 id=设置时间文件>设置时间文件</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>cat &gt; <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/etc/adjtime &lt;&lt; <span style=color:#e6db74>&#34;EOF&#34;</span>
+0.0 <span style=color:#ae81ff>0</span> 0.0
+<span style=color:#ae81ff>0</span>
+LOCAL
+EOF
+</code></pre></div><p>　　这里设置为使用BIOS提供的时间，如果使用UTC时间，可以将文件中的“LOCAL”改成“UTC”。</p><h3 id=创建系统信息文件>创建系统信息文件</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>cat &gt; <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/etc/lsb-release &lt;&lt; <span style=color:#e6db74>&#34;EOF&#34;</span>
+DISTRIB_ID<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;My GNU/Linux System for LoongArch64&#34;</span>
+DISTRIB_RELEASE<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;1.0&#34;</span>
+DISTRIB_CODENAME<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;Sun Haiyong&#34;</span>
+DISTRIB_DESCRIPTION<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;My GNU/Linux System&#34;</span>
+EOF
+
+cat &gt; <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/etc/os-release &lt;&lt; <span style=color:#e6db74>&#34;EOF&#34;</span>
+NAME<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;My GNU/Linux System for LoongArch64&#34;</span>
+VERSION<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;1.0&#34;</span>
+ID<span style=color:#f92672>=</span>CLFS4LA64
+PRETTY_NAME<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;My GNU/Linux System for LoongArch64 1.0&#34;</span>
+VERSION_CODENAME<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;Sun Haiyong&#34;</span>
+EOF
+</code></pre></div><h3 id=启动设置>启动设置</h3><h4 id=生成efi文件>生成EFI文件</h4><p>　　生成UEFI的启动文件，用于启动grub，命令如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>-grub-mkimage <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>          --directory <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span><span style=color:#e6db74>/sysroot/usr/lib64/grub/loongarch64-efi&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>          --prefix <span style=color:#e6db74>&#39;(,gpt2)/boot/grub&#39;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>          --output <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span><span style=color:#e6db74>/sysroot/boot/efi/EFI/BOOT/BOOTLOONGARCH.EFI&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>          --format <span style=color:#e6db74>&#39;loongarch64-efi&#39;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>          --compression <span style=color:#e6db74>&#39;auto&#39;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>          <span style=color:#e6db74>&#39;ext2&#39;</span> <span style=color:#e6db74>&#39;part_gpt&#39;</span>
+</code></pre></div><p>　　因为运行的是存放在交叉编译工具目录中的Grub命令，所以根据当时安装的命名规则运行的命令是以<code>${CROSS_TARGET}-</code>开头的。</p><p>　　解释一下上述命令的参数：</p><ul><li><p><code>--directory</code>，该参数指定生成EFI文件所使用模块存放的目录，这里指定的是目标系统存放目录中Grub安装的模块目录。</p></li><li><p><code>--prefix</code>，该参数指定EFI文件读取文件的基础目录，也就是说EFI如果需要读取什么文件的话都以该参数设置的目录作为最基础的目录，这里有一个很重要的参数设置<code>(,gpt2)</code>，这指定的是存储设备的分区，括号中有两个参数，并使用“,”分隔，逗号前的参数是磁盘编号，逗号后的参数是分区编号，我们看到这里没有指定磁盘编号，那么EFI启动后会自动使用启动EFI文件的磁盘编号来代替，而分区编号指定为<code>gpt2</code>,其中“gpt”代表分区类型，这里通常为“gpt”或者“msdos”，“gpt”代表了GPT分区，“msdos”代表了DOS分区，目前GPT分区逐渐成为主流，且UEFI的BIOS也建议分区采用GPT，“gpt”后面的数字代表分区的编号，第一个分区为“1”，第二个分区为“2”，所以这里<code>gpt2</code>代表的是GPT的第二个分区。之所以这样设置是为了方便安装了目标系统的存储设备可以正常的启动，因为通常存放EFI文件的分区和存放与其匹配的Grub启动相关文件的分区都在同一个存储设备上。</p></li><li><p><code>--output</code>，该参数指定生成的EFI文件存放的路径和文件名，这里设置的是目标系统存放目录中的“/boot/efi/EFI/BOOT”，这是按照一个系统被正常挂载后的目录结构，“/boot/efi”目录通常挂载的是第一个分区，也就是EFI分区，在该分区中通常要创建“EFI/BOOT”，因为UEFI的BIOS通常从这个分区的这个目录中载入EFI文件用于启动。“BOOTLOONGARCH.EFI”是LoongArch机器使用的默认查找的启动EFI文件名。</p></li><li><p><code>--format</code>，该参数指定生成文件的格式名，不同架构以及不同启动方式的名字会不同，这里针对LoongArch64的EFI启动方式采用的名称为“loongarch64-efi”。</p></li><li><p><code>--compression 'auto'</code>，该参数指定生成的EFI文件采用的压缩方式，这里设置为<code>auto</code>就可以了，其它的取值还有<code>xz</code>代表用XZ的压缩方式和<code>none</code>代表不进行压缩。</p></li><li><p><code>'ext2' 'part_gpt'</code>,这两个是指定加入到EFI文件中的模块，加入到EFI文件中的模块会自动作为EFI文件启动后能直接使用的功能，而如果没有加入到EFI中则需要通过加载模块的方式才能使用，这里只加入了<code>ext2</code>和<code>part_gpt</code>是因为模块都存放在存储设备中，如果要读取模块就需要能识别存储设备的分区和文件系统，这里<code>part_gpt</code>用来识别存储设备的GPT分区，而<code>ext2</code>则是该分区所使用的文件系统，当这两者与实际的分区和文件系统相匹配的情况下，后续再有什么功能上的需求都可以用加载模块的方式来使用了，这样可以最小化EFI文件的大小，可加快BIOS对EFI文件的加载速度。模块的存放位置由<code>--prefix</code>参数指定的基础目录决定，在这个基础目录中的loongarch64-efi目录就是存放各个模块的目录。</p></li></ul><h4 id=安装grub模块文件>安装Grub模块文件</h4><p>　　生成好EFI文件后，就可以按照生成EFI所设置的目录存放Grub的模块文件了，安装过程如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>ln -sfv . <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/boot/boot
+mkdir <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/boot/<span style=color:#f92672>{</span>grub,efi<span style=color:#f92672>}</span>
+mkdir -pv <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/boot/efi/EFI/BOOT
+cp -a <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/usr/lib64/grub/loongarch64-efi <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot/boot/grub
+</code></pre></div><h2 id=6-处理目标系统>6 处理目标系统</h2><h3 id=清理符号symbol信息>清理符号（symbol）信息</h3><p>　　目前安装到目标系统中的二进制文件大多带有各种符号信息，这些信息不影响执行，但是占用了大量的存储空间，如果没有调试相关的需求，可以将这些信息清理掉以减少存储空间。</p><p>　　清理符号信息可以使用strip命令，但strip必须能够处理目标平台二进制，所以我们可以使用交叉编译工具链中的strip命令来操作，操作步骤如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>pushd <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot
+	find usr/lib<span style=color:#f92672>{</span>,64<span style=color:#f92672>}</span> -type f -name <span style=color:#ae81ff>\*</span>.a -exec <span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>-strip --strip-debug <span style=color:#f92672>{}</span> <span style=color:#e6db74>&#39;;&#39;</span>
+	find usr/lib<span style=color:#f92672>{</span>,64<span style=color:#f92672>}</span> -type f -name <span style=color:#ae81ff>\*</span>.so* -exec <span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>-strip --strip-unneeded <span style=color:#f92672>{}</span> <span style=color:#e6db74>&#39;;&#39;</span>
+	find usr/<span style=color:#f92672>{</span>bin,sbin,libexec<span style=color:#f92672>}</span> -type f -exec <span style=color:#e6db74>${</span>CROSS_TARGET<span style=color:#e6db74>}</span>-strip --strip-all <span style=color:#f92672>{}</span> <span style=color:#e6db74>&#39;;&#39;</span>
+popd
+</code></pre></div><p>　　这里我们发现strip使用的参数有多种，这里简单的说明一下：</p><ul><li><p><code>--strip-debug</code>，仅去掉调试相关的符号信息，该参数适合用于静态库文件，对于链接过程需要的信息是不会去掉的。</p></li><li><p><code>--strip-unneeded</code>，删除所有与重定位无关的所有符号信息，该参数不能用于静态库文件，否则会导致静态链接时无法使用处理过的静态库。</p></li><li><p><code>--strip-all</code>，该参数代表所有能去掉的符号信息都尽量去掉，该参数不建议用于库文件，特别是静态库文件。</p></li></ul><h3 id=打包系统>打包系统</h3><p>　　制作完成后就可以退出制作用户环境了，使用命令:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>exit
+</code></pre></div><p>　　接着可以使用root权限对目标系统进行打包，打包步骤如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>pushd <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/sysroot
+	sudo tar --xattrs-include<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;*&#39;</span> --owner<span style=color:#f92672>=</span>root --group<span style=color:#f92672>=</span>root -cjpf <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>			<span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/loongarch64-clfs-system-1.0.tar.bz2 *
+popd
+</code></pre></div><h2 id=7-创建启动u盘>7 创建启动U盘</h2><p>　　制作好了目标系统后，我们可以尝试启动这个目标系统，借助U盘，我们来制作一个可以启动的简易LiveUSB。</p><h3 id=设置u盘分区>设置U盘分区</h3><p>　　找到一个容量不少于4G的U盘，如果没有进行符号清理，那么建议容量不少于8G，请确保U盘中没有重要和要保留的数据，因为接下来的操作将破坏U盘内原有的数据。</p><p>　　接着给U盘进行分区，建议划分为3个分区，分别是：</p><p>　　第一分区：EFI 分区，文件系统为fat，容量100M即可；</p><p>　　第二分区：boot分区，文件系统为ext2，容量500M即可；</p><p>　　第三分区：根分区，文件系统建议为xfs，剩余容量可以都分给该分区。</p><p>　　假设U盘设备名为<code>sdb</code>,以下为实际制作步骤如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>sudo cfdisk -z /dev/sdb
+</code></pre></div><p>　　该命令将出现交互式操作模式，<code>-z</code>参数将强制进入分区类型选择（这会导致U盘上原有数据全部丢失，请再次确认没有要保留的数据后再继续），这里选择<code>gpt</code>，然后在分区的界面中对U盘按照上述的分区进行，保存退出，此时系统中将有<code>/dev/sdb1</code>、<code>/dev/sdb2</code>和<code>/dev/sdb3</code>这三个分区名，接下来就开始处理这三个分区。</p><p>　　首先，创建一个目录用于制作LiveUSB，命令如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>mkdir /tmp/liveusb
+</code></pre></div><p>　　挂载U盘的第三个分区既根分区到该目录上，命令如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>sudo mount /dev/sdb3 /tmp/liveusb
+</code></pre></div><p>　　然后，创建一个boot分区，用于挂载第二分区既boot分区，命令如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>sudo mkdir /tmp/liveusb/boot
+sudo mount /dev/sdb2 /tmp/liveusb/boot
+</code></pre></div><p>　　接着创建efi分区，用于挂载第一分区既EFI分区，命令如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>sudo mkdir /tmp/liveusb/boot/efi
+sudo mount /dev/sdb1 /tmp/liveusb/boot/efi
+</code></pre></div><p>　　此时USB的分区挂载准备好了，接下来就是将目标系统解压到该目录即可，命令如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>pushd /tmp/liveusb
+    sudo tar -xvpf <span style=color:#e6db74>${</span>SYSDIR<span style=color:#e6db74>}</span>/loongarch64-clfs-system-1.0.tar.bz2
+popd
+</code></pre></div><p>　　解压完目标系统后先不要着急卸载和拔下U盘，因为还需要一些工作。</p><h3 id=制作grub的启动菜单文件>制作Grub的启动菜单文件</h3><p>　　用Grub启动机器后通常会自动加载grub.cfg文件，用来显示启动菜单，以下就是制作一个简单的启动菜单制作步骤：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>pushd /tmp/liveusb
+cat &gt; boot/grub/grub.cfg &lt;&lt; <span style=color:#e6db74>&#34;EOF&#34;</span>
+menuentry <span style=color:#e6db74>&#39;My GNU/Linux System for LoongArch64&#39;</span> <span style=color:#f92672>{</span>
+echo <span style=color:#e6db74>&#39;Loading Linux Kernel ...&#39;</span>
+linux /vmlinux root<span style=color:#f92672>=</span>&lt;PARTUUID&gt; rootdelay<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span> rw
+boot
+<span style=color:#f92672>}</span>
+EOF
+popd
+</code></pre></div><p>　　grub.cfg存放的目录是由生成EFI文件时<code>--prefix</code>参数设置决定的，按照参数设置的目录并命名为grub.cfg即可。</p><p>　　下面简单介绍一下菜单文件的设置内容：</p><ul><li><p><code>menuentry</code>，该设置项设置启动菜单显示的条目，一个条目对应一个<code>menuentry</code>。</p></li><li><p><code>echo</code>，输入内容，就是在屏幕上打印该行的内容。</p></li><li><p><code>linux</code>，加载Linux内核，因当前加载的grub.cfg与Linux内核vmlinux文件在同一个分区，则可以直接使用路径，若不在同一个分区中则需要设置磁盘和分区来指定内核文件路径。后面的<code>root=&lt;PARTUUID> rootdelay=5 rw</code>都是提供给Linux内核启动时的参数：<code>root</code>指定启动根分区名，这里设置了待转换的<code>&lt;PARTUUID></code>，接下来会用到，也可以时用确定的设备名，假定U盘的设备名是sdb，根分区是sdb3，则在可以写成root=/dev/sdb3，当然这里需要根据U盘插入到目标机器上时的设备名进行修改；<code>rootdelay</code>设置等待时间，这通常在用U盘作为启动盘时使用，因为U盘会需要一小段的初始化，如果没有等待会导致找不到设备而启动失败；<code>rw</code>设置根分区按照可读写的方式挂载。</p></li></ul><p>　　当设置根分区为待转换的<code>&lt;PARTUUID></code>时，就需要根据根分区的实际PARTUUID进行替换，替换步骤如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>pushd /tmp/liveusb
+	ROOTPARTUUID<span style=color:#f92672>=</span><span style=color:#66d9ef>$(</span>sudo blkid /dev/sdb3 | awk -F<span style=color:#e6db74>&#39;PARTUUID=&#39;</span> <span style=color:#e6db74>&#39;{ print $2 }&#39;</span><span style=color:#66d9ef>)</span>
+	sed -i <span style=color:#e6db74>&#34;s@&lt;PARTUUID&gt;@PARTUUID=</span><span style=color:#e6db74>${</span>ROOTPARTUUID<span style=color:#e6db74>}</span><span style=color:#e6db74>@g&#34;</span> boot/grub/grub.cfg
+popd
+</code></pre></div><p>　　我们可以看到替换步骤就是通过blkid命令获取到实际分区的“PARTUUID”，“PARTUUID”通常是由5段字母和数字组成的32个字符的字符串，每段字符使用“-”进行链接，例如：b2c2bd57-82e4-1c25-b87a-0e9caf919053。</p><p>　　内核启动时可以通过给root参数传递“PARTUUID”的参数来查找根分区，这样可以使U盘具备更好的通用性。</p><p>　　做到这里，我们基本完成了LiveUSB的制作过程，接下来先卸载U盘：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>sudo umount -R /tmp/liveusb
+</code></pre></div><p>　　umount命令使用‵-R‵参数可以一次行把指定目录中多个挂载都卸载掉。</p><p>　　接下来就可以拔出U盘，然后到龙芯3A5000的机器上去启动一下试试吧。</p><h2 id=附录>附录</h2><h3 id=参考资料>参考资料</h3><p>《用“芯”探索 教你构建龙芯平台的Linux系统》 孙海勇著</p><p>LFS： <a href=https://www.linuxfromscratch.org/lfs/>https://www.linuxfromscratch.org/lfs/</a></p></div><div class="post-copyright mb-4"><h3>版权</h3><div class=post-cc>本作品采用 <a target=_blank rel=license href=https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh>CC BY-NC-ND 4.0 <i class="fab fa-fw fa-creative-commons"></i><i class="fab fa-fw fa-creative-commons-by"></i><i class="fab fa-fw fa-creative-commons-nc"></i><i class="fab fa-fw fa-creative-commons-nd"></i></a>授权。</div></div><div class="post-reward mb-4 text-center"><button type=button class="btn btn-reward" data-toggle=modal data-target=#rewardModal>
+<i class="fas fa-fw fa-medal"></i>打赏</button></div><div class="modal fade" id=rewardModal tabindex=-1 aria-labelledby=rewardModalLabel aria-hidden=true><div class=modal-dialog><div class="modal-content surface"><div class=modal-header><h5 class=modal-title id=rewardModalLabel><i class="fas fa-fw fa-medal"></i>打赏</h5><a href=# data-dismiss=modal aria-label=Close><i class="fas fa-fw fa-times"></i></a></div><div class=modal-body><ul class="nav nav-tabs mb-3" role=tablist><li class=nav-item role=presentation><a class="nav-link active" id=reward-alipay-tab data-toggle=tab href=#reward-alipay role=tab aria-controls=reward-alipay aria-selected=true><i class="fab fa-fw fa-alipay"></i>支付宝</a></li><li class=nav-item role=presentation><a class=nav-link id=reward-wechat-tab data-toggle=tab href=#reward-wechat role=tab aria-controls=reward-wechat aria-selected=true><i class="fab fa-fw fa-weixin"></i>微信</a></li></ul><div class=tab-content id=rewardTabContent><div class="tab-pane fade post-reward-content show active" id=reward-alipay role=tabpanel aria-labelledby=reward-alipay-tab><img class="img-fluid post-reward-img" src=/images/reward/alipay.webp loading=lazy></div><div class="tab-pane fade post-reward-content show" id=reward-wechat role=tabpanel aria-labelledby=reward-wechat-tab><img class="img-fluid post-reward-img" src=/images/reward/wechat.webp loading=lazy></div></div></div></div></div></div><div class="post-navs d-flex mb-3 justify-content-between"><div class="post-nav w-50"><div class=prev-post><a href=/zh-cn/posts/20210508-upstream-community/>2021年一季度社区动态</a></div></div><div class="post-nav flex-row-reverse"><div class=next-post><a href=/zh-cn/posts/20210801-upstream-community/>2021年二季度社区动态</a></div></div></div></article><div class="post-comments surface row"><script src=https://utteranc.es/client.js repo=loongarch64/website issue-term=og:title label theme=github-light crossorigin=anonymous async></script></div></div></div></div></main><footer class="footer mt-auto py-3 text-center container"><nav class="social-links nav my-2 justify-content-center"><li class=nav-item><a class="nav-link social-link" target=_blank href=https://github.com/loongarch64 title=Github><i class="fab fa-fw fa-2x fa-github"></i></a></li><li class=nav-item><a class="nav-link social-link" target=_blank href="http://wpa.qq.com/msgrd?v=3&uin=922566903&site=qq&menu=yes" title=Qq><i class="fab fa-fw fa-2x fa-qq"></i></a></li><li class=nav-item><a class="nav-link social-link" target=_blank href=https://t.me/loongson_users title=Telegram><i class="fab fa-fw fa-2x fa-telegram"></i></a></li></nav><div class="copyright mb-2">Copyright © 2016-2024 Community Team. All Rights Reserved.</div><div class="powered-by mb-2">Powered by <a href=https://gohugo.io target=_blank>Hugo</a> and the <a href=https://github.com/razonyang/hugo-theme-bootstrap target=_blank>Bootstrap</a> theme.</div></footer><a id=btnScrollToTop class=btn-scroll-to-top><i class="fas fa-fw fa-chevron-circle-up fa-2x"></i></a></body></html>

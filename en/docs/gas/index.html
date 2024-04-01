@@ -1,0 +1,145 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=keywords content="Linux,LoongArch,龙芯,龙架构,开放,开源,社区"><title>GNU as user guide - LoongArch Opensource community</title><link rel=apple-touch-icon href=/images/favicons/apple-touch-icon.png sizes=180x180><link rel=icon href=/images/favicons/favicon-32x32.png sizes=32x32 type=image/png><link rel=icon href=/images/favicons/favicon-16x16.png sizes=16x16 type=image/png><link rel=manifest href=/images/favicons/manifest.json><link rel=icon href=/images/favicons/favicon.ico><meta name=description content><meta itemprop=name content="GNU as user guide"><meta itemprop=description content="This file is a user guide to the GNU assembler as (GNU Binutils) version 2.35.
+This document is distributed under the terms of the GNU Free Documentation License. A copy of the license is included in the section entitled “GNU Free Documentation License”."><meta itemprop=datePublished content="2021-01-16T19:39:26+08:00"><meta itemprop=dateModified content="2021-01-16T19:39:26+08:00"><meta itemprop=wordCount content="1509"><meta itemprop=keywords content><meta property="og:title" content="GNU as user guide"><meta property="og:description" content="This file is a user guide to the GNU assembler as (GNU Binutils) version 2.35.
+This document is distributed under the terms of the GNU Free Documentation License. A copy of the license is included in the section entitled “GNU Free Documentation License”."><meta property="og:type" content="article"><meta property="og:url" content="/en/docs/gas/"><meta property="article:published_time" content="2021-01-16T19:39:26+08:00"><meta property="article:modified_time" content="2021-01-16T19:39:26+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="GNU as user guide"><meta name=twitter:description content="This file is a user guide to the GNU assembler as (GNU Binutils) version 2.35.
+This document is distributed under the terms of the GNU Free Documentation License. A copy of the license is included in the section entitled “GNU Free Documentation License”."><meta data-name=palette content="blue"><link rel=stylesheet href=/css/bundle.min.31ae5fde579e9e77d7cd6ec43c26b9999d493df060fca9a54f9da00676116d7c.css integrity="sha256-Ma5f3leennfXzW7EPCa5mZ1JPfBg/KmlT52gBnYRbXw=" crossorigin=anonymous><script src=/js/bundle.min.4f0bf0084c93f18baec18d21035f382e8b666d326b7f3a3fddfab7c6e7566bfc.js integrity="sha256-TwvwCEyT8YuuwY0hA184LotmbTJrfzo/3fq3xudWa/w=" crossorigin=anonymous></script><link rel=stylesheet href=/css/custom.css crossorigin=anonymous></head><body><header><nav class="navbar fixed-top navbar-expand-xl"><div class=container><a class=navbar-brand href=/en/><img class=logo alt=Logo src=/images/logo.png loading=lazy>LoongArch</a>
+<button class=navbar-toggler type=button data-toggle=collapse data-target=#navbarSupportedContent aria-controls=navbarSupportedContent aria-expanded=false aria-label="Toggle navigation">
+<span class=navbar-toggler-icon></span></button><div class="collapse navbar-collapse" id=navbarSupportedContent><ul class="navbar-nav mr-2 mb-2 mb-lg-0"><form class="search-bar d-flex mr-2" action=/en/search><div class="input-group input-group-sm"><button class="btn btn-search disabled position-absolute left-0" type=submit><i class="fas fa-fw fa-search"></i></button>
+<input class="form-control rounded-pill" id=searchQuery name=q type=search aria-label=Search></div></form></ul><ul class="navbar-nav mb-2 mb-lg-0 mr-2 ml-auto"><li class=nav-item><a class=nav-link href=/en/docs/><i class="fa fa-fw fa-book"></i>Documents</a></li><li class=nav-item><a class=nav-link href=/en/archives><i class="fas fa-fw fa-file-archive"></i>Archives</a></li><li class=nav-item><a class=nav-link href=/en/categories><i class="fas fa-fw fa-folder"></i>Categories</a></li><li class=nav-item><a class=nav-link href=/en/tags><i class="fas fa-fw fa-tags"></i>Tags</a></li><li class=nav-item><a class=nav-link href=/en/series><i class="fas fa-fw fa-columns"></i>Series</a></li><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" id=navbarDropdown-about role=button data-toggle=dropdown aria-expanded=false><i class="fa fa-fw fa-user"></i>About</a><ul class=dropdown-menu aria-labelledby=navbarDropdown-about><li><a class=dropdown-item href=https://github.com/loongarch64/ target=_blank><i class="fab fa-fw fa-github"></i>Github</a></li></ul></li></ul><ul class="navbar-nav d-flex flex-row mb-2 mb-lg-0"><li class="nav-item mr-2"><a class=nav-link tabindex=0 data-trigger=click id=languageSwitcher data-toggle=popover data-placement=bottom data-target=#languagesPopoverBody data-html=true><i class="fas fa-fw fa-language"></i></a></li><script type=text/html id=languagesPopoverBody><ul class="languages list-group"><li class="language list-group-item active">English</li><li class="language list-group-item"><a href=/zh-cn/>简体中文</a></li></ul></script><li class="nav-item mr-2"><a class=nav-link tabindex=0 data-trigger=click id=paletteSwitcher data-toggle=popover data-placement=bottom data-target=#palettesPopoverBody data-html=true><i class="fas fa-fw fa-palette"></i></a></li><script type=text/html id=palettesPopoverBody><ul class="palettes list-group"><li id=palette-blue class="palette list-group-item bg-blue"><a>Blue</a></li><li id=palette-blue-gray class="palette list-group-item bg-blue-gray"><a>Blue Gray</a></li><li id=palette-brown class="palette list-group-item bg-brown"><a>Brown</a></li><li id=palette-cyan class="palette list-group-item bg-cyan"><a>Cyan</a></li><li id=palette-green class="palette list-group-item bg-green"><a>Green</a></li><li id=palette-indigo class="palette list-group-item bg-indigo"><a>Indigo</a></li><li id=palette-orange class="palette list-group-item bg-orange"><a>Orange</a></li><li id=palette-pink class="palette list-group-item bg-pink"><a>Pink</a></li><li id=palette-purple class="palette list-group-item bg-purple"><a>Purple</a></li><li id=palette-red class="palette list-group-item bg-red"><a>Red</a></li><li id=palette-teal class="palette list-group-item bg-teal"><a>Teal</a></li><li id=palette-yellow class="palette list-group-item bg-yellow"><a>Yellow</a></li></ul></script><li class="nav-item mr-2"><a class=nav-link tabindex=0 data-trigger=click id=fontSizeSwitcher data-toggle=popover data-placement=bottom data-target=#fontSizesPopoverBody data-html=true><i class="fas fa-fw fa-font"></i></a></li><script type=text/html id=fontSizesPopoverBody><form class=font-size-switcher-form><label for=fontSize class=form-label>Font Size</label>
+<input type=range class=form-range min=-2 max=2 id=fontSize></form></script><form class="mode-switcher-form d-flex align-items-center"><div class="form-check form-switch"><input class=form-check-input type=checkbox id=modeSwitcher></div></form></ul></div></div></nav></header><main role=main class=container><div class="row content"><img class=banner alt=Banner src=/images/banner.jpg loading=lazy></div><div class="row content"><div class=container-fluid><div class=container-fluid><nav class=row aria-label=breadcrumb><ol class="breadcrumb surface"><li class=breadcrumb-item><a href=/en/>Home</a></li><li class=breadcrumb-item><a href=/en/docs/>Documents</a></li><li class="breadcrumb-item active">GNU as user guide</li></ol></nav></div></div><aside class="col-lg-4 sidebar d-flex"><div class=container><div class="accordion accordion-flush surface post-toc position-sticky" id=accordionTOC><div class=accordion-item><div class=accordion-header id=headingTOC data-toggle=collapse data-target=#collapseTOC aria-expanded=true aria-controls=collapseTOC><i class="fas fa-fw fa-bars"></i>Table Of Contents</div><div id=collapseTOC class="accordion-collapse collapse show" aria-labelledby=headingTOC data-parent=#accordionTOC><div class="accordion-body mt-2 docs"><nav id=TableOfContents><ul><li><a href=#overview>Overview</a></li></ul></nav></div></div></div></div></div></aside><div class=col-md-8><div class=container-fluid><article class="post row surface"><h1 class="post-title my-3">GNU as user guide</h1><div class="post-meta mb-3"><span class="post-date mr-2"><i class="fas fa-fw fa-calendar-alt"></i>Jan 16, 2021
+</span><span class="post-reading-time mr-2"><i class="fas fa-fw fa-coffee"></i>8 min read</span><div class="post-translations nav-item dropdown mr-2 d-inline-flex"><a class="nav-link p-0" data-toggle=dropdown href=# role=button aria-haspopup=true aria-expanded=false><i class="fas fa-fw fa-language mr-1"></i>English</a><div class=dropdown-menu><a class="dropdown-item post-translation" href=/zh-cn/docs/gas/>简体中文</a></div></div></div><div class="post-content mb-3"><p>This file is a user guide to the GNU assembler as (GNU Binutils) version 2.35.</p><p>This document is distributed under the terms of the GNU Free Documentation License. A copy of the license is included in the section entitled “GNU Free Documentation License”.</p><h2 id=overview>Overview</h2><p>Here is a brief summary of how to invoke <code>as</code>. For details, see Command-Line Options.</p><p>as [ <strong>-a</strong> [ <strong>cdghlns</strong> ][=file]] [ <strong>- alternate</strong>] [ <strong>-D</strong> ]</p><p>[ <strong>- compress-debug-sections</strong>] [ <strong>- nocompress-debug-sections</strong>]</p><p>[ <strong>- debug-prefix-map</strong> old=new]</p><p>[ <strong>- defsym</strong> sym=val] [ <strong>-f</strong> ] [ <strong>-g</strong> ] [ <strong>- gstabs</strong>]</p><p>[ <strong>- gstabs+</strong>] [ <strong>- gdwarf-</strong>] [ <strong>- gdwarf-sections</strong>]</p><p>[ <strong>- gdwarf-cie-version</strong>=VERSION]</p><p>[ <strong>- help</strong>] [ <strong>-I</strong> dir] [ <strong>-J</strong> ]</p><p>[ <strong>-K</strong> ] [ <strong>-L</strong> ] [ <strong>- listing-lhs-width</strong>=NUM]</p><p>[ <strong>- listing-lhs-width2</strong>=NUM] [ <strong>- listing-rhs-width</strong>=NUM]</p><p>[ <strong>- listing-cont-lines</strong>=NUM] [ <strong>- keep-locals</strong>]</p><p>[ <strong>- no-pad-sections</strong>]</p><p>[ <strong>-o</strong> objfile] [ <strong>-R</strong> ]</p><p>[ <strong>- hash-size</strong>=NUM] [ <strong>- reduce-memory-overheads</strong>]</p><p>[ <strong>- statistics</strong>]</p><p>[ <strong>-v</strong> ] [ <strong>-version</strong> ] [ <strong>- version</strong>]</p><p>[ <strong>-W</strong> ] [ <strong>- warn</strong>] [ <strong>- fatal-warnings</strong>] [ <strong>-w</strong> ] [ <strong>-x</strong> ]</p><p>[ <strong>-Z</strong> ] [ <strong>@ FILE</strong>]</p><p>[ <strong>- sectname-subst</strong>] [ <strong>- size-check=[error|warning]</strong>]</p><p>[ <strong>- elf-stt-common=[no|yes]</strong>]</p><p>[ <strong>- generate-missing-build-notes=[no|yes]</strong>]</p><p>[ <strong>- target-help</strong>] [target-options]</p><p>[ <strong>-</strong> |files …]</p><p><em>Target Loongarch options:</em></p><p>[ <strong>-mabi</strong> =ABI]</p><p><code>@file</code></p><pre><code>Read command-line options from file. The options read are inserted in place of
+the original @file option. If file does not exist, or cannot be read, then the
+option will be treated literally, and not removed.
+
+Options in file are separated by whitespace. A whitespace character may be
+included in an option by surrounding the entire option in either single or
+double quotes. Any character (including a backslash) may be included by
+prefixing the character to be included with a backslash. The file may itself
+contain additional @file options; any such options will be processed
+recursively.
+</code></pre><p><code>-a[cdghlmns]</code></p><pre><code>Turn on listings, in any of a variety of ways:
+</code></pre><p><code>-ac</code></p><pre><code>omit false conditionals
+</code></pre><p><code>-ad</code></p><pre><code>omit debugging directives
+</code></pre><p><code>-ag</code></p><pre><code>include general information, like as version and options passed
+</code></pre><p><code>-ah</code></p><pre><code>include high-level source
+</code></pre><p><code>-al</code></p><pre><code>include assembly
+</code></pre><p><code>-am</code></p><pre><code>include macro expansions
+</code></pre><p><code>-an</code></p><pre><code>omit forms processing
+</code></pre><p><code>-as</code></p><pre><code>include symbols
+</code></pre><p><code>=file</code></p><pre><code>set the name of the listing file
+
+You may combine these options; for example, use '-aln' for assembly listing
+without forms processing. The '=file' option, if used, must be the last one.
+By itself, '-a' defaults to '-ahls'.
+</code></pre><p><code>--alternate</code></p><pre><code>Begin in alternate macro mode. See [`.altmacro`](Altmacro.html#Altmacro).
+</code></pre><p><code>--compress-debug-sections</code></p><pre><code>Compress DWARF debug sections using zlib with SHF_COMPRESSED from the ELF ABI.
+The resulting object file may not be compatible with older linkers and object
+file utilities. Note if compression would make a given section _larger_ then
+it is not compressed.
+</code></pre><p><code>--compress-debug-sections=none</code></p><p><code>--compress-debug-sections=zlib</code></p><p><code>--compress-debug-sections=zlib-gnu</code></p><p><code>--compress-debug-sections=zlib-gabi</code></p><pre><code>These options control how DWARF debug sections are compressed. \--compress-
+debug-sections=none is equivalent to \--nocompress-debug-sections.
+\--compress-debug-sections=zlib and \--compress-debug-sections=zlib-gabi are
+equivalent to \--compress-debug-sections. \--compress-debug-sections=zlib-gnu
+compresses DWARF debug sections using zlib. The debug sections are renamed to
+begin with '.zdebug'. Note if compression would make a given section _larger_
+then it is not compressed nor renamed.
+</code></pre><p><code>--nocompress-debug-sections</code></p><pre><code>Do not compress DWARF debug sections. This is usually the default for all
+targets except the x86/x86_64, but a configure time option can be used to
+override this.
+</code></pre><p><code>-D</code></p><pre><code>Ignored. This option is accepted for script compatibility with calls to other
+assemblers.
+</code></pre><p><code>--debug-prefix-map old=new</code></p><pre><code>When assembling files in directory old, record debugging information
+describing them as in new instead.
+</code></pre><p><code>--defsym sym=value</code></p><pre><code>Define the symbol sym to be value before assembling the input file. value must
+be an integer constant. As in C, a leading '0x' indicates a hexadecimal value,
+and a leading '0' indicates an octal value. The value of the symbol can be
+overridden inside a source file via the use of a `.set` pseudo-op.
+</code></pre><p><code>-f</code></p><pre><code>&quot;fast&quot;--skip whitespace and comment preprocessing (assume source is compiler output).
+</code></pre><p><code>-g</code></p><p><code>--gen-debug</code></p><pre><code>Generate debugging information for each assembler source line using whichever
+debug format is preferred by the target. This currently means either STABS,
+ECOFF or DWARF2.
+</code></pre><p><code>--gstabs</code></p><pre><code>Generate stabs debugging information for each assembler line. This may help
+debugging assembler code, if the debugger can handle it.
+</code></pre><p><code>--gstabs+</code></p><pre><code>Generate stabs debugging information for each assembler line, with GNU
+extensions that probably only gdb can handle, and that could make other
+debuggers crash or refuse to read your program. This may help debugging
+assembler code. Currently the only GNU extension is the location of the
+current working directory at assembling time.
+</code></pre><p><code>--gdwarf-2</code></p><pre><code>Generate DWARF2 debugging information for each assembler line. This may help
+debugging assembler code, if the debugger can handle it. Note--this option is
+only supported by some targets, not all of them.
+</code></pre><p><code>--gdwarf-3</code></p><pre><code>This option is the same as the \--gdwarf-2 option, except that it allows for
+the possibility of the generation of extra debug information as per version 3
+of the DWARF specification. Note - enabling this option does not guarantee the
+generation of any extra infortmation, the choice to do so is on a per target
+basis.
+</code></pre><p><code>--gdwarf-4</code></p><pre><code>This option is the same as the \--gdwarf-2 option, except that it allows for
+the possibility of the generation of extra debug information as per version 4
+of the DWARF specification. Note - enabling this option does not guarantee the
+generation of any extra infortmation, the choice to do so is on a per target
+basis.
+</code></pre><p><code>--gdwarf-5</code></p><pre><code>This option is the same as the \--gdwarf-2 option, except that it allows for
+the possibility of the generation of extra debug information as per version 5
+of the DWARF specification. Note - enabling this option does not guarantee the
+generation of any extra infortmation, the choice to do so is on a per target
+basis.
+</code></pre><p><code>--gdwarf-sections</code></p><pre><code>Instead of creating a .debug_line section, create a series of .debug_line.foo
+sections where foo is the name of the corresponding code section. For example
+a code section called .text.func will have its dwarf line number information
+placed into a section called .debug_line.text.func. If the code section is
+just called .text then debug line section will still be called just
+.debug_line without any suffix.
+</code></pre><p><code>--gdwarf-cie-version=version</code></p><pre><code>Control which version of DWARF Common Information Entries (CIEs) are produced.
+When this flag is not specificed the default is version 1, though some targets
+can modify this default. Other possible values for version are 3 or 4.
+</code></pre><p><code>--size-check=error</code></p><p><code>--size-check=warning</code></p><pre><code>Issue an error or warning for invalid ELF .size directive.
+</code></pre><p><code>--elf-stt-common=no</code></p><p><code>--elf-stt-common=yes</code></p><pre><code>These options control whether the ELF assembler should generate common symbols
+with the `STT_COMMON` type. The default can be controlled by a configure
+option \--enable-elf-stt-common.
+</code></pre><p><code>--generate-missing-build-notes=yes</code></p><p><code>--generate-missing-build-notes=no</code></p><pre><code>These options control whether the ELF assembler should generate GNU Build
+attribute notes if none are present in the input sources. The default can be
+controlled by the \--enable-generate-build-notes configure option.
+</code></pre><p><code>--help</code></p><pre><code>Print a summary of the command-line options and exit.
+</code></pre><p><code>--target-help</code></p><pre><code>Print a summary of all target specific options and exit.
+</code></pre><p><code>-I dir</code></p><pre><code>Add directory dir to the search list for `.include` directives.
+</code></pre><p><code>-J</code></p><pre><code>Don't warn about signed overflow.
+</code></pre><p><code>-K</code></p><pre><code>Issue warnings when difference tables altered for long displacements.
+</code></pre><p><code>-L</code></p><p><code>--keep-locals</code></p><pre><code>Keep (in the symbol table) local symbols. These symbols start with system-
+specific local label prefixes, typically '.L' for ELF systems or 'L' for
+traditional a.out systems. See [Symbol Names](Symbol-Names.html#Symbol-Names).
+</code></pre><p><code>--listing-lhs-width=number</code></p><pre><code>Set the maximum width, in words, of the output data column for an assembler
+listing to number.
+</code></pre><p><code>--listing-lhs-width2=number</code></p><pre><code>Set the maximum width, in words, of the output data column for continuation
+lines in an assembler listing to number.
+</code></pre><p><code>--listing-rhs-width=number</code></p><pre><code>Set the maximum width of an input source line, as displayed in a listing, to
+number bytes.
+</code></pre><p><code>--listing-cont-lines=number</code></p><pre><code>Set the maximum number of lines printed in a listing for a single line of
+input to number \+ 1.
+</code></pre><p><code>--no-pad-sections</code></p><pre><code>Stop the assembler for padding the ends of output sections to the alignment of
+that section. The default is to pad the sections, but this can waste space
+which might be needed on targets which have tight memory constraints.
+</code></pre><p><code>-o objfile</code></p><pre><code>Name the object-file output from `as` objfile.
+</code></pre><p><code>-R</code></p><pre><code>Fold the data section into the text section.
+</code></pre><p><code>--hash-size=number</code></p><pre><code>Set the default size of GAS's hash tables to a prime number close to number.
+Increasing this value can reduce the length of time it takes the assembler to
+perform its tasks, at the expense of increasing the assembler's memory
+requirements. Similarly reducing this value can reduce the memory requirements
+at the expense of speed.
+</code></pre><p><code>--reduce-memory-overheads</code></p><pre><code>This option reduces GAS's memory requirements, at the expense of making the
+assembly processes slower. Currently this switch is a synonym for '\--hash-
+size=4051', but in the future it may have other effects as well.
+</code></pre><p><code>--sectname-subst</code></p><pre><code>Honor substitution sequences in section names. See [`.section
+name`](Section.html#Section-Name-Substitutions).
+</code></pre><p><code>--statistics</code></p><pre><code>Print the maximum space (in bytes) and total time (in seconds) used by
+assembly.
+</code></pre><p><code>--strip-local-absolute</code></p><pre><code>Remove local absolute symbols from the outgoing symbol table.
+</code></pre><p><code>-v</code></p><p><code>-version</code></p><pre><code>Print the `as` version.
+</code></pre><p><code>--version</code></p><pre><code>Print the `as` version and exit.
+</code></pre><p><code>-W</code></p><p><code>--no-warn</code></p><pre><code>Suppress warning messages.
+</code></pre><p><code>--fatal-warnings</code></p><pre><code>Treat warnings as errors.
+</code></pre><p><code>--warn</code></p><pre><code>Don't suppress warning messages or treat them as errors.
+</code></pre><p><code>-w</code></p><pre><code>Ignored.
+</code></pre><p><code>-x</code></p><pre><code>Ignored.
+</code></pre><p><code>-Z</code></p><pre><code>Generate an object file even after errors.
+</code></pre><p><code>-- | files …</code></p><pre><code>Standard input, or source files to assemble.
+</code></pre></div><div class="post-copyright mb-4"><h3>Copyright</h3><div class=post-cc>This work is licensed under <a target=_blank rel=license href=https://creativecommons.org/licenses/by-nc-nd/4.0/deed.en>CC BY-NC-ND 4.0 <i class="fab fa-fw fa-creative-commons"></i><i class="fab fa-fw fa-creative-commons-by"></i><i class="fab fa-fw fa-creative-commons-nc"></i><i class="fab fa-fw fa-creative-commons-nd"></i></a>.</div></div><div class="post-reward mb-4 text-center"><button type=button class="btn btn-reward" data-toggle=modal data-target=#rewardModal>
+<i class="fas fa-fw fa-medal"></i>Reward</button></div><div class="modal fade" id=rewardModal tabindex=-1 aria-labelledby=rewardModalLabel aria-hidden=true><div class=modal-dialog><div class="modal-content surface"><div class=modal-header><h5 class=modal-title id=rewardModalLabel><i class="fas fa-fw fa-medal"></i>Reward</h5><a href=# data-dismiss=modal aria-label=Close><i class="fas fa-fw fa-times"></i></a></div><div class=modal-body><ul class="nav nav-tabs mb-3" role=tablist><li class=nav-item role=presentation><a class="nav-link active" id=reward-alipay-tab data-toggle=tab href=#reward-alipay role=tab aria-controls=reward-alipay aria-selected=true><i class="fab fa-fw fa-alipay"></i>Alipay</a></li><li class=nav-item role=presentation><a class=nav-link id=reward-wechat-tab data-toggle=tab href=#reward-wechat role=tab aria-controls=reward-wechat aria-selected=true><i class="fab fa-fw fa-weixin"></i>WeChat</a></li></ul><div class=tab-content id=rewardTabContent><div class="tab-pane fade post-reward-content show active" id=reward-alipay role=tabpanel aria-labelledby=reward-alipay-tab><img class="img-fluid post-reward-img" src=/images/reward/alipay.webp loading=lazy></div><div class="tab-pane fade post-reward-content show" id=reward-wechat role=tabpanel aria-labelledby=reward-wechat-tab><img class="img-fluid post-reward-img" src=/images/reward/wechat.webp loading=lazy></div></div></div></div></div></div><div class="post-navs d-flex mb-3 justify-content-between"><div class="post-nav w-50"><div class=prev-post><a href=/en/hello/>Hello</a></div></div><div class="post-nav flex-row-reverse"></div></div></article><div class="post-comments surface row"><script src=https://utteranc.es/client.js repo=loongarch64/website issue-term=og:title label theme=github-light crossorigin=anonymous async></script></div></div></div></div></main><footer class="footer mt-auto py-3 text-center container"><nav class="social-links nav my-2 justify-content-center"><li class=nav-item><a class="nav-link social-link" target=_blank href=https://github.com/loongarch64 title=Github><i class="fab fa-fw fa-2x fa-github"></i></a></li><li class=nav-item><a class="nav-link social-link" target=_blank href="http://wpa.qq.com/msgrd?v=3&uin=922566903&site=qq&menu=yes" title=Qq><i class="fab fa-fw fa-2x fa-qq"></i></a></li><li class=nav-item><a class="nav-link social-link" target=_blank href=https://t.me/loongson_users title=Telegram><i class="fab fa-fw fa-2x fa-telegram"></i></a></li></nav><div class="copyright mb-2">Copyright © 2016-2024 Community Team. All Rights Reserved.</div><div class="powered-by mb-2">Powered by <a href=https://gohugo.io target=_blank>Hugo</a> and the <a href=https://github.com/razonyang/hugo-theme-bootstrap target=_blank>Bootstrap</a> theme.</div></footer><a id=btnScrollToTop class=btn-scroll-to-top><i class="fas fa-fw fa-chevron-circle-up fa-2x"></i></a></body></html>

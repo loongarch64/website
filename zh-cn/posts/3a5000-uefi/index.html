@@ -1,0 +1,341 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=keywords content="Linux,LoongArch,龙芯,龙架构,开放,开源,社区"><title>3A5000之UEFI - LoongArch 开放社区</title><link rel=apple-touch-icon href=/images/favicons/apple-touch-icon.png sizes=180x180><link rel=icon href=/images/favicons/favicon-32x32.png sizes=32x32 type=image/png><link rel=icon href=/images/favicons/favicon-16x16.png sizes=16x16 type=image/png><link rel=manifest href=/images/favicons/manifest.json><link rel=icon href=/images/favicons/favicon.ico><meta name=description content="在3A5000上使用UEFI"><meta itemprop=name content="3A5000之UEFI"><meta itemprop=description content="在3A5000上使用UEFI"><meta itemprop=datePublished content="2021-09-26T15:20:00+08:00"><meta itemprop=dateModified content="2021-09-26T15:20:00+08:00"><meta itemprop=wordCount content="4055"><meta itemprop=keywords content="新闻,"><meta property="og:title" content="3A5000之UEFI"><meta property="og:description" content="在3A5000上使用UEFI"><meta property="og:type" content="article"><meta property="og:url" content="/zh-cn/posts/3a5000-uefi/"><meta property="article:published_time" content="2021-09-26T15:20:00+08:00"><meta property="article:modified_time" content="2021-09-26T15:20:00+08:00"><meta property="og:site_name" content="LoongArch 开放社区"><meta name=twitter:card content="summary"><meta name=twitter:title content="3A5000之UEFI"><meta name=twitter:description content="在3A5000上使用UEFI"><meta data-name=palette content="blue"><link rel=stylesheet href=/css/bundle.min.31ae5fde579e9e77d7cd6ec43c26b9999d493df060fca9a54f9da00676116d7c.css integrity="sha256-Ma5f3leennfXzW7EPCa5mZ1JPfBg/KmlT52gBnYRbXw=" crossorigin=anonymous><script src=/js/bundle.min.4f0bf0084c93f18baec18d21035f382e8b666d326b7f3a3fddfab7c6e7566bfc.js integrity="sha256-TwvwCEyT8YuuwY0hA184LotmbTJrfzo/3fq3xudWa/w=" crossorigin=anonymous></script><link rel=stylesheet href=/css/custom.css crossorigin=anonymous></head><body><header><nav class="navbar fixed-top navbar-expand-xl"><div class=container><a class=navbar-brand href=/zh-cn/><img class=logo alt=Logo src=/images/logo.png loading=lazy>LoongArch</a>
+<button class=navbar-toggler type=button data-toggle=collapse data-target=#navbarSupportedContent aria-controls=navbarSupportedContent aria-expanded=false aria-label="Toggle navigation">
+<span class=navbar-toggler-icon></span></button><div class="collapse navbar-collapse" id=navbarSupportedContent><ul class="navbar-nav mr-2 mb-2 mb-lg-0"><form class="search-bar d-flex mr-2" action=/zh-cn/search><div class="input-group input-group-sm"><button class="btn btn-search disabled position-absolute left-0" type=submit><i class="fas fa-fw fa-search"></i></button>
+<input class="form-control rounded-pill" id=searchQuery name=q type=search aria-label=Search></div></form></ul><ul class="navbar-nav mb-2 mb-lg-0 mr-2 ml-auto"><li class=nav-item><a class=nav-link href=/zh-cn/docs/><i class="fa fa-fw fa-book"></i>文档</a></li><li class=nav-item><a class=nav-link href=/zh-cn/archives><i class="fas fa-fw fa-file-archive"></i>归档</a></li><li class=nav-item><a class=nav-link href=/zh-cn/categories><i class="fas fa-fw fa-folder"></i>分类</a></li><li class=nav-item><a class=nav-link href=/zh-cn/tags><i class="fas fa-fw fa-tags"></i>标签</a></li><li class=nav-item><a class=nav-link href=/zh-cn/series><i class="fas fa-fw fa-columns"></i>专栏</a></li><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" id=navbarDropdown-distro role=button data-toggle=dropdown aria-expanded=false><i class="fa fa-fw fa-bars"></i>发行版</a><ul class=dropdown-menu aria-labelledby=navbarDropdown-distro><li><a class=dropdown-item href=https://loongarchlinux.org target=_blank>ArchLinux</a></li><li><a class=dropdown-item href=https://github.com/sunhaiyong1978/CLFS-for-LoongArch target=_blank>CLFS</a></li><li><a class=dropdown-item href=https://gentoo.org/ target=_blank>Gentoo</a></li><li><a class=dropdown-item href=http://slackwarecn.github.io/ target=_blank>Slackware</a></li></ul></li><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" id=navbarDropdown-about role=button data-toggle=dropdown aria-expanded=false><i class="fa fa-fw fa-user"></i>关于</a><ul class=dropdown-menu aria-labelledby=navbarDropdown-about><li><a class=dropdown-item href=https://github.com/loongarch64/ target=_blank><i class="fab fa-fw fa-github"></i>Github</a></li><li><a class=dropdown-item href=/zh-cn/pages/about/><i class="fa fa-fw fa-user"></i>关于本站</a></li></ul></li></ul><ul class="navbar-nav d-flex flex-row mb-2 mb-lg-0"><li class="nav-item mr-2"><a class=nav-link tabindex=0 data-trigger=click id=languageSwitcher data-toggle=popover data-placement=bottom data-target=#languagesPopoverBody data-html=true><i class="fas fa-fw fa-language"></i></a></li><script type=text/html id=languagesPopoverBody><ul class="languages list-group"><li class="language list-group-item"><a href=/en/>English</a></li><li class="language list-group-item active">简体中文</li></ul></script><li class="nav-item mr-2"><a class=nav-link tabindex=0 data-trigger=click id=paletteSwitcher data-toggle=popover data-placement=bottom data-target=#palettesPopoverBody data-html=true><i class="fas fa-fw fa-palette"></i></a></li><script type=text/html id=palettesPopoverBody><ul class="palettes list-group"><li id=palette-blue class="palette list-group-item bg-blue"><a>蓝色</a></li><li id=palette-blue-gray class="palette list-group-item bg-blue-gray"><a>蓝灰色</a></li><li id=palette-brown class="palette list-group-item bg-brown"><a>棕色</a></li><li id=palette-cyan class="palette list-group-item bg-cyan"><a>青色</a></li><li id=palette-green class="palette list-group-item bg-green"><a>绿色</a></li><li id=palette-indigo class="palette list-group-item bg-indigo"><a>靛青色</a></li><li id=palette-orange class="palette list-group-item bg-orange"><a>橙色</a></li><li id=palette-pink class="palette list-group-item bg-pink"><a>粉色</a></li><li id=palette-purple class="palette list-group-item bg-purple"><a>紫色</a></li><li id=palette-red class="palette list-group-item bg-red"><a>红色</a></li><li id=palette-teal class="palette list-group-item bg-teal"><a>蓝绿色</a></li><li id=palette-yellow class="palette list-group-item bg-yellow"><a>黄色</a></li></ul></script><li class="nav-item mr-2"><a class=nav-link tabindex=0 data-trigger=click id=fontSizeSwitcher data-toggle=popover data-placement=bottom data-target=#fontSizesPopoverBody data-html=true><i class="fas fa-fw fa-font"></i></a></li><script type=text/html id=fontSizesPopoverBody><form class=font-size-switcher-form><label for=fontSize class=form-label>字体大小</label>
+<input type=range class=form-range min=-2 max=2 id=fontSize></form></script><form class="mode-switcher-form d-flex align-items-center"><div class="form-check form-switch"><input class=form-check-input type=checkbox id=modeSwitcher></div></form></ul></div></div></nav></header><main role=main class=container><div class="row content"><img class=banner alt=Banner src=/images/banner.jpg loading=lazy></div><div class="row content"><div class=col-md-8><div class=container><nav class=row aria-label=breadcrumb><ol class="breadcrumb surface"><li class=breadcrumb-item><a href=/zh-cn/>主页</a></li><li class=breadcrumb-item><a href=/zh-cn/posts/>文章</a></li><li class="breadcrumb-item active">3A5000之UEFI</li></ol></nav><article class="post row surface"><h1 class="post-title my-3">3A5000之UEFI</h1><div class="post-meta mb-3"><span class="post-date mr-2"><i class="fas fa-fw fa-calendar-alt"></i>2021-09-26
+</span><span class="post-reading-author mr-2"><i class="fas fa-fw fa-user"></i>武校田
+</span><span class="post-reading-time mr-2"><i class="fas fa-fw fa-coffee"></i>9 分钟阅读</span>
+<a href=/zh-cn/categories/%E5%9B%BA%E4%BB%B6/ class=post-taxonomy>#固件</a><a href=/zh-cn/categories/uefi/ class=post-taxonomy>#UEFI</a><a href=/zh-cn/tags/%E6%96%B0%E9%97%BB/ class=post-taxonomy>#新闻</a></div><div class="accordion accordion-flush surface post-toc position-sticky" id=accordionTOC><div class=accordion-item><div class=accordion-header id=headingTOC data-toggle=collapse data-target=#collapseTOC aria-expanded=true aria-controls=collapseTOC><i class="fas fa-fw fa-bars"></i>目录</div><div id=collapseTOC class="accordion-collapse collapse" aria-labelledby=headingTOC data-parent=#accordionTOC><div class="accordion-body mt-2"><nav id=TableOfContents><ul><li><a href=#简介>简介</a></li><li><a href=#gpt-分区表>GPT 分区表</a></li><li><a href=#efi-系统分区>EFI 系统分区</a></li><li><a href=#固件启动项>固件启动项</a></li><li><a href=#uefi-shell>UEFI Shell</a></li><li><a href=#操作系统支持>操作系统支持</a></li><li><a href=#helloworld-应用>helloworld 应用</a></li><li><a href=#startupnsh-脚本>startup.nsh 脚本</a></li></ul></nav></div></div></div></div><div class="post-content mb-3"><p>经过两年的开发，龙芯平台的固件已经实现了 UEFI 规范，从 3A5000 开始默认使用支持 UEFI 的固件。</p><h2 id=简介>简介</h2><p>UEFI(统一可扩展固件接口)，英文全称为 Unified Extensible Firmware Interface，是一种个人电脑系统规格，用来定义操作系统与系统固件之间的软件界面，作为 BIOS 的替代方案。可扩展固件接口负责加电自检（POST）、联系操作系统以及提供连接操作系统与硬件的接口。</p><p>UEFI 的前身是 Intel 在1998年开始开发的 Intel Boot Initiative，后来被重命名为可扩展固件接口（Extensible Firmware Interface，缩写EFI）。Intel在2005年将其交由统一可扩展固件接口论坛（Unified EFI Forum）来推广与发展，为了凸显这一点，EFI 也更名为UEFI（Unified EFI）。UEFI 论坛的创始者是11家知名电脑公司，包括 Intel、IBM 等硬件厂商，软件厂商 Microsoft，及 BIOS 厂商 AMI、Insyde 及 Phoenix。</p><p>目前主流的电脑都已经提供支持 UEFI 的固件，龙芯从 2018 年开始对edk2进行移植，并在3A4000上进行了试验性使用，从 3A5000 开始，将默认使用支持 UEFI 的固件。</p><h2 id=gpt-分区表>GPT 分区表</h2><p>GPT: GUID（Globals Unique Identifiers）Partition Table 全局唯一标识，是一个较新的分区机制，解决了MBR很多缺点。</p><p>使用128位 UUID 表示磁盘和分区 GPT 分区表自动备份在头和尾两份，并有CRC校验位</p><p>支持超过2T的磁盘（64位寻址空间），使用64位，支持128个分区，支持8Z（512Byte/block ）64Z（4096Byte/block）。fdisk 最大只能建立2TB大小的分区，创建一个大于2TB的分区使用 parted，gdisk 分区工具。</p><p>特点：</p><ul><li>向后兼容MBR</li><li>必须在支持 UEFI 的硬件上才能使用（Intel提出，用于取代BIOS）</li><li>必须使用64位系统</li><li>Mac、Linux 系统都能支持 GPT 分区格式</li><li>Windows 7/8 64bit、Windows Server 2008 64bit 支持 GPT</li></ul><p>要使用 UEFI，硬盘需要使用 GPT 分区表。</p><h2 id=efi-系统分区>EFI 系统分区</h2><p>UEFI规范里，在GPT分区表的基础上，规定了一个EFI系统分区（EFI System Partition，ESP），ESP要格式化成FAT32，EFI启动文件要放在 <code>&lt;esp分区>/EFI</code> 目录下面。</p><p>在龙芯固件中，默认的EFI文件加载路径是 <code>&lt;esp>/EFI/BOOT/BOOTLOONGARCH64.EFI</code>，当写入固件的启动项失败时，可以将 efi 文件放在这个路径，以让固件自动加载。</p><p><strong>注：</strong></p><p>未提交上游的旧固件版本，默认的EFI文件加载路径是 <code>&lt;esp>/EFI/BOOT/BOOTLOONGARCH.EFI</code>。</p><p>EFI 系统分区，通过挂载在 <code>/boot/efi</code> 目录中：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>/dev/sda1 on /boot/efi type vfat <span style=color:#f92672>(</span>rw,relatime,fmask<span style=color:#f92672>=</span>0022,dmask<span style=color:#f92672>=</span>0022,codepage<span style=color:#f92672>=</span>936,iocharset<span style=color:#f92672>=</span>cp936,shortname<span style=color:#f92672>=</span>mixed,utf8,errors<span style=color:#f92672>=</span>remount-ro<span style=color:#f92672>)</span>
+</code></pre></div><h2 id=固件启动项>固件启动项</h2><p>启动过程中，当显示红色 LOONSON 界面时，按下F12键，会出现固件启动项：</p><pre><code>/-----------------------------------\
+|    Please select boot device:     |
+|-----------------------------------|
+| arch                              |
+| rEFInd Boot Manager               |
+| UEFI S5170-256                    |
+| UEFI Shell                        |
+| Enter Setup                       |
+|-----------------------------------|
+|     ^ and v to move selection     |
+|    ENTER to select boot device    |
+|            ESC to exit            |
+\-----------------------------------/
+</code></pre><p>选择 <code>arch</code> 将进入 grub，(Archlinux发行版会修改grub安装后的名称)。</p><p>选择 <code>rEFInd Boot Managerarch</code> 将进入refind界面。</p><p>选择 <code>UEFI S5170-256</code> 将加载硬盘上的默认efi文件。</p><p>选择 <code>UEFI Shell</code> 将进入固件交互命令行界面。</p><p>选择 <code>Enter Setup</code> 将进入固件设置界面。</p><h2 id=uefi-shell>UEFI Shell</h2><ul><li><strong>help</strong>: 显示内置到 UEFI Shell 的命令列表。</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>Shell&gt; help
+alias         - Displays, creates, or deletes UEFI Shell aliases.
+attrib        - Displays or modifies the attributes of files or directories.
+bcfg          - Manages the boot and driver options that are stored in NVRAM.
+cd            - Displays or changes the current directory.
+cls           - Clears the console output and optionally changes the background and foreground color.
+comp          - Compares the contents of two files on a byte-for-byte basis.
+connect       - Binds a driver to a specific device and starts the driver.
+cp            - Copies one or more files or directories to another location.
+date          - Displays and sets the current date <span style=color:#66d9ef>for</span> the system.
+dblk          - Displays one or more blocks from a block device.
+devices       - Displays the list of devices managed by UEFI drivers.
+devtree       - Displays the UEFI Driver Model compliant device tree.
+dh            - Displays the device handles in the UEFI environment.
+disconnect    - Disconnects one or more drivers from the specified devices.
+dmem          - Displays the contents of system or device memory.
+dmpstore      - Manages all UEFI variables.
+drivers       - Displays the UEFI driver list.
+drvcfg        - Invokes the driver configuration.
+drvdiag       - Invokes the Driver Diagnostics Protocol.
+echo          - Controls script file command echoing or displays a message.
+edit          - Provides a full screen text editor <span style=color:#66d9ef>for</span> ASCII or UCS-2 files.
+eficompress   - Compresses a file using UEFI Compression Algorithm.
+efidecompress - Decompresses a file using UEFI Decompression Algorithm.
+<span style=color:#66d9ef>else</span>          - Identifies the code executed when <span style=color:#e6db74>&#39;if&#39;</span> is FALSE.
+endfor        - Ends a <span style=color:#e6db74>&#39;for&#39;</span> loop.
+endif         - Ends the block of a script controlled by an <span style=color:#e6db74>&#39;if&#39;</span> statement.
+exit          - Exits the UEFI Shell or the current script.
+<span style=color:#66d9ef>for</span>           - Starts a loop based on <span style=color:#e6db74>&#39;for&#39;</span> syntax.
+getmtc        - Gets the MTC from BootServices and displays it.
+goto          - Moves around the point of execution in a script.
+help          - Displays the UEFI Shell command list or verbose command help.
+hexedit       - Provides a full screen hex editor <span style=color:#66d9ef>for</span> files, block devices, or memory.
+<span style=color:#66d9ef>if</span>            - Executes commands in specified conditions.
+ifconfig      - Modifies the default IP address of the UEFI IPv4 Network Stack.
+load          - Loads a UEFI driver into memory.
+loadpcirom    - Loads a PCI Option ROM.
+ls            - Lists the contents of a directory or file information.
+map           - Displays or defines file system mappings.
+memmap        - Displays the memory map maintained by the UEFI environment.
+mkdir         - Creates one or more new directories.
+mm            - Displays or modifies MEM/MMIO/IO/PCI/PCIE address space.
+mode          - Displays or changes the console output device mode.
+mv            - Moves one or more files to a destination within or between file systems.
+openinfo      - Displays the protocols and agents associated with a handle.
+parse         - Retrieves a value from a standard format output file.
+pause         - Pauses a script and waits <span style=color:#66d9ef>for</span> an operator to press a key.
+pci           - Displays PCI device list or PCI <span style=color:#66d9ef>function</span> configuration space and PCIe extended
+configuration space.
+pcieswitch    - PCIE signal test switch.
+pcietest      - PCIE signal test.
+ping          - Ping the target host with an IPv4 stack.
+reconnect     - Reconnects drivers to the specific device.
+reset         - Resets the system.
+rm            - Deletes one or more files or directories.
+rtcWakeup     - Test rtc wakeup after Shutdown.
+run           - Load and run the linux kernal.
+satatest      - SATA signal test.
+sermode       - Sets serial port attributes.
+set           - Displays or modifies UEFI Shell environment variables.
+setsize       - Adjusts the size of a file.
+setvar        - Displays or modifies a UEFI variable.
+shift         - Shifts in-script parameter positions.
+smbiosview    - Displays SMBIOS information.
+spi           - Read or write spi flash.
+stall         - Stalls the operation <span style=color:#66d9ef>for</span> a specified number of microseconds.
+time          - Displays or sets the current time <span style=color:#66d9ef>for</span> the system.
+timezone      - Displays or sets time zone information.
+touch         - Updates the filename timestamp with the current system date and time.
+type          - Sends the contents of a file to the standard output device.
+unload        - Unloads a driver image that was already loaded.
+usbtest       - USB signal test.
+ver           - Displays UEFI Firmware version information.
+vers          - Displays Loongson UEFI build version information.
+vol           - Displays or modifies information about a disk volume.
+</code></pre></div><p>常用命令说明：</p><ul><li><strong>set</strong>: 创建、显示、更改或删除 UEFI Shell 环境变量。</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>Shell&gt; set
+    path <span style=color:#f92672>=</span> FS0:<span style=color:#ae81ff>\e</span>fi<span style=color:#ae81ff>\t</span>ools<span style=color:#ae81ff>\;</span>FS0:<span style=color:#ae81ff>\e</span>fi<span style=color:#ae81ff>\b</span>oot<span style=color:#ae81ff>\;</span>FS0:<span style=color:#ae81ff>\;</span>FS1:<span style=color:#ae81ff>\e</span>fi<span style=color:#ae81ff>\t</span>ools<span style=color:#ae81ff>\;</span>FS1:<span style=color:#ae81ff>\e</span>fi<span style=color:#ae81ff>\b</span>oot<span style=color:#ae81ff>\;</span>FS1:<span style=color:#ae81ff>\;</span>FS2:<span style=color:#ae81ff>\e</span>fi<span style=color:#ae81ff>\t</span>ools<span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>;FS2:<span style=color:#ae81ff>\e</span>fi<span style=color:#ae81ff>\b</span>oot<span style=color:#ae81ff>\;</span>FS2:<span style=color:#ae81ff>\;</span>FS3:<span style=color:#ae81ff>\e</span>fi<span style=color:#ae81ff>\t</span>ools<span style=color:#ae81ff>\;</span>FS3:<span style=color:#ae81ff>\e</span>fi<span style=color:#ae81ff>\b</span>oot<span style=color:#ae81ff>\;</span>FS3:<span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>nonesting <span style=color:#f92672>=</span> False
+debuglasterror <span style=color:#f92672>=</span> 0x0
+lasterror <span style=color:#f92672>=</span> 0x0
+profiles <span style=color:#f92672>=</span> ;Driver1;Debug1;network1;spi;signal test;LoongsonTest;vers;
+uefishellsupport <span style=color:#f92672>=</span> <span style=color:#ae81ff>3</span>
+uefishellversion <span style=color:#f92672>=</span> 2.2
+uefiversion <span style=color:#f92672>=</span> 2.70
+</code></pre></div><ul><li><strong>ver</strong>: 显示固件版本信息</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>Shell&gt; ver
+UEFI Interactive Shell v2.2
+EDK II
+UEFI v2.70 <span style=color:#f92672>(</span>EDK II, 0x00010000<span style=color:#f92672>)</span>
+</code></pre></div><ul><li><strong>cd</strong>: 显示或更改当前目录。</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>Shell&gt; help cd
+Displays or changes the current directory.
+
+CD <span style=color:#f92672>[</span>path<span style=color:#f92672>]</span>
+
+  path - Specifies the relative or absolute directory path.
+
+NOTES:
+  1. This command changes the current working directory that is used by the
+     UEFI Shell environment. If a file system mapping is specified, <span style=color:#66d9ef>then</span> the
+     current working directory is changed <span style=color:#66d9ef>for</span> that device. Otherwise, the
+     current working directory is changed <span style=color:#66d9ef>for</span> the current device.
+  2. If path is not present, <span style=color:#66d9ef>then</span> the current working directory <span style=color:#f92672>(</span>including
+     file system mapping<span style=color:#f92672>)</span> is displayed to standard out.
+  3. The table below describes the conventions that are used to refer to the
+     directory, its parent, and the root directory in the UEFI Shell
+     environment.
+     Convention  Description
+      <span style=color:#e6db74>&#39;.&#39;</span>        Refers to the current directory.
+      <span style=color:#e6db74>&#39;..&#39;</span>       Refers to the directory<span style=color:#e6db74>&#39;s parent.
+</span><span style=color:#e6db74>      &#39;</span><span style=color:#ae81ff>\&#39;</span>        Refers to the root of the current file system.
+  4. The current working directory is maintained in the environment
+     variable %cwd%.
+
+EXAMPLES:
+  * 将当前文件系统变为映射的 fs0 文件系统：
+    Shell&gt; fs0:
+
+  * 将当前目录变为 efi 子目录：
+    fs0:<span style=color:#ae81ff>\&gt;</span> cd efi
+
+  * 将当前目录变为父目录 <span style=color:#f92672>(</span>fs0:<span style=color:#ae81ff>\)</span>:
+    fs0:<span style=color:#ae81ff>\e</span>fi<span style=color:#ae81ff>\&gt;</span> cd ..
+
+  * 将当前目录变为 <span style=color:#e6db74>&#39;fs0:\efi\Tools&#39;</span>:
+    fs0:<span style=color:#ae81ff>\&gt;</span> cd efi<span style=color:#ae81ff>\T</span>ools
+
+  * 将当前目录变为当前 fs 的根目录 <span style=color:#f92672>(</span>fs0<span style=color:#f92672>)</span>:
+    fs0:<span style=color:#ae81ff>\e</span>fi<span style=color:#ae81ff>\T</span>ools<span style=color:#ae81ff>\&gt;</span> cd <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>Shell&gt;
+</code></pre></div><ul><li><strong>reset</strong>: 重启或关机</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>Shell&gt; help reset
+Resets the system.
+
+RESET <span style=color:#f92672>[</span>-w <span style=color:#f92672>[</span>string<span style=color:#f92672>]]</span>
+RESET <span style=color:#f92672>[</span>-s <span style=color:#f92672>[</span>string<span style=color:#f92672>]]</span>
+RESET <span style=color:#f92672>[</span>-c <span style=color:#f92672>[</span>string<span style=color:#f92672>]]</span>
+
+  -s     - 关机
+  -w     - 热启动
+  -c     - 冷启动
+  string - 给出一个原因并重启
+
+NOTES:
+  1. This command resets the system.
+  2. The default is to perform a cold reset unless the -w parameter is
+     specified.
+  3. If a reset string is specified, it is passed into the Reset<span style=color:#f92672>()</span>
+     <span style=color:#66d9ef>function</span>, and the system records the reason <span style=color:#66d9ef>for</span> the system reset.
+</code></pre></div><ul><li><strong>spi</strong>: 固件刷新</li></ul><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>Shell&gt; help spi
+Read or write spi flash.
+
+SPI <span style=color:#f92672>[</span>-r StartAddr Size<span style=color:#f92672>]</span>/<span style=color:#f92672>[</span>-w data/-w StartAddr data<span style=color:#f92672>]</span>/<span style=color:#f92672>[</span>-u file<span style=color:#f92672>]</span>/<span style=color:#f92672>[</span>-e<span style=color:#f92672>]</span>/<span style=color:#f92672>[</span>-l file StartAddr Size<span style=color:#f92672>]</span>
+
+  -r           - read ls7a spi from address.
+  -w           - write ls7a spi data.
+  -u           - update ls3a spi flash.
+  -e           - erase ls7a spi flash by Sector.
+  -x           - download correct firmware to Serial ROM <span style=color:#66d9ef>for</span> xhci.
+  -l           - write ls7a spi data from start address to end address
+
+NOTES:
+  1. This command can update flash you should be careful.
+
+  * 刷新固件
+    fs0:<span style=color:#ae81ff>\&gt;</span> spi -u uefi
+
+  * write the ls7a spi flash:
+    fs0:<span style=color:#ae81ff>\&gt;</span> spi -w 00:11:22:33:44:55
+    fs0:<span style=color:#ae81ff>\&gt;</span> spi -w 0x10 aa:bb:cc:dd:ee:ff
+
+  * write the ls7a spi flash:
+    fs0:<span style=color:#ae81ff>\&gt;</span> spi -l vbios.bin 0x1000 0x20000
+Shell&gt; 
+</code></pre></div><h2 id=操作系统支持>操作系统支持</h2><p>基于 3A5000 平台的操作系统内核已经增加了对固件 Variable Runtime Services 的支持，可以在操作系统中直接操作固件提供的 Runtime 服务，如增加、删除引导项，调整启动顺序等。</p><p>要使用操作系统的这个功能，需要:</p><ol><li>在编译内核时，打开 <code>CONFIG_EFIVAR_FS=m</code> 配置项，在 <code>make menuconfig</code> 时，显示为：</li></ol><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>&lt;M&gt; EFI Variable Support via sysfs
+</code></pre></div><ol start=2><li>挂载 <code>efivarfs</code> 文件系统</li></ol><p>如果操作系统使用了 <code>systemd</code>，在启动时会自动挂载，挂载位置如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>efivarfs on /sys/firmware/efi/efivars type efivarfs <span style=color:#f92672>(</span>rw,nosuid,nodev,noexec,relatime<span style=color:#f92672>)</span>
+</code></pre></div><ol start=3><li>编译并安装 <code>efibootmgr</code> 软件包。</li></ol><p><code>efibootmgr</code> 命令用法如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>$ efibootmgr -h
+efibootmgr version <span style=color:#ae81ff>17</span>
+usage: efibootmgr <span style=color:#f92672>[</span>options<span style=color:#f92672>]</span>
+        -a | --active         sets bootnum active
+        -A | --inactive       sets bootnum inactive
+        -b | --bootnum XXXX   modify BootXXXX <span style=color:#f92672>(</span>hex<span style=color:#f92672>)</span>
+        -B | --delete-bootnum delete bootnum
+        -c | --create         create new variable bootnum and add to bootorder
+        -C | --create-only      create new variable bootnum and <span style=color:#66d9ef>do</span> not add to bootorder
+        -D | --remove-dups      remove duplicate values from BootOrder
+        -d | --disk disk       <span style=color:#f92672>(</span>defaults to /dev/sda<span style=color:#f92672>)</span> containing loader
+        -r | --driver         Operate on Driver variables, not Boot Variables.
+        -e | --edd <span style=color:#f92672>[</span>1|3|-1<span style=color:#f92672>]</span>   force EDD 1.0 or 3.0 creation variables, or guess
+        -E | --device num      EDD 1.0 device number <span style=color:#f92672>(</span>defaults to 0x80<span style=color:#f92672>)</span>
+        -g | --gpt            force disk with invalid PMBR to be treated as GPT
+        -i | --iface name     create a netboot entry <span style=color:#66d9ef>for</span> the named interface
+        -l | --loader name     <span style=color:#f92672>(</span>defaults to <span style=color:#e6db74>&#34;\EFI\arch\grub.efi&#34;</span><span style=color:#f92672>)</span> <span style=color:#f92672>[</span>1<span style=color:#f92672>]</span>
+        -L | --label label     Boot manager display label <span style=color:#f92672>(</span>defaults to <span style=color:#e6db74>&#34;Linux&#34;</span><span style=color:#f92672>)</span>
+        -m | --mirror-below-4G t|f mirror memory below 4GB
+        -M | --mirror-above-4G X percentage memory to mirror above 4GB
+        -n | --bootnext XXXX   set BootNext to XXXX <span style=color:#f92672>(</span>hex<span style=color:#f92672>)</span>
+        -N | --delete-bootnext delete BootNext
+        -o | --bootorder XXXX,YYYY,ZZZZ,...     explicitly set BootOrder <span style=color:#f92672>(</span>hex<span style=color:#f92672>)</span>
+        -O | --delete-bootorder delete BootOrder
+        -p | --part part        partition containing loader <span style=color:#f92672>(</span>defaults to <span style=color:#ae81ff>1</span> on partitioned devices<span style=color:#f92672>)</span>
+        -q | --quiet            be quiet
+        -t | --timeout seconds  set boot manager timeout waiting <span style=color:#66d9ef>for</span> user input.
+        -T | --delete-timeout   delete Timeout.
+        -u | --unicode | --UCS-2  handle extra args as UCS-2 <span style=color:#f92672>(</span>default is ASCII<span style=color:#f92672>)</span>
+        -v | --verbose          print additional information
+        -V | --version          <span style=color:#66d9ef>return</span> version and exit
+        -w | --write-signature  write unique sig to MBR <span style=color:#66d9ef>if</span> needed
+        -y | --sysprep          Operate on SysPrep variables, not Boot Variables.
+        -@ | --append-binary-args file  append extra args from file <span style=color:#f92672>(</span>use <span style=color:#e6db74>&#34;-&#34;</span> <span style=color:#66d9ef>for</span> stdin<span style=color:#f92672>)</span>
+        -h | --help             show help/usage
+</code></pre></div><p>注: [1] 这里显示的 &ldquo;\EFI\arch\grub.efi&rdquo; 是当前启动项所使用的 efi 文件位置，非原始默认位置。</p><ol><li>查看当前启动项信息</li></ol><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>$ efibootmgr -v
+BootCurrent: <span style=color:#ae81ff>0005</span>
+Timeout: <span style=color:#ae81ff>3</span> seconds
+BootOrder: 0005,0004,0001,0002,0003,0000
+Boot0000* Enter Setup	FvVol<span style=color:#f92672>(</span>7cb8bdc9-f8eb-4f34-aaea-3ee4af6516a1<span style=color:#f92672>)</span>/FvFile<span style=color:#f92672>(</span>462caa21-7614-4503-836e-8ab6f4662331<span style=color:#f92672>)</span>
+Boot0001  UEFI BootManagerMenuApp	FvVol<span style=color:#f92672>(</span>7cb8bdc9-f8eb-4f34-aaea-3ee4af6516a1<span style=color:#f92672>)</span>/FvFile<span style=color:#f92672>(</span>eec25bdc-67f2-4d95-b1d5-f81b2039d11d<span style=color:#f92672>)</span>
+Boot0002* UEFI S5170-256	PciRoot<span style=color:#f92672>(</span>0x0<span style=color:#f92672>)</span>/Pci<span style=color:#f92672>(</span>0x8,0x0<span style=color:#f92672>)</span>/Sata<span style=color:#f92672>(</span>0,65535,0<span style=color:#f92672>)</span>N.....YM....R,Y.
+Boot0003* UEFI Shell	FvVol<span style=color:#f92672>(</span>7cb8bdc9-f8eb-4f34-aaea-3ee4af6516a1<span style=color:#f92672>)</span>/FvFile<span style=color:#f92672>(</span>7c04a583-9e3e-4f1c-ad65-e05268d0b4d1<span style=color:#f92672>)</span>
+Boot0004* rEFInd Boot Manager	HD<span style=color:#f92672>(</span>1,GPT,125d060a-911a-4a4f-ba44-7035cb7bad01,0x800,0xfa000<span style=color:#f92672>)</span>/File<span style=color:#f92672>(</span><span style=color:#ae81ff>\E</span>FI<span style=color:#ae81ff>\r</span>efind<span style=color:#ae81ff>\r</span>efind_loongarch64.efi<span style=color:#f92672>)</span>
+Boot0005* arch	HD<span style=color:#f92672>(</span>1,GPT,125d060a-911a-4a4f-ba44-7035cb7bad01,0x800,0xfa000<span style=color:#f92672>)</span>/File<span style=color:#f92672>(</span><span style=color:#ae81ff>\E</span>FI<span style=color:#ae81ff>\a</span>rch<span style=color:#ae81ff>\g</span>rubloongarch64.efi<span style=color:#f92672>)</span>
+</code></pre></div><p>当前启动项是0005，即arch，efi文件是 <code>&lt;esp>/EFI/arch/grub/loongarch64.efi</code>。</p><p>启动顺序是0005(arch),0004(rEFInd Boot Manager),0001(UEFI BootManagerMenuApp),0002(UEFI S5170-256),0003(UEFI Shell),0000(Enter Setup)。</p><ol start=2><li>调整启动顺序</li></ol><p>交换arch和rEFInd Boot Manager：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#75715e># efibootmgr -o 0004,0005,0001,0002,0003,0000</span>
+</code></pre></div><ol start=3><li>添加新启动项</li></ol><p>将文件 <code>/boot/efi/EFI/BOOT/BOOTLA64.EFI</code> 添加为新的启动项<code>Linux Boot Manager</code>。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=color:#75715e># efibootmgr -c -w -L &#34;Linux Boot Manager&#34; -d /dev/sda -p 1 -l \EFI\BOOT\BOOTLA64.EFI</span>
+BootCurrent: <span style=color:#ae81ff>0005</span>
+Timeout: <span style=color:#ae81ff>3</span> seconds
+BootOrder: 0006,0005,0004,0001,0002,0003,0000
+Boot0000* Enter Setup
+Boot0001  UEFI BootManagerMenuApp
+Boot0002* UEFI S5170-256
+Boot0003* UEFI Shell
+Boot0004* rEFInd Boot Manager
+Boot0005* arch
+Boot0006* Linux Boot Manager
+</code></pre></div><ol start=4><li>删除启动项</li></ol><p>删除刚才添加的启动项：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>$ efibootmgr -b <span style=color:#ae81ff>0006</span> -B
+BootCurrent: <span style=color:#ae81ff>0005</span>
+Timeout: <span style=color:#ae81ff>3</span> seconds
+BootOrder: 0005,0004,0001,0002,0003,0000
+Boot0000* Enter Setup
+Boot0001  UEFI BootManagerMenuApp
+Boot0002* UEFI S5170-256
+Boot0003* UEFI Shell
+Boot0004* rEFInd Boot Manager
+Boot0005* arch
+</code></pre></div><p><code>efibootmgr</code> 工具还有许多功能（比如隐藏启动项、修改启动项、删除无用的启动项、超时时间等），这里不再一一介绍，有兴趣的朋友可以自行研究测试。</p><h2 id=helloworld-应用>helloworld 应用</h2><p>UEFI 支持用户自行开发efi application，如比较常见的bootloader、memtest、uefi shell等等，都是一个个UEFI Application。</p><p>开发应用可以使用UEFI提供的头文件和库，也可以使用 gnu-efi 封装的专用于 linux 工具链的开发库，我们以使用 gnu-efi 为例，编写一个能输出 &ldquo;Hello, world!&rdquo; 的 应用。</p><p>编写 <code>main.c</code> 文件，内容如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;efi.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;efilib.h&gt;</span><span style=color:#75715e>
+</span><span style=color:#75715e></span>
+EFI_STATUS
+EFIAPI
+<span style=color:#a6e22e>efi_main</span> (EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE <span style=color:#f92672>*</span>SystemTable) {
+   InitializeLib(ImageHandle, SystemTable);
+   Print(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;Hello, world!</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+
+   <span style=color:#66d9ef>return</span> EFI_SUCCESS;
+}
+</code></pre></div><p>编写 <code>Makefile</code> 文件，内容如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-makefile data-lang=makefile>ARCH            <span style=color:#f92672>=</span> <span style=color:#66d9ef>$(</span>shell uname -m | sed s,i<span style=color:#f92672>[</span>3456789<span style=color:#f92672>]</span>86,ia32,<span style=color:#66d9ef>)</span>
+OBJS            <span style=color:#f92672>=</span> main.o
+TARGET          <span style=color:#f92672>=</span> hello.efi
+EFIINC          <span style=color:#f92672>=</span> /usr/include/efi
+EFIINCS         <span style=color:#f92672>=</span> -I<span style=color:#66d9ef>$(</span>EFIINC<span style=color:#66d9ef>)</span> -I<span style=color:#66d9ef>$(</span>EFIINC<span style=color:#66d9ef>)</span>/<span style=color:#66d9ef>$(</span>ARCH<span style=color:#66d9ef>)</span> -I<span style=color:#66d9ef>$(</span>EFIINC<span style=color:#66d9ef>)</span>/protocol
+LIB             <span style=color:#f92672>=</span> /usr/lib
+EFI_CRT_OBJS    <span style=color:#f92672>=</span> <span style=color:#66d9ef>$(</span>LIB<span style=color:#66d9ef>)</span>/crt0-efi-<span style=color:#66d9ef>$(</span>ARCH<span style=color:#66d9ef>)</span>.o
+EFI_LDS         <span style=color:#f92672>=</span> <span style=color:#66d9ef>$(</span>LIB<span style=color:#66d9ef>)</span>/elf_<span style=color:#66d9ef>$(</span>ARCH<span style=color:#66d9ef>)</span>_efi.lds
+CFLAGS          <span style=color:#f92672>=</span> <span style=color:#66d9ef>$(</span>EFIINCS<span style=color:#66d9ef>)</span> -fno-stack-protector -fpic <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>                  -fshort-wchar -Wall
+<span style=color:#960050;background-color:#1e0010>ifeq</span> <span style=color:#960050;background-color:#1e0010>(</span><span style=color:#66d9ef>$(</span>ARCH<span style=color:#66d9ef>)</span><span style=color:#960050;background-color:#1e0010>,loongarch64)</span>
+    CFLAGS <span style=color:#f92672>+=</span> -march<span style=color:#f92672>=</span>loongarch64 -mabi<span style=color:#f92672>=</span>lp64 -g -O2 <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>              -Wextra -Werror -fno-strict-aliasing <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>              -ffreestanding -fno-stack-check <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>              <span style=color:#66d9ef>$(if</span> <span style=color:#66d9ef>$(</span>findstring gcc,<span style=color:#66d9ef>$(</span>CC<span style=color:#66d9ef>))</span>,-fno-merge-all-constants,<span style=color:#66d9ef>)</span>
+<span style=color:#960050;background-color:#1e0010>endif</span>
+
+LDFLAGS         <span style=color:#f92672>=</span> -nostdlib --warn-common --no-undefined --fatal-warnings -shared <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>                  --build-id<span style=color:#f92672>=</span>sha1 -Bsymbolic --defsym<span style=color:#f92672>=</span>EFI_SUBSYSTEM<span style=color:#f92672>=</span>0xa -T <span style=color:#66d9ef>$(</span>EFI_LDS<span style=color:#66d9ef>)</span> -L <span style=color:#66d9ef>$(</span>LIB<span style=color:#66d9ef>)</span> <span style=color:#66d9ef>$(</span>EFI_CRT_OBJS<span style=color:#66d9ef>)</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>
+<span style=color:#a6e22e>all</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>$(</span>TARGET<span style=color:#66d9ef>)</span>
+
+<span style=color:#a6e22e>hello.so</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>$(</span>OBJS<span style=color:#66d9ef>)</span>
+	ld <span style=color:#66d9ef>$(</span>LDFLAGS<span style=color:#66d9ef>)</span> <span style=color:#66d9ef>$(</span>OBJS<span style=color:#66d9ef>)</span> -o $@ -lefi -lgnuefi
+
+<span style=color:#a6e22e>%.efi</span><span style=color:#f92672>:</span> %.so
+	@objcopy -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>            -j .rela -j .rel.* -j .rela.* -j .rel* -j .rela* <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>            -j .reloc -O binary $^ $@
+
+<span style=color:#a6e22e>clean</span><span style=color:#f92672>:</span>
+	@rm -f *.o *.efi *.so
+</code></pre></div><p>编译</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>$ make
+</code></pre></div><p>复制 efi 到 esp 分区：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>$ cp hello.efi /boot/efi/hello.efi
+</code></pre></div><p>重启系统，进入 <code>UEFI Shell</code> 进行测试：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>Shell&gt; fs0:<span style=color:#ae81ff>\h</span>ello.efi
+Hello, world!
+Shell&gt; 
+</code></pre></div><p>更多测试请 clone <a href=https://github.com/loongarch64/gnu-efi>https://github.com/loongarch64/gnu-efi</a> 仓库，切换到 <code>dev-la64/master</code> 分支，编译运行。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>$ git clone https://github.com/loongarch64/gnu-efi
+$ git checkout dev-la64/master
+$ make
+$ make apps
+$ ls loongarch64/apps/
+AllocPages.efi  debughook.efi        drv0.efi      exit.efi       lfbgrid.efi   printenv.efi  setdbg.efi  t2.efi  t4.efi  t6.efi  t8.efi   t.efi
+bltgrid.efi     debughook.efi.debug  drv0_use.efi  FreePages.efi  modelist.efi  route80h.efi  setjmp.efi  t3.efi  t5.efi  t7.efi  tcc.efi  unsetdbg.efi
+</code></pre></div><p>生成的 <code>efi</code> 文件位于 <code>loongarch64/apps</code> 目录中，可以通过 <code>UEFI Shell</code> 来加载这些 <code>efi</code> 文件进行测试和学习编写固件 <code>efi</code> 应用。</p><h2 id=startupnsh-脚本>startup.nsh 脚本</h2><p>UEFI 固件支持自动加载脚本来执行一系列自动化任务，将编写好的 <code>startup.nsh</code> 脚本复制到 <code>&lt;esp>/efi/tools/startup.nsh</code>，重启系统可自动执行。</p><p>下面是一个脚本示例：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>cat /boot/efi/tools/startup.nsh
+
+cls
+echo <span style=color:#e6db74>&#34;Press any key to continue...&#34;</span>
+pause
+
+<span style=color:#66d9ef>if</span> exist fs0:<span style=color:#ae81ff>\h</span>ello.efi <span style=color:#66d9ef>then</span>
+  echo <span style=color:#e6db74>&#34;Run hello.efi...&#34;</span>
+  fs0:<span style=color:#ae81ff>\h</span>ello.efi
+endif
+
+<span style=color:#66d9ef>if</span> exist fs0:<span style=color:#ae81ff>\E</span>FI<span style=color:#ae81ff>\a</span>rch<span style=color:#ae81ff>\g</span>rubloongarch64.efi <span style=color:#66d9ef>then</span>
+  echo <span style=color:#e6db74>&#34;Run Grub...&#34;</span>
+  fs0:<span style=color:#ae81ff>\E</span>FI<span style=color:#ae81ff>\a</span>rch<span style=color:#ae81ff>\g</span>rubloongarch64.efi
+endif
+</code></pre></div><p>脚本先进行清屏，然后显示<code>Press any key to continue...</code>, 并等待用户按键。</p><p>如果 <code>/boot/efi/hello.efi</code> 文件存在，则显示 <code>Run hello.efi...</code> 并加载执行 <code>hello.efi</code>。</p><p>如果 <code>/boot/efi/EFI/arch/grubloongarch64.efi</code> 文件存在，则显示 <code>Run Grub...</code> 并加载执行，进行 Grub 界面。</p></div><div class="post-copyright mb-4"><h3>版权</h3><div class=post-cc>本作品采用 <a target=_blank rel=license href=https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh>CC BY-NC-ND 4.0 <i class="fab fa-fw fa-creative-commons"></i><i class="fab fa-fw fa-creative-commons-by"></i><i class="fab fa-fw fa-creative-commons-nc"></i><i class="fab fa-fw fa-creative-commons-nd"></i></a>授权。</div></div><div class="post-navs d-flex mb-3 justify-content-between"><div class="post-nav w-50"><div class=prev-post><a href=/zh-cn/posts/20210801-upstream-community/>2021年二季度社区动态</a></div></div><div class="post-nav flex-row-reverse"><div class=next-post><a href=/zh-cn/posts/2021116-upstream-community/>2021年三季度社区动态</a></div></div></div><section class=related-posts><h3>相关文章</h3><ul class=related-posts><li><a href=/zh-cn/posts/20210801-upstream-community/>2021年二季度社区动态</a></li><li><a href=/zh-cn/posts/20210508-upstream-community/>2021年一季度社区动态</a></li><li><a href=/zh-cn/posts/20210501-loongarch-manual/>LoongArch指令集手册发布</a></li><li><a href=/zh-cn/posts/20200127-binutils-and-autotools/>上游优先，迈出第一步</a></li><li><a href=/zh-cn/posts/20200820-ccf-aca/>指令系统的自主与兼容</a></li></ul></section></article><div class="post-comments surface row"><script src=https://utteranc.es/client.js repo=loongarch64/website issue-term=og:title label theme=github-light crossorigin=anonymous async></script></div></div></div><aside class="col-lg-4 sidebar d-flex"><div class=container><section class="profile surface row"><h4>开发者手册</h4><ul><li><a href=https://github.com/loongson/LoongArch-Documentation/releases/download/2022.03.17/LoongArch-Vol1-v1.00-CN.pdf target=_blank>龙芯架构参考手册 - 卷一：基础架构</a></li><li><a href=https://github.com/loongson/LoongArch-Documentation/releases/download/2022.03.17/Loongson-3A5000-usermanual-v1.03-CN.pdf target=_blank>龙芯 3A5000/3B5000 处理器寄存器使用手册</a></li><li><a href=https://github.com/loongson/LoongArch-Documentation/releases/download/2022.03.17/Loongson-7A1000-usermanual-v2.00-CN.pdf target=_blank>龙芯 7A1000 桥片用户手册</a></li><li><a href=https://loongson.github.io/LoongArch-Documentation/LoongArch-ELF-ABI-CN.html target=_blank>龙芯架构 ELF psABI</a></li><li><a href=https://loongson.github.io/LoongArch-Documentation/LoongArch-toolchain-conventions-CN.html target=_blank>龙芯架构工具链约定</a></li></ul></section><section class="featured-posts row surface"><h4>精选文章</h4><ul><li><a href=/zh-cn/posts/3a5000-uefi/>3A5000之UEFI</a></li></ul></section><section class="recent-posts row surface"><h4>最近文章</h4><ul><li><a href=/zh-cn/posts/pxe-grub/>网络启动之Grub篇</a></li><li><a href=/zh-cn/posts/2022year/>2022年社区动态</a></li><li><a href=/zh-cn/posts/20220809-loongarch-assembly/>LoongArch 汇编快速入门</a></li><li><a href=/zh-cn/posts/loongarch-merged-linux/>LoongArch 架构支持合并到 Linux 5.19 内核</a></li><li><a href=/zh-cn/posts/2021q4-upstream-community/>2021年四季度社区动态</a></li></ul></section><section class="taxonomy-categories row surface"><h4><a href=/zh-cn/categories>分类</a></h4><div><a href=/zh-cn/categories/kernel/ class="post-taxonomy rounded-pill btn btn-sm mr-2 mb-2" title=kernel>kernel <span class="badge rounded-pill">1</span>
+</a><a href=/zh-cn/categories/uefi/ class="post-taxonomy rounded-pill btn btn-sm mr-2 mb-2" title=UEFI>UEFI <span class="badge rounded-pill">1</span>
+</a><a href=/zh-cn/categories/%E5%86%85%E6%A0%B8/ class="post-taxonomy rounded-pill btn btn-sm mr-2 mb-2" title=内核>内核 <span class="badge rounded-pill">1</span>
+</a><a href=/zh-cn/categories/%E5%9B%BA%E4%BB%B6/ class="post-taxonomy rounded-pill btn btn-sm mr-2 mb-2" title=固件>固件 <span class="badge rounded-pill">1</span>
+</a><a href=/zh-cn/categories/%E7%BC%96%E7%A8%8B/ class="post-taxonomy rounded-pill btn btn-sm mr-2 mb-2" title=编程>编程 <span class="badge rounded-pill">1</span></a></div></section><section class="taxonomy-series row surface"><h4><a href=/zh-cn/series>专栏</a></h4><div><a href=/zh-cn/series/%E7%94%A8%E6%88%B7%E6%89%8B%E5%86%8C/ class="post-taxonomy rounded-pill btn btn-sm mr-2 mb-2" title=用户手册>用户手册 <span class="badge rounded-pill">1</span></a></div></section><section class="taxonomy-tags row surface"><h4><a href=/zh-cn/tags>标签</a></h4><div><a href=/zh-cn/tags/%E6%96%B0%E9%97%BB/ class="post-taxonomy rounded-pill btn btn-sm mr-2 mb-2" title=新闻>新闻 <span class="badge rounded-pill">11</span>
+</a><a href=/zh-cn/tags/css/ class="post-taxonomy rounded-pill btn btn-sm mr-2 mb-2" title=CSS>CSS <span class="badge rounded-pill">1</span>
+</a><a href=/zh-cn/tags/html/ class="post-taxonomy rounded-pill btn btn-sm mr-2 mb-2" title=HTML>HTML <span class="badge rounded-pill">1</span>
+</a><a href=/zh-cn/tags/markdown/ class="post-taxonomy rounded-pill btn btn-sm mr-2 mb-2" title=Markdown>Markdown <span class="badge rounded-pill">1</span>
+</a><a href=/zh-cn/tags/%E6%B1%87%E7%BC%96/ class="post-taxonomy rounded-pill btn btn-sm mr-2 mb-2" title=汇编>汇编 <span class="badge rounded-pill">1</span></a></div></section><section class="profile surface row"><h4>社区资源</h4><ul><li><i class="fab fa-fw fa-github"></i><a href=https://github.com/loongson target=_blank>Great Loongson Union</a></li><li><i class="fab fa-fw fa-github"></i><a href=https://github.com/loongarch64 target=_blank>Loongarch64</a></li><li><i class="fab fa-fw fa-github"></i><a href=https://github.com/loongson-community target=_blank>Loongson Community</a></li><li><a href=http://loongnix.cn target=_blank>龙芯开源社区</a></li><li><a href=https://loongson-cloud-community.github.io/Loongson-Cloud-Community/ target=_blank>龙芯云</a></li><li><a href=https://bbs.loongarch.org/ target=_blank>LA UOSC社区</a></li><li><a href="https://tieba.baidu.com/f?kw=%E9%BE%99%E8%8A%AF&ie=utf-8" target=_blank>百度贴吧</a></li></ul></section></div></aside></div></main><footer class="footer mt-auto py-3 text-center container"><nav class="social-links nav my-2 justify-content-center"><li class=nav-item><a class="nav-link social-link" target=_blank href=https://github.com/loongarch64 title=Github><i class="fab fa-fw fa-2x fa-github"></i></a></li><li class=nav-item><a class="nav-link social-link" target=_blank href="http://wpa.qq.com/msgrd?v=3&uin=922566903&site=qq&menu=yes" title=Qq><i class="fab fa-fw fa-2x fa-qq"></i></a></li><li class=nav-item><a class="nav-link social-link" target=_blank href=https://t.me/loongson_users title=Telegram><i class="fab fa-fw fa-2x fa-telegram"></i></a></li></nav><div class="copyright mb-2">Copyright © 2016-2024 Community Team. All Rights Reserved.</div><div class="powered-by mb-2">Powered by <a href=https://gohugo.io target=_blank>Hugo</a> and the <a href=https://github.com/razonyang/hugo-theme-bootstrap target=_blank>Bootstrap</a> theme.</div></footer><a id=btnScrollToTop class=btn-scroll-to-top><i class="fas fa-fw fa-chevron-circle-up fa-2x"></i></a></body></html>
